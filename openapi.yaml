@@ -1,0 +1,1117 @@
+openapi: 3.0.0
+info:
+  title: Market Data API
+  termsOfService: 'https://api.bravenewcoin.com/terms/'
+  version: 'v3'
+  x-logo:
+    url: 'https://www.futureblockchainsummit.com/__media/libraries/media-partners/__thumbs/__700x9999.BNC_extlogo_blk_or_slogan.png'
+  contact:
+    name: Brave New Coin
+    url: 'https://bravenewcoin.com/'
+    email: support@bravenewcoin.com
+  description: |
+    The BraveNewCoin API is an HTTP API. The BraveNewCoin APIs provide market data information about crypto assets.
+servers:
+  - url: 'https://api.dev.bravenewcoin.com/{basePath}'
+    description: Development Server.
+    variables:
+      basePath:
+        default: v3
+  - url: 'https://api.bravenewcoin.com/{basePath}'
+    description: Production Server.
+    variables:
+      basePath:
+        default: v3
+components:
+  schemas:
+    Error:
+      type: object
+      properties:
+        status:
+          description: The status of the error.
+          type: string
+        timestamp:
+          description: The timestamp of the error.
+          type: string
+          format: date-time
+        message:
+          description: description of error.
+          type: string
+        errors:
+          description: A list of errors.
+          type: array
+          items:
+            type: object
+            properties:
+              object:
+                description: The object that caused the error.
+                type: string
+              field:
+                description: The field that caused the error.
+                type: string
+              rejectedValue:
+                description: The value which caused the error.
+                type: string
+              message:
+                description: A message which usually provides a hint on how to resolve the error.
+                type: string
+    Asset:
+      type: object
+      properties:
+        id:
+          description: Unique identifier for the resource.
+          type: string
+          format: uuid
+        name:
+          description: The friendly name of the asset.
+          type: string
+        symbol:
+          description: The ticker symbol of the asset.
+          type: string
+        status:
+          description: The status of the asset.
+          type: string
+          enum:
+            - ACTIVE
+            - INACTIVE
+        type:
+          description: Indicator for the type of the asset.
+          type: string
+          enum:
+            - FIAT
+            - CRYPTO
+        url:
+          description: The url of where information about the asset can be found.
+          type: string
+        supplyUrl:
+          description: The url where the asset supply information can be found.
+          type: string
+    Market:
+      type: object
+      properties:
+        id:
+          description: Unique identifier for the resource.
+          type: string
+          format: uuid
+        baseAssetId:
+          description: The base asset id which makes up the market
+          type: string
+          format: uuid
+        quoteAssetId:
+          description: The quote asset id which makes up the market
+          type: string
+          format: uuid
+    Exchange:
+      type: object
+      properties:
+        id:
+          description: Unique identifier for the resource.
+          type: string
+          format: uuid
+        name:
+          description: The name of the exchange
+          type: string
+        url:
+          description: The URL of the exchange
+          type: string
+        status:
+          description: The status of the exchange
+          type: string
+          enum:
+            - ACTIVE
+            - INACTIVE
+        markets:
+          description: The markets available on the exchange
+          type: array
+          items:
+            type: object
+            properties:
+              marketId:
+                description: The market id
+                type: string
+                format: uuid
+              marketStatus:
+                description: The status of the market on the exchange
+                type: string
+                enum:
+                  - ACTIVE
+                  - INACTIVE
+    Tick:
+      type: object
+      properties:
+        id:
+          description: Unique identifier for the resource.
+          type: string
+          format: uuid
+        exchangeId:
+          description: Unique identifier for the exchange.
+          type: string
+          format: uuid
+        marketId:
+          description: Unique identifier for the market.
+          type: string
+          format: uuid
+        price:
+          description: The last traded price at the timestamp in the quote asset.
+          type: string
+        volume:
+          description: The volume of the base asset in the last 24 hours.
+          type: string
+        bid:
+          description: 'The bid price in the quote asset.'
+          type: string
+        ask:
+          description: 'The ask price in the quote asset.'
+          type: string
+        timestamp:
+          description: The timestamp from when the market data was collected from the exchange.
+          type: string
+          format: date-time
+    MarketWeightedAverage:
+      type: object
+      properties:
+        id:
+          description: Unique identifier for the resource.
+          type: string
+          format: uuid
+        marketId:
+          description: Unique identifier for the market.
+          type: string
+          format: uuid
+        timestamp:
+          description: The timestamp the marketed weighted average was calculated.
+          type: string
+          format: date-time
+        price:
+          description: The market weighted average price in the quote asset.
+          type: string
+        volume:
+          description: The marked weighted average volume of the base asset in the last 24 hours.
+          type: string
+    GlobalWeightedAverage:
+      type: object
+      properties:
+        id:
+          description: Unique identifier for the resource.
+          type: string
+          format: uuid
+        assetId:
+          description: The asset id of the global weighted average.
+          type: string
+          format: string
+        timestamp:
+          description: The timestamp the global weighted average was calculated.
+          type: string
+          format: date-time
+        price:
+          description: The global weighted average price of the asset in USD.
+          type: string
+        volume:
+          description: The total global weighted average 24h volume of the asset.
+          type: string
+        totalSupply:
+          description: The total supply of the asset.
+          type: string
+        freeFloatSupply:
+          description: The circulating supply of the asset.
+          type: string
+    OpenHighLowCloseVolume:
+      type: object
+      properties:
+        id:
+          description: Unique identifier for the resource.
+          type: string
+          format: uuid
+        timestamp:
+          description: The date and time for the period to which the OHLCV averages belong
+          type: string
+          format: date-time
+        open:
+          description: The opening price of the asset at the timestamp
+          type: string
+        close:
+          description: The closing price of the asset at the timestamp
+          type: string
+        high:
+          description: The high price of the asset at the timestamp
+          type: string
+        low:
+          description: The low price of the asset at the timestamp
+          type: string
+        volume:
+          description: The 24h volume of the asset at the timestamp
+          type: string
+  parameters:
+    idParam:
+      name: id
+      in: path
+      required: true
+      description: The unique resource identifier
+      schema:
+        type: string
+        format: uuid
+  responses:
+    Error:
+      description: General Error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+tags:
+  - name: Errors
+    description: |
+      BraveNewCoin uses conventional HTTP response codes to indicate the success or failure of an API request. In general: Codes in the `2xx` range indicate success. Codes in the `4xx` range indicate an error that failed given the information provided (e.g. A  required parameter was missing). Codes in the `5xx` range indicate an error with BraveNewCoin's servers (these will be rare).
+
+      Some `4xx` errors that could be handled programmatically include an error code that briefly explains the error reported.
+      ```
+      {
+        "status": "BAD_REQUEST",
+        "timestamp": "2018-08-14T21:55:46.055Z",
+        "message": "validation error",
+        "errors": [
+          {
+            "object": "Asset",
+            "field": "status",
+            "rejectedValue": "ERROR",
+            "message": "Invalid value provided for status"
+          }
+        ]
+      }
+      ```
+
+      ### HTTP status code summary
+      HTTP Code                          | Description
+      -----------------------------------|------------
+      200 - OK                           | Everything worked as expected
+      400 - Bad Request                  | The request was unacceptable, often due to missing a required parameter.
+      401 - Unauthorized                 | No valid OAuth2 token provided
+      404 - Not Found                    | The requested resource doesn't exist
+      409 - Conflict                     | The request conflicts with another request (perhaps due the resource was updated)
+      429 - Too Many Requests            | Too many requests hit the API too quickly. We recommend an expontential backoff of your requests.
+      500, 502, 503, 504 - Server Errors | Something went wrong on BraveNewCoin's end. (These will be rare).
+
+      ### Handling Errors
+      Our API libraries raise exceptions for many reasons, such as invalid parameters, authentication errors, and network unavailability. We recommend writing code that gracefully handles all possible API exceptions.
+    x-traitTag: true
+  - name: Pagination
+    description: |
+      All top-level API resources have support listing all resources which they hold. For instance, you can [list assets](#operation/listAssets), [list markets](#operation/listMarkets) and [list exchanges](#operation/listExchanges) etc. These list API methods share a common structure and where BraveNewCoin determines the number of resources is too large, the list APIs have the ability to take at least these two parameters: `size` and `startAfter`.
+
+      BraveNewCoin API's utilise cursor-based pagination using the `startAfter` parameter. The parameter should be a existing object ID and returns resources in reverse chronological order. The `startAfter` parameter returns resources listed after the named resource. For APIs which take both a `startAfter` and `timestamp` parameters, the `timestamp` is ignored if `startAfter` is provided.
+
+      Arguments     |                         | Description
+      ----------------------------------------|------------
+      limit         | Optional, default is 10 | A limit on the number of resources to be returned, between 1 and 2000.
+      startAfter    |                         | A cursor for use in pagination. startAfter is an resource ID that defines your place in the list.
+      timestamp     |                         | The timestamp to start searching from.
+
+      List Response Format | Description
+      ---------------------|------------
+      content              | An array containing the actual response elements, paginated by any request parameters.
+      nextId               | The value to be provided in the `startAfter` to get the next page.
+  - name: Timezones
+    description: |
+      BraveNewCoin APIs will return datetime values in ISO8601 format. Datetime values are always returned in UTC time (as indicated by the `Z` at the end of the datetime value).
+
+      Currently BraveNewCoin APIs only accept datetimes in query parameters and request bodies which are in UTC.
+  - name: Versioning
+    description: |
+      When we make backwards-incompatible changes to the API, we will release a new version. The current version is **v3**, for more information regarding changes see the [API changelog](#tag/Versioning)
+
+      The following changes are considered backwards-compatible:
+        * Adding new API resources
+        * Adding new optional request parameters to existing API methods
+        * Adding new properties to existing API responses
+        * Changing the order of properties in existing API responses
+        * Changing the length or format of object IDs or other opaque strings
+    x-traitTag: true
+  - name: Asset
+    description: Retrieve information about assets.
+  - name: Market
+    description: Retrieve information about markets.
+  - name: Exchange
+    description: Retrieve information about exchanges.
+  - name: Ticker
+    description: Retrieve the ticker information.
+  - name: Market Weighted Averages
+    description: Retrieve the market weighted averages.
+  - name: Global Weighted Averages
+    description: Retrieve the global weighted averages.
+  - name: Open, High, Low, Close, Volumes
+    description: Retrieve the open high low close volumes.
+  - name: Market Capitalisation
+    description: Retrieve the market capitalisation.
+  - name: Rates
+    description: Retrieve the exchange rates between assets.
+paths:
+  /asset:
+    get:
+      tags:
+        - Asset
+      summary: List all assets
+      description: List all assets or provide a query parameter to search.
+      operationId: listAssets
+      x-code-samples:
+        -
+          lang: Shell
+          label: curl
+          source: "curl https://api.bravenewcoin.com/v3/asset/ -H 'Authorization: Bearer test_SiHrnL5NKsea0G2W4LHd' -G"
+      parameters:
+        - name: type
+          in: query
+          description: Only return assets of a particular type.
+          required: false
+          schema:
+            type: string
+            enum:
+              - FIAT
+              - CRYPTO
+        - name: symbol
+          in: query
+          description: Only return assets which have a particular ticker symbol.
+          required: false
+          schema:
+            type: string
+        - name: status
+          in: query
+          description: Only return assets which have a particular status.
+          required: false
+          schema:
+            type: string
+            enum:
+              - ACTIVE
+              - INACTIVE
+      responses:
+        '200':
+          description: A object with a `content` property that contains an array of assets. Each entry in the array is a seperate asset resource. If no assets are found then a empty object will be returned. This request should never return an error.
+          content:
+            application/json:
+              schema:
+                title: AssetResponse
+                type: object
+                properties:
+                  content:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Asset'
+                  nextId:
+                    description: The next id which can be used for pagination
+                    type: string
+                    format: uuid
+  '/asset/{id}':
+    parameters:
+      - $ref: '#/components/parameters/idParam'
+    get:
+      tags:
+        - Asset
+      summary: Retrieve a asset
+      description: Retrieves the details of a asset that has previously been created. Supply the unique identifier of the asset.
+      operationId: getAssetById
+      x-code-samples:
+        -
+          lang: Shell
+          label: curl
+          source: "curl https://api.bravenewcoin.com/v3/asset/74182afb-c7ea-4856-a65d-a03ab5f72635 -H 'Authorization: Bearer test_SiHrnL5NKsea0G2W4LHd' -G"
+      responses:
+        '200':
+          description: The asset which matches the UUID requested.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Asset'
+        '404':
+          description: The asset resource cannot be found.
+  /market:
+    get:
+      tags:
+        - Market
+      summary: List all markets
+      description: List all markets or provide a query parameter to search.
+      operationId: listMarkets
+      x-code-samples:
+        -
+          lang: Shell
+          label: curl
+          source: "curl https://api.bravenewcoin.com/v3/market/ -H 'Authorization: Bearer test_SiHrnL5NKsea0G2W4LHd' -G"
+      parameters:
+        - name: baseAssetId
+          in: query
+          description: Only return markets which contain the asset id on the base side of the market.
+          required: false
+          schema:
+            type: string
+            format: uuid
+        - name: quoteAssetId
+          in: query
+          description: Only return markets which contain the asset id on the quote side of the market.
+          required: false
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: A object with a `content` property that contains an array of markets. Each entry in the array is a seperate market resource. If no markets are found then a empty object will be returned. This request should never return an error.
+          content:
+            application/json:
+              schema:
+                type: object
+                title: MarketResponse
+                properties:
+                  content:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Market'
+                  nextId:
+                    description: The next id which can be used for pagination
+                    type: string
+                    format: uuid
+  '/market/{id}':
+    parameters:
+      - $ref: '#/components/parameters/idParam'
+    get:
+      tags:
+        - Market
+      summary: Retrieve a market
+      description: Retrieves the details of a market that has previously been created. Supply the unique identifier of the market.
+      operationId: getMarketById
+      x-code-samples:
+        -
+          lang: Shell
+          label: curl
+          source: "curl https://api.bravenewcoin.com/v3/market/74182afb-c7ea-4856-a65d-a03ab5f72635 -H 'Authorization: Bearer test_SiHrnL5NKsea0G2W4LHd' -G"
+      responses:
+        '200':
+          description: The market which matches the UUID requested
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Market'
+        '404':
+          description: The market resource cannot be found.
+  /exchange:
+    get:
+      tags:
+        - Exchange
+      summary: List all exchanges
+      description: List all exchanges or provide a query parameter to search.
+      operationId: listExchanges
+      x-code-samples:
+        -
+          lang: Shell
+          label: curl
+          source: "curl https://api.bravenewcoin.com/v3/exchange/ -H 'Authorization: Bearer test_SiHrnL5NKsea0G2W4LHd' -G"
+      parameters:
+        - name: status
+          in: query
+          description: Only return exchanges which have a particular status.
+          required: false
+          schema:
+            type: string
+            enum:
+              - ACTIVE
+              - INACTIVE
+      responses:
+        '200':
+          description: A object with a `content` property that contains an array of exchanges. Each entry in the array is a seperate exchange resource. If no exchanges are found then a empty object will be returned. This request should never return an error.
+          content:
+            application/json:
+              schema:
+                title: ExchangeResponse
+                type: object
+                properties:
+                  content:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Exchange'
+                  nextId:
+                    description: The next id which can be used for pagination
+                    type: string
+                    format: uuid
+  '/exchange/{id}':
+    parameters:
+      - $ref: '#/components/parameters/idParam'
+    get:
+      tags:
+        - Exchange
+      summary: Retrieve a exchange
+      description: Retrieves the details of a exchange that has previously been created. Supply the unique identifier of the exchange.
+      operationId: getExchangeById
+      x-code-samples:
+        -
+          lang: Shell
+          label: curl
+          source: "curl https://api.bravenewcoin.com/v3/exchange/74182afb-c7ea-4856-a65d-a03ab5f72635 -H 'Authorization: Bearer test_SiHrnL5NKsea0G2W4LHd' -G"
+      responses:
+        '200':
+          description: The exchange which matched the UUID requested
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Exchange'
+        '404':
+          description: The exchange resource cannot be found.
+  /ticker:
+    get:
+      tags:
+        - Ticker
+      summary: List all tickers
+      description: |-
+        This API provides ticker information by exchange and market. If no timestamp is provided, then all of the last ticks will be provided.
+
+        Using this API by **base and quote symbol is not recommended** as it may result in a error when duplicate symbols are found. Searching by marketId is recommended and will result in a faster response.
+      operationId: listTicker
+      x-code-samples:
+        -
+          lang: Shell
+          label: curl
+          source: "curl https://api.bravenewcoin.com/v3/ticker/?timestamp=2018-08-14T05:54:42.395Z&size=100 -H 'Authorization: Bearer test_SiHrnL5NKsea0G2W4LHd' -G"
+      parameters:
+        - name: timestamp
+          in: query
+          description: >-
+            Retrieve all ticks from the timestamp provided.
+          required: false
+          schema:
+            type: string
+            format: date-time
+        - name: exchangeId
+          in: query
+          description: Retrieve all ticks for the particular exchange id provided.
+          required: false
+          schema:
+            type: string
+            format: uuid
+        - name: marketId
+          in: query
+          description: Retrieve all ticks for the particular market id provided.
+          required: false
+          schema:
+            type: string
+            format: uuid
+        - name: startAfter
+          in: query
+          description: Retrieve all ticks starting after this particular id.
+          required: false
+          schema:
+            type: string
+            format: uuid
+        - name: size
+          description: The maximum size to return in the result set.
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 10
+            minimum: 1
+            maximum: 2000
+        - name: baseSymbol
+          in: query
+          description: Retrieve the ticks for the markets which contain the base symbol. If the base symbol is provided then the quote symbol must be provided.
+          required: false
+          schema:
+            type: string
+        - name: quoteSymbol
+          in: query
+          description: Retrieve the ticks for the markets which contain the quote symbol. If the quote symbol is provided, then the base symbol must be provided.
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: The ticker information by exchange id and market id
+          content:
+            application/json:
+              schema:
+                title: TickerResponse
+                type: object
+                properties:
+                  content:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Tick'
+                  nextId:
+                    description: The next id which can be used for pagination
+                    type: string
+                    format: uuid
+  /mwa:
+    get:
+      tags:
+        - Market Weighted Averages
+      summary: List all market weighted averages
+      description: |
+        ** THIS ENDPOINT IS CURRENTLY NOT AVAILABLE **
+
+        This API provides market weighted averages. If no timestamp is provided, then the most recent market weighted averages will be provided.
+
+        Using this API by **base and quote symbol is not recommended** as it may result in a error when duplicate symbols are found. Searching by marketId is recommended and will result in a faster response.
+      operationId: listMarketWeightedAverages
+      x-code-samples:
+        -
+          lang: Shell
+          label: curl
+          source: "curl https://api.bravenewcoin.com/v3/mwa/?timestamp=2018-08-14T05:54:42.395Z&size=100 -H 'Authorization: Bearer test_SiHrnL5NKsea0G2W4LHd' -G"
+      parameters:
+        - name: timestamp
+          in: query
+          description: >-
+            Retrieve all market weighted averages from the timestamp provided.
+          required: false
+          schema:
+            type: string
+            format: date-time
+        - name: marketId
+          in: query
+          description: Retrieve all market weighted avaerages for the particular market id provided.
+          required: false
+          schema:
+            type: string
+            format: uuid
+        - name: startAfter
+          in: query
+          description: Retrieve all market weighted averages starting after this particular id.
+          required: false
+          schema:
+            type: string
+            format: uuid
+        - name: size
+          description: The maximum size to return in the result set.
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 10
+            minimum: 1
+            maximum: 2000
+      responses:
+        '200':
+          description: The market weighted averages by market.
+          content:
+            application/json:
+              schema:
+                title: MarketWeightedAverageResponse
+                type: object
+                properties:
+                  content:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/MarketWeightedAverage'
+                  nextId:
+                    description: The next id which can be used for pagination
+                    type: string
+                    format: uuid
+  /mwa/ohlcv:
+    get:
+      tags:
+        - Open, High, Low, Close, Volumes
+      summary: List the open, high, low, close and volumes (OHLCV) using market weighted averages
+      description: |
+        ** THIS ENDPOINT IS CURRENTLY NOT AVAILABLE **
+
+        This API provides the open, high, low, close and volume using market weighted averages. If no timestamp is provided, then only the latest averages are returned.
+      operationId: listMwaOhlcv
+      x-code-samples:
+        -
+          lang: Shell
+          label: curl
+          source: "curl https://api.bravenewcoin.com/v3/mwa/ohlcv/?timestamp=2018-08-14T05:54:42.395Z&size=100 -H 'Authorization: Bearer test_SiHrnL5NKsea0G2W4LHd' -G"
+      parameters:
+        - name: timestamp
+          in: query
+          description: |
+            Retrieve all market weighted averages OHLCV from the timestamp provided.
+          required: false
+          schema:
+            type: string
+            format: date-time
+        - name: marketId
+          in: query
+          description: Retrieve all market weighted average OHLCV by the particular market id provided.
+          required: false
+          schema:
+            type: string
+            format: uuid
+        - name: startAfter
+          in: query
+          description: Retrieve market weighted average OHLCV by a particular id provided.
+          required: false
+          schema:
+            type: string
+            format: uuid
+        - name: size
+          description: The maximum size to return in the result set.
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 10
+            minimum: 1
+            maximum: 2000
+      responses:
+        '200':
+          description: 'The market weighted average OHLCV by market'
+          content:
+            application/json:
+              schema:
+                title: OpenHighLowCloseVolumeResponse
+                type: object
+                properties:
+                  content:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/OpenHighLowCloseVolume'
+                  nextId:
+                    description: The next id which can be used for pagination
+                    type: string
+                    format: uuid
+  /gwa:
+    get:
+      tags:
+        - Global Weighted Averages
+      summary: List all global weighted averages
+      description: |
+        ** THIS ENDPOINT IS CURRENTLY NOT AVAILABLE **
+
+        This API provides global weighted averages in USD. If no timestamp is provided, then the most recent global weighted averages will be provided.
+
+        Using this API by **symbol is not recommended** as it may result in a error when duplicate symbols are found. Searching by asset id is recommended and will result in a faster response.
+      operationId: listGlobalWeightedAverages
+      x-code-samples:
+        -
+          lang: Shell
+          label: curl
+          source: "curl https://api.bravenewcoin.com/v3/gwa/?timestamp=2018-08-14T05:54:42.395Z&size=100 -H 'Authorization: Bearer test_SiHrnL5NKsea0G2W4LHd' -G"
+      parameters:
+        - name: timestamp
+          in: query
+          description: Retrieve all global weighted averages from the timestamp provided.
+          required: false
+          schema:
+            type: string
+            format: date-time
+        - name: assetId
+          in: query
+          description: Retrieve all global weighted avaerages for the particular asset id provided.
+          required: false
+          schema:
+            type: string
+            format: uuid
+        - name: startAfter
+          in: query
+          description: Retrieve all global weighted averages starting after this particular id.
+          required: false
+          schema:
+            type: string
+            format: uuid
+        - name: size
+          description: The maximum size to return in the result set.
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 10
+            minimum: 1
+            maximum: 2000
+      responses:
+        '200':
+          description: The global weighted averages by asset.
+          content:
+            application/json:
+              schema:
+                title: GlobalWeightedAverageResponse
+                type: object
+                properties:
+                  content:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/GlobalWeightedAverage'
+                  nextId:
+                    description: The next id which can be used for pagination
+                    type: string
+                    format: uuid
+  /gwa/ohlcv:
+    get:
+      tags:
+        - Open, High, Low, Close, Volumes
+      summary: |
+        List the open, high, low, close and volumes using global weighted averages
+      description: |
+        ** THIS ENDPOINT IS CURRENTLY NOT AVAILABLE **
+
+        This API provides the open, high, low, close and volume based on global weighted averages. If no timestamp is provided, then only the latest averages are returned.
+      operationId: listGwaOhlcv
+      x-code-samples:
+        -
+          lang: Shell
+          label: curl
+          source: "curl https://api.bravenewcoin.com/v3/gwa/ohlcv/?timestamp=2018-08-14T05:54:42.395Z&size=100 -H 'Authorization: Bearer test_SiHrnL5NKsea0G2W4LHd' -G"
+      parameters:
+        - name: timestamp
+          in: query
+          description: |
+            Retrieve all global weighted average OHLCV from the timestamp provided.
+          required: false
+          schema:
+            type: string
+            format: date-time
+        - name: assetId
+          in: query
+          description: Retrieve all global weighted average OHLCV for a particular asset.
+          required: false
+          schema:
+            type: string
+            format: uuid
+        - name: startAfter
+          in: query
+          description: Retrieve all global weighted average OHLCV after this particular id
+          required: false
+          schema:
+            type: string
+            format: uuid
+        - name: size
+          description: The maximum size to return in the result set.
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 10
+            minimum: 1
+            maximum: 2000
+      responses:
+        '200':
+          description: 'The open, high, low, close and volume by asset'
+          content:
+            application/json:
+              schema:
+                title: OpenHighLowCloseVolumeResponse
+                type: object
+                properties:
+                  content:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/OpenHighLowCloseVolume'
+                  nextId:
+                    description: The next id which can be used for pagination
+                    type: string
+                    format: uuid
+  /marketcap:
+    get:
+      tags:
+        - Market Capitalisation
+      summary: |
+        List the market capitalisation for assets
+      description: |
+        ** THIS ENDPOINT IS CURRENTLY NOT AVAILABLE **
+
+        This API provides the market cap for the assets based on the GWA. This only provides the latest market cap is provided.
+      operationId: listMarketCaps
+      x-code-samples:
+        -
+          lang: Shell
+          label: curl
+          source: "curl https://api.bravenewcoin.com/v3/marketcap/?period=1 -H 'Authorization: Bearer test_SiHrnL5NKsea0G2W4LHd' -G"
+      parameters:
+        - name: assetId
+          in: query
+          description: The asset id to search
+          required: false
+          schema:
+            type: string
+            format: uuid
+        - name: period
+          in: query
+          description: The period in days to look back for percentage movements
+          required: true
+          schema:
+            type: string
+            enum:
+              - 1
+              - 7
+              - 30
+      responses:
+        '200':
+          description: The market capitalisation of the assets
+          content:
+            application/json:
+              schema:
+                title: MarketCapResponse
+                type: object
+                properties:
+                  content:
+                    type: array
+                    items:
+                      allOf:
+                        - $ref: '#/components/schemas/GlobalWeightedAverage'
+                        - type: object
+                          properties:
+                            marketCap:
+                              description: The market capitalisation in USD
+                              type: string
+                            priceChange:
+                              description: The percentage price change for the given period
+                              type: string
+                            volumeChange:
+                              description: The percentage volume change for the given period
+                              type: string
+                            marketCapChange:
+                              description: The percentage market cap change for the given period
+                              type: string
+                  nextId:
+                    description: The next id which can be used for pagination
+                    type: string
+                    format: uuid
+  /price:
+    get:
+      tags:
+        - Rates
+      summary: List all prices for a particular asset
+      description: |
+        ** THIS ENDPOINT IS CURRENTLY NOT AVAILABLE **
+
+        Provides the ability to get the price of a specific asset in all other assets.
+      operationId: listAssetPrice
+      parameters:
+        - name: assetId
+          in: query
+          description: The asset id to get the prices for
+          required: false
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: All of the prices for the asset
+          content:
+            application/json:
+              schema:
+                title: PriceResponse
+                type: object
+                properties:
+                  content:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        assetId:
+                          description: The asset the converted price is for
+                          type: string
+                        prices:
+                          description: The list of prices for the asset
+                          type: array
+                          items:
+                            type: object
+                            properties:
+                              assetId:
+                                description: The asset id the exchange rate is for
+                                type: string
+                              price:
+                                description: the exchange rate
+                                type: string
+  /convert:
+    get:
+      tags:
+        - Rates
+      summary: Convert the value of one asset into another asset
+      description: |
+        ** THIS ENDPOINT IS CURRENTLY NOT AVAILABLE **
+
+        Provides the ability to convert one asset into another asset.
+      operationId: convertAsset
+      parameters:
+        - name: fromAssetId
+          in: query
+          description: The asset id to convert from
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: toAssetId
+          in: query
+          description: The asset id to convert to
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: amount
+          in: query
+          description: The amount of the asset to convert
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: The rate and converted value
+          content:
+            application/json:
+              schema:
+                title: ConvertResponse
+                type: object
+                properties:
+                  fromAssetId:
+                    description: The asset to convert from
+                    type: string
+                  toAssetId:
+                    description: The asset to convert to
+                    type: string
+                  amount:
+                    description: The amount of the from asset to convert
+                    type: string
+                  rate:
+                    description: The rate used for the converstion
+                    type: string
+                  timestamp:
+                    description: The timestamp of the rate used
+                    type: string
+                    format: date-time
+                  result:
+                    description: The conversion result
+                    type: string
+  /rates:
+    get:
+      tags:
+        - Rates
+      summary: Convert the value of one asset into another asset
+      description: |
+        ** THIS ENDPOINT IS CURRENTLY NOT AVAILABLE **
+
+        Provides the ability to convert one asset into another asset.
+      operationId: getExchangeRates
+      parameters:
+        - name: baseAssetId
+          in: query
+          description: The base asset id to get the rates for
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: The latest exchange rate data for a particular base asset
+          content:
+            application/json:
+              schema:
+                title: RatesResponse
+                type: object
+                properties:
+                  content:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        baseAssetId:
+                          description: The base asset id
+                          type: string
+                        rates:
+                          description: The exchange rates for all currencies
+                          type: array
+                          items:
+                            type: object
+                            properties:
+                              timestamp:
+                                description: The timestamp when the rates were published
+                                type: string
+                                format: date-time
+                              assetId:
+                                description: The asset id the exchange rate is for
+                                type: string
+                              rate:
+                                description: the exchange rate
+                                type: string
