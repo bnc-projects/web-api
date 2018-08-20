@@ -11,7 +11,25 @@ info:
     url: 'https://bravenewcoin.com/'
     email: support@bravenewcoin.com
   description: |
-    The BraveNewCoin API is an HTTP API. The BraveNewCoin APIs provide market data information about crypto assets.
+    The Brave New Coin API is an HTTP API. The Brave New Coin APIs provide market data information about crypto assets.
+    The following resources are currently available:
+    * [Asset](#tag/Asset)
+    * [Market](#tag/Market)
+    * [Exchange](#tag/Exchange)
+    * [Ticker](#tag/Ticker)
+
+    The Brave New Coin github organisation has example API clients for your usage:
+    * [Java](https://github.com/bnc-projects/java-api-client)
+
+    If the language which you are working in isn't found in our list, then feel free to download the OpenAPI specification and generate your own clients in the language of your choice. The download link can be found at the top of this page.
+
+    If you find any errors with our documentation feel free to create issues and/or pull requests on [github](https://github.com/bnc-projects/web-api).
+
+    ### Usage of our APIs
+    We recommend only querying using UUIDs to our market data APIs and using a local cache which is refreshed every 15 minutes for the the information APIs. The following resources are our informational APIs:
+    * [Asset](#tag/Asset)
+    * [Market](#tag/Market)
+    * [Exchange](#tag/Exchange)
 servers:
   - url: 'https://demo-api.bravenewcoin.com/{basePath}'
     description: Demo API Server.
@@ -261,7 +279,7 @@ components:
 tags:
   - name: Errors
     description: |
-      BraveNewCoin uses conventional HTTP response codes to indicate the success or failure of an API request. In general: Codes in the `2xx` range indicate success. Codes in the `4xx` range indicate an error that failed given the information provided (e.g. A  required parameter was missing). Codes in the `5xx` range indicate an error with BraveNewCoin's servers (these will be rare).
+      Brave New Coin uses conventional HTTP response codes to indicate the success or failure of an API request. In general: Codes in the `2xx` range indicate success. Codes in the `4xx` range indicate an error that failed given the information provided (e.g. A  required parameter was missing). Codes in the `5xx` range indicate an error with Brave New Coin's servers (these will be rare).
 
       Some `4xx` errors that could be handled programmatically include an error code that briefly explains the error reported.
       ```
@@ -289,16 +307,16 @@ tags:
       404 - Not Found                    | The requested resource doesn't exist
       409 - Conflict                     | The request conflicts with another request (perhaps due the resource was updated)
       429 - Too Many Requests            | Too many requests hit the API too quickly. We recommend an expontential backoff of your requests.
-      500, 502, 503, 504 - Server Errors | Something went wrong on BraveNewCoin's end. (These will be rare).
+      500, 502, 503, 504 - Server Errors | Something went wrong on Brave New Coin's end. (These will be rare).
 
       ### Handling Errors
       Our API libraries raise exceptions for many reasons, such as invalid parameters, authentication errors, and network unavailability. We recommend writing code that gracefully handles all possible API exceptions.
     x-traitTag: true
   - name: Pagination
     description: |
-      All top-level API resources have support listing all resources which they hold. For instance, you can [list assets](#operation/listAssets), [list markets](#operation/listMarkets) and [list exchanges](#operation/listExchanges) etc. These list API methods share a common structure and where BraveNewCoin determines the number of resources is too large, the list APIs have the ability to take at least these two parameters: `size` and `startAfter`.
+      All top-level API resources have support listing all resources which they hold. For instance, you can [list assets](#operation/listAssets), [list markets](#operation/listMarkets) and [list exchanges](#operation/listExchanges) etc. These list API methods share a common structure and where Brave New Coin determines the number of resources is too large, the list APIs have the ability to take at least these two parameters: `size` and `startAfter`.
 
-      BraveNewCoin API's utilise cursor-based pagination using the `startAfter` parameter. The parameter should be a existing object ID and returns resources in reverse chronological order. The `startAfter` parameter returns resources listed after the named resource. For APIs which take both a `startAfter` and `timestamp` parameters, the `timestamp` is ignored if `startAfter` is provided.
+      Brave New Coin API's utilise cursor-based pagination using the `startAfter` parameter. The parameter should be a existing object ID and returns resources in reverse chronological order. The `startAfter` parameter returns resources listed after the named resource. For APIs which take both a `startAfter` and `timestamp` parameters, the `timestamp` is ignored if `startAfter` is provided.
 
       Arguments     |                         | Description
       ----------------------------------------|------------
@@ -312,9 +330,9 @@ tags:
       nextId               | The value to be provided in the `startAfter` to get the next page.
   - name: Timezones
     description: |
-      BraveNewCoin APIs will return datetime values in ISO8601 format. Datetime values are always returned in UTC time (as indicated by the `Z` at the end of the datetime value).
+      Brave New Coin APIs will return datetime values in ISO8601 format. Datetime values are always returned in UTC time (as indicated by the `Z` at the end of the datetime value).
 
-      Currently BraveNewCoin APIs only accept datetimes in query parameters and request bodies which are in UTC.
+      Currently Brave New Coin APIs only accept datetimes in query parameters and request bodies which are in UTC.
   - name: Versioning
     description: |
       When we make backwards-incompatible changes to the API, we will release a new version. The current version is **v3**, for more information regarding changes see the [API changelog](#tag/Versioning)
@@ -557,9 +575,9 @@ paths:
         - Ticker
       summary: List all tickers
       description: |-
-        This API provides ticker information by exchange and market. If no timestamp is provided, then all of the last ticks will be provided.
+        This API provides ticker information by exchange and market. If no timestamp is provided, then only the most recent ticks will be provided.
 
-        Using this API by **base and quote symbol is not recommended** as it may result in a error when duplicate symbols are found. Searching by marketId is recommended and will result in a faster response.
+        Using this API by **base and quote symbol is not recommended** as it may result in an error when duplicate symbols are found. Searching by marketId is recommended and will result in a faster response.
       operationId: listTicker
       x-code-samples:
         -
@@ -597,7 +615,7 @@ paths:
             type: string
             format: uuid
         - name: size
-          description: The maximum size to return in the result set.
+          description: The maximum size to return in the result set. This parameter is ignored if no timestamp is provided.
           in: query
           required: false
           schema:
@@ -644,7 +662,7 @@ paths:
 
         This API provides market weighted averages. If no timestamp is provided, then the most recent market weighted averages will be provided.
 
-        Using this API by **base and quote symbol is not recommended** as it may result in a error when duplicate symbols are found. Searching by marketId is recommended and will result in a faster response.
+        Using this API by **base and quote symbol is not recommended** as it may result in an error when duplicate symbols are found. Searching by marketId is recommended and will result in a faster response.
       operationId: listMarketWeightedAverages
       x-code-samples:
         -
@@ -675,7 +693,7 @@ paths:
             type: string
             format: uuid
         - name: size
-          description: The maximum size to return in the result set.
+          description: The maximum size to return in the result set. This parameter is ignored if no timestamp is provided.
           in: query
           required: false
           schema:
@@ -739,7 +757,7 @@ paths:
             type: string
             format: uuid
         - name: size
-          description: The maximum size to return in the result set.
+          description: The maximum size to return in the result set. This parameter is ignored if no timestamp is provided.
           in: query
           required: false
           schema:
@@ -774,7 +792,7 @@ paths:
 
         This API provides global weighted averages in USD. If no timestamp is provided, then the most recent global weighted averages will be provided.
 
-        Using this API by **symbol is not recommended** as it may result in a error when duplicate symbols are found. Searching by asset id is recommended and will result in a faster response.
+        Using this API by **symbol is not recommended** as it may result in an error when duplicate symbols are found. Searching by asset id is recommended and will result in a faster response.
       operationId: listGlobalWeightedAverages
       x-code-samples:
         -
@@ -804,7 +822,7 @@ paths:
             type: string
             format: uuid
         - name: size
-          description: The maximum size to return in the result set.
+          description: The maximum size to return in the result set. This parameter is ignored if no timestamp is provided.
           in: query
           required: false
           schema:
@@ -869,7 +887,7 @@ paths:
             type: string
             format: uuid
         - name: size
-          description: The maximum size to return in the result set.
+          description: The maximum size to return in the result set. This parameter is ignored if no timestamp is provided.
           in: query
           required: false
           schema:
