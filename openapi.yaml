@@ -13,13 +13,13 @@ info:
   description: |
     The BraveNewCoin API is an HTTP API. The BraveNewCoin APIs provide market data information about crypto assets.
 servers:
-  - url: 'https://api.dev.bravenewcoin.com/{basePath}'
-    description: Development Server.
+  - url: 'https://demo-api.bravenewcoin.com/{basePath}'
+    description: Demo API Server.
     variables:
       basePath:
         default: v3
   - url: 'https://api.bravenewcoin.com/{basePath}'
-    description: Production Server.
+    description: Production API Server.
     variables:
       basePath:
         default: v3
