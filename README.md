@@ -8,7 +8,7 @@ npm i -g redoc-cli
 
 ## Build documentation
 ```
-redoc-cli bundle openapi.yaml --output build/index.html --cdn --title "Brave New Coin API documentation" --options.theme.colors.primary.main=#333F48 --options.theme.typography.headings.fontFamily='Lato, sans-serif'
+redoc-cli bundle openapi.yaml --output build/index.html --cdn --title "Brave New Coin API documentation" --template template.hbs --options.theme.colors.primary.main=#333F48 --options.theme.typography.headings.fontFamily='Lato, sans-serif'
 ```
 
 ## ReDoc Documentation
