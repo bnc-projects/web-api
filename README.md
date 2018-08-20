@@ -8,7 +8,7 @@ npm i -g redoc-cli
 
 ## Build documentation
 ```
-redoc-cli bundle openapi.yaml --output build/index.html --cdn --title "BraveNewCoin API documentation"
+redoc-cli bundle openapi.yaml --output build/index.html --cdn --title "Brave New Coin API documentation" --template template.hbs
 ```
 
 ## ReDoc Documentation

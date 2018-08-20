@@ -4,8 +4,8 @@ node_js:
 before_install:
 - npm install -g redoc-cli
 script:
-- redoc-cli bundle openapi.yaml --output build/index.html --cdn --title "BraveNewCoin
-  API documentation"
+- redoc-cli bundle openapi.yaml --output build/index.html --cdn --title "Brave New Coin API documentation" --template template.hbs
+- cp -R images build/
 cache:
   directories:
   - node_modules
