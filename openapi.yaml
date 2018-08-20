@@ -563,6 +563,7 @@ paths:
       tags:
         - Exchange
       summary: Retrieve a exchange
+      security:
       - auth0:
         - read:exchange
       description: Retrieves the details of a exchange that has previously been created. Supply the unique identifier of the exchange.
