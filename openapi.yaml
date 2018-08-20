@@ -2,7 +2,7 @@ openapi: 3.0.0
 info:
   title: Market Data API
   termsOfService: 'https://api.bravenewcoin.com/terms/'
-  version: 'v3'
+  version: 'v3-BETA'
   x-logo:
     url: 'https://www.futureblockchainsummit.com/__media/libraries/media-partners/__thumbs/__700x9999.BNC_extlogo_blk_or_slogan.png'
   contact:
@@ -151,7 +151,7 @@ components:
           description: Unique identifier for the market.
           type: string
           format: uuid
-        price:
+        last:
           description: The last traded price at the timestamp in the quote asset.
           type: string
         volume:
