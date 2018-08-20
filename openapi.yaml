@@ -2,7 +2,7 @@ openapi: 3.0.0
 info:
   title: Market Data API
   termsOfService: 'https://api.bravenewcoin.com/terms/'
-  version: 'v3-BETA'
+  version: 'v3'
   x-logo:
     url: 'https://www.futureblockchainsummit.com/__media/libraries/media-partners/__thumbs/__700x9999.BNC_extlogo_blk_or_slogan.png'
   contact:
@@ -12,17 +12,31 @@ info:
   description: |
     The BraveNewCoin API is an HTTP API. The BraveNewCoin APIs provide market data information about crypto assets.
 servers:
-  - url: 'https://api.dev.bravenewcoin.com/{basePath}'
-    description: Development Server.
+  - url: 'https://demo-api.bravenewcoin.com/{basePath}'
+    description: Demo API Server.
     variables:
       basePath:
         default: v3
   - url: 'https://api.bravenewcoin.com/{basePath}'
-    description: Production Server.
+    description: Production API Server.
     variables:
       basePath:
         default: v3
 components:
+  securitySchemes:
+    auth0:
+      type: oauth2
+      description: |
+        We use Auth0 as our authentication provider, please read the approripate sections of the Auth0 authentication documentation https://auth0.com/docs/api/authentication.
+      flows:
+        clientCredentials:
+          tokenUrl: 'https://YOUR_AUTH0_DOMAIN.auth0.com/oauth/token'
+          scopes:
+            read:asset: read available assets
+            read:market: read the available markets
+            read:exchange: read the available exchanges
+            read:ticker: read the exchange ticker with a 5 minute delay
+            read:ticker_realtime: read the exchange ticker near realtime
   schemas:
     Error:
       type: object
@@ -349,6 +363,9 @@ paths:
       tags:
         - Asset
       summary: List all assets
+      security:
+      - auth0:
+        - read:asset
       description: List all assets or provide a query parameter to search.
       operationId: listAssets
       x-code-samples:
@@ -405,6 +422,9 @@ paths:
       tags:
         - Asset
       summary: Retrieve a asset
+      security:
+      - auth0:
+        - read:asset
       description: Retrieves the details of a asset that has previously been created. Supply the unique identifier of the asset.
       operationId: getAssetById
       x-code-samples:
@@ -426,6 +446,9 @@ paths:
       tags:
         - Market
       summary: List all markets
+      security:
+      - auth0:
+        - read:market
       description: List all markets or provide a query parameter to search.
       operationId: listMarkets
       x-code-samples:
@@ -472,6 +495,9 @@ paths:
       tags:
         - Market
       summary: Retrieve a market
+      security:
+      - auth0:
+        - read:market
       description: Retrieves the details of a market that has previously been created. Supply the unique identifier of the market.
       operationId: getMarketById
       x-code-samples:
@@ -493,6 +519,9 @@ paths:
       tags:
         - Exchange
       summary: List all exchanges
+      security:
+      - auth0:
+        - read:exchange
       description: List all exchanges or provide a query parameter to search.
       operationId: listExchanges
       x-code-samples:
@@ -534,6 +563,8 @@ paths:
       tags:
         - Exchange
       summary: Retrieve a exchange
+      - auth0:
+        - read:exchange
       description: Retrieves the details of a exchange that has previously been created. Supply the unique identifier of the exchange.
       operationId: getExchangeById
       x-code-samples:
@@ -555,6 +586,10 @@ paths:
       tags:
         - Ticker
       summary: List all tickers
+      security:
+      - auth0:
+        - read:ticker
+        - read:ticker_realtime
       description: |-
         This API provides ticker information by exchange and market. If no timestamp is provided, then all of the last ticks will be provided.
 
