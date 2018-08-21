@@ -26,7 +26,7 @@ info:
     If you find any errors with our documentation feel free to create issues and/or pull requests on [github](https://github.com/bnc-projects/web-api).
 
     ### Usage of our APIs
-    We recommend only querying using UUIDs to our market data APIs and using a local cache which is refreshed every 15 minutes for the the information APIs. The following resources are our informational APIs:
+    We recommend only querying using UUIDs to our market data APIs and using a local cache which is refreshed every 15 minutes for the information APIs. The following resources are our informational APIs:
     * [Asset](#tag/Asset)
     * [Market](#tag/Market)
     * [Exchange](#tag/Exchange)
@@ -314,9 +314,9 @@ tags:
     x-traitTag: true
   - name: Pagination
     description: |
-      All top-level API resources have support listing all resources which they hold. For instance, you can [list assets](#operation/listAssets), [list markets](#operation/listMarkets) and [list exchanges](#operation/listExchanges) etc. These list API methods share a common structure and where Brave New Coin determines the number of resources is too large, the list APIs have the ability to take at least these two parameters: `size` and `startAfter`.
+      All top-level API resources have supported listing all resources which they hold. For instance, you can [list assets](#operation/listAssets), [list markets](#operation/listMarkets) and [list exchanges](#operation/listExchanges) etc. These list API methods share a common structure and where Brave New Coin determines the number of resources is too large, the list APIs have the ability to take at least these two parameters: `size` and `startAfter`. But the numbers of assets, markets and exchanges are still not large enough now, the settings of `size` and `startAfter` for these resources will not take effect.
 
-      Brave New Coin API's utilise cursor-based pagination using the `startAfter` parameter. The parameter should be a existing object ID and returns resources in reverse chronological order. The `startAfter` parameter returns resources listed after the named resource. For APIs which take both a `startAfter` and `timestamp` parameters, the `timestamp` is ignored if `startAfter` is provided.
+      Brave New Coin API's utilise cursor-based pagination using the `startAfter` parameter. The parameter should be an existing object ID and returns resources in reverse chronological order. The `startAfter` parameter returns resources listed after the named resource. For APIs which take both a `startAfter` and `timestamp` parameters, the `timestamp` is ignored if `startAfter` is provided.
 
       Arguments     |                         | Description
       ----------------------------------------|------------
@@ -402,7 +402,7 @@ paths:
               - INACTIVE
       responses:
         '200':
-          description: A object with a `content` property that contains an array of assets. Each entry in the array is a seperate asset resource. If no assets are found then a empty object will be returned. This request should never return an error.
+          description: An object with a `content` property that contains an array of assets. Each entry in the array is a seperate asset resource. If no assets are found then an empty object will be returned. This request should never return an error.
           content:
             application/json:
               schema:
@@ -423,8 +423,8 @@ paths:
     get:
       tags:
         - Asset
-      summary: Retrieve a asset
-      description: Retrieves the details of a asset that has previously been created. Supply the unique identifier of the asset.
+      summary: Retrieve an asset
+      description: Retrieves the details of an asset that has previously been created. Supply the unique identifier of the asset.
       operationId: getAssetById
       x-code-samples:
         -
@@ -469,7 +469,7 @@ paths:
             format: uuid
       responses:
         '200':
-          description: A object with a `content` property that contains an array of markets. Each entry in the array is a seperate market resource. If no markets are found then a empty object will be returned. This request should never return an error.
+          description: An object with a `content` property that contains an array of markets. Each entry in the array is a seperate market resource. If no markets are found then an empty object will be returned. This request should never return an error.
           content:
             application/json:
               schema:
@@ -531,7 +531,7 @@ paths:
               - INACTIVE
       responses:
         '200':
-          description: A object with a `content` property that contains an array of exchanges. Each entry in the array is a seperate exchange resource. If no exchanges are found then a empty object will be returned. This request should never return an error.
+          description: An object with a `content` property that contains an array of exchanges. Each entry in the array is a seperate exchange resource. If no exchanges are found then an empty object will be returned. This request should never return an error.
           content:
             application/json:
               schema:
@@ -552,8 +552,8 @@ paths:
     get:
       tags:
         - Exchange
-      summary: Retrieve a exchange
-      description: Retrieves the details of a exchange that has previously been created. Supply the unique identifier of the exchange.
+      summary: Retrieve an exchange
+      description: Retrieves the details of an exchange that has previously been created. Supply the unique identifier of the exchange.
       operationId: getExchangeById
       x-code-samples:
         -
