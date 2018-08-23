@@ -13,7 +13,6 @@ info:
   description: |
     Brave New Coin has been tracking crypto asset ticker data from the worlds major exchanges since April 2014. Now we provide data from over 230 exchanges, collected every 30 seconds.
 
-    The Brave New Coin APIs provide market data information about crypto assets.
     The following resources are currently available:
     * [Asset](#tag/Asset)
     * [Market](#tag/Market)
