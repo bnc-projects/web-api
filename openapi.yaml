@@ -10,27 +10,6 @@ info:
     name: Brave New Coin
     url: 'https://bravenewcoin.com/'
     email: support@bravenewcoin.com
-  description: |
-    Brave New Coin has been tracking crypto asset ticker data from the worlds major exchanges since April 2014. Now we provide data from over 230 exchanges, collected every 30 seconds.
-
-    The following resources are currently available:
-    * [Asset](#tag/Asset)
-    * [Market](#tag/Market)
-    * [Exchange](#tag/Exchange)
-    * [Ticker](#tag/Ticker)
-
-    The Brave New Coin github organisation has example API clients for your usage:
-    * [Java](https://github.com/bnc-projects/java-api-client)
-
-    If the language which you are working in isn't found in our list, then feel free to download the OpenAPI specification and generate your own clients in the language of your choice. The download link can be found at the top of this page.
-
-    If you find any errors with our documentation feel free to create issues and/or pull requests on [github](https://github.com/bnc-projects/web-api).
-
-    ### Usage of our APIs
-    We recommend only querying using UUIDs to our market data APIs and using a local cache which is refreshed every 15 minutes for the information APIs. The following resources are our informational APIs:
-    * [Asset](#tag/Asset)
-    * [Market](#tag/Market)
-    * [Exchange](#tag/Exchange)
 servers:
   - url: 'https://demo-api.bravenewcoin.com/{basePath}'
     description: Demo API Server.
@@ -277,8 +256,142 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/Error'
+x-tagGroups:
+- name: General
+  tags:
+  - Overview
+  - Pagination
+  - Timezones
+  - Versioning
+- name: Websocket API
+  tags:
+  - Websocket Overview
+  - Websocket Errors
+  - Websocket Ticker
+- name: Rest API
+  tags:
+  - Rest API Errors
+  - Asset
+  - Market
+  - Exchange
+  - Ticker
+  - Market Weighted Averages
+  - Global Weighted Averages
+  - Open, High, Low, Close, Volumes
+  - Market Capitalisation
+  - Rates
 tags:
-  - name: Errors
+  - name: Overview
+    description: |
+      Brave New Coin has been tracking crypto asset ticker data from the worlds major exchanges since April 2014. Now we provide data from over 230 exchanges, collected every 30 seconds.
+
+      The following resources are currently available:
+      * [Asset](#tag/Asset)
+      * [Market](#tag/Market)
+      * [Exchange](#tag/Exchange)
+      * [Ticker](#tag/Ticker)
+
+      The Brave New Coin github organisation has example API clients for your usage:
+      * [Java](https://github.com/bnc-projects/java-api-client)
+
+      If the language which you are working in isn't found in our list, then feel free to download the OpenAPI specification and generate your own clients in the language of your choice. The download link can be found at the top of this page.
+
+      If you find any errors with our documentation feel free to create issues and/or pull requests on [github](https://github.com/bnc-projects/web-api).
+
+      ### Usage of our APIs
+      We recommend only querying using UUIDs to our market data APIs and using a local cache which is refreshed every 15 minutes for the information APIs. The following resources are our informational APIs:
+      * [Asset](#tag/Asset)
+      * [Market](#tag/Market)
+      * [Exchange](#tag/Exchange)
+  - name: Websocket Overview
+    description: |
+      Brave New Coin Websocket API exposes exchange ticker data via Websockets. Clients need to send subscribe message to start recieving data. See [Exchange Ticker](#tag/Exchange-Ticker).
+
+      ### Common Message Types
+
+      Websocket messages have an `event` field to identify them
+
+      #### Connection Message
+
+      Once the client connection is successful the server will send back a connection message
+      ```
+      {
+        "event" : "CONNECTED",
+        "timestamp" : "2018-09-05T01:34:39Z"
+      }
+      ```
+
+      #### Ping message
+
+      Clients or server can send a ping request to check if the connection is active. Clients are expected to implement a `pong` response. The server may terminate the connection if the client does not respond to `ping` from the server.
+
+      Request
+      ```
+      {
+        "event": "PING"
+      }
+      ```
+      Response
+      ```
+      {
+        "event": "PONG",
+        "timestamp": "2018-09-05T01:34:39Z"
+      }
+      ```
+  - name: Websocket Errors
+    description: |
+      Server will return an error message in the below format
+      ```
+      {
+        "event": "ERROR",
+        "code": "400",
+        "message": "Invalid event type provided",
+        "timestamp": "2018-09-05T01:34:39Z"
+      }
+      ```
+      ### Error code summary
+
+      Error Code                         | Description
+      -----------------------------------|------------
+      400 - Bad Request                  | The request was unacceptable, often due to missing a required parameter.
+      401 - Unauthorized                 | No valid OAuth2 token provided
+      403 - Forbidden                    | Not authorized to access this resource
+      404 - Not Found                    | Requested resource not found(typically the marketId or exchangeId passed through the subscription request not found)
+
+      There may be other types of errors that may be returned and we recommend handling the ERROR type gracefully.
+  - name: Websocket Ticker
+    description: |
+
+      Clients can send a Subscribe message to start receiving ticker data.
+
+      #### Subscribe to ticks
+
+      Used subscribe to ticks for a market and/or exchange. To subscribe to all the ticks of an exchange only the exchangeId can be sent. To subscribe to all the ticks of an market only the marketId can be sent. Both exchangeId and marketId can be sent to subscribe to the market in an exchange. Clients can subscribe to multiple sources as required. Clients need to call the [Market](#tag/Market) and [Exchange](#tag/Exchange) REST API's to get the ids.
+
+      ```
+      {
+        "event": "SUBSCRIBE_TICKER",
+        "exchangeId": "359107d3-bd1a-418c-9470-58831ed9a45e",
+        "marketId": "f7cbc588-283e-41da-9c28-eee2113d7b8d"
+      }
+      ```
+
+      The server will return ticks in this format
+      ```
+      {
+        "event": "TICK"
+        "id": "string",
+        "exchangeId": "string",
+        "marketId": "string",
+        "last": "string",
+        "volume": "string",
+        "bid": "string",
+        "ask": "string",
+        "timestamp": "2018-09-06T04:35:44Z"
+      }
+      ```
+    x-traitTag: true
+  - name: Rest API Errors
     description: |
       Brave New Coin uses conventional HTTP response codes to indicate the success or failure of an API request. In general: Codes in the `2xx` range indicate success. Codes in the `4xx` range indicate an error that failed given the information provided (e.g. A  required parameter was missing). Codes in the `5xx` range indicate an error with Brave New Coin's servers (these will be rare).
 
