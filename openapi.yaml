@@ -298,6 +298,11 @@ x-tagGroups:
 tags:
   - name: Authentication
     description: |
+      We use OAuth2 flows for security. If no bearer token is provided the following endpoints will return 5 minute delayed data:
+      * [Asset](#tag/Asset)
+      * [Market](#tag/Market)
+      * [Exchange](#tag/Exchange)
+      * [Ticker](#tag/Ticker)
       <!-- ReDoc-Inject: <security-definitions> -->
   - name: Overview
     description: |
