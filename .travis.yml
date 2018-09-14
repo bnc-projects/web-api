@@ -4,7 +4,7 @@ node_js:
 before_install:
 - npm install -g redoc-cli@0.6.1
 script:
-- redoc-cli bundle openapi.yaml --output build/index.html --title "Brave New Coin API documentation" --template template.hbs --options.theme.colors.primary.main=#333F48 --options.theme.typography.links.color=#32329f --options.theme.typography.links.visited=#32329f --options.theme.typography.headings.fontFamily='Lato, sans-serif'
+- redoc-cli bundle openapi.yaml --output build/index.html --title "Brave New Coin API documentation" --template template.hbs --options.expandResponses=all --options.noAutoAuth --options.theme.colors.primary.main=#333F48 --options.theme.typography.links.color=#32329f --options.theme.typography.links.visited=#32329f --options.theme.typography.headings.fontFamily='Lato, sans-serif'
 - cp -R images build/
 cache:
   directories:
