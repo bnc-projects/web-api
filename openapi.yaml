@@ -25,17 +25,15 @@ components:
   securitySchemes:
     auth:
       type: oauth2
-      description: |
-        We use Auth0 as our authentication provider, please read the approripate sections of the Auth0 authentication documentation https://auth0.com/docs/api/authentication.
       flows:
         clientCredentials:
           tokenUrl: 'https://auth.bravenewcoin.com/oauth/token'
           scopes:
-            read:asset: read available assets
-            read:market: read the available markets
-            read:exchange: read the available exchanges
-            read:ticker: read the exchange ticker with a 5 minute delay
-            read:ticker_realtime: read the exchange ticker near realtime
+            read:asset: Read available assets
+            read:market: Read available markets
+            read:exchange: Read available exchanges
+            read:ticker: Read delayed exchange ticker
+            read:ticker_realtime: Read exchange ticker
   schemas:
     Error:
       type: object
@@ -500,6 +498,51 @@ tags:
   - name: Rates
     description: Retrieve the exchange rates between assets.
 paths:
+  /oauth/token:
+    post:
+      tags:
+        - Authentication
+      summary: Client Credentials
+      description: |
+        This is the OAuth 2.0 grant that server processes utilize in order to access an API.
+        Use this endpoint to directly request an Access Token by using the Client Credentials (a Client ID and a Client Secret).
+      operationId: clientCredentials
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                grant_type:
+                  description: Denotes the flow you are using. For Client Credentials use `client_credentials`.
+                  type: string
+                client_id:
+                  description: Your application's Client ID.
+                  type: string
+                client_secret:
+                  description: Your application's Client Secret.
+                  type: string
+                audience:
+                  description: The unique identifier of the target API you want to access.
+                  type: string
+      responses:
+        '200':
+          description: The authentication response.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  access_token:
+                    description: The access token issued.
+                    type: string
+                  token_type:
+                    description: The type of token type issued.
+                    type: string
+                  expires_in:
+                    description: The number of seconds in which the access token will expire.
+                    type: integer
   /asset:
     get:
       tags:
