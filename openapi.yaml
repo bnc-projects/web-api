@@ -4,7 +4,7 @@ info:
   termsOfService: 'https://api.bravenewcoin.com/terms/'
   version: 'v3-BETA'
   x-logo:
-    url: 'http://docs.bravenewcoin.com/images/logo.png'
+    url: 'https://docs.bravenewcoin.com/images/logo.png'
     altText: 'Brave New Coin'
   contact:
     name: Brave New Coin
