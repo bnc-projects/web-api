@@ -34,7 +34,7 @@ deploy:
   on:
     branch: master
 after_deploy:
-- aws cloudfront create-invalidation --distribution-id $CF_DISTRIBUTION_ID
+- aws cloudfront create-invalidation --distribution-id $CF_DISTRIBUTION_ID --paths "/*"
 notifications:
   slack:
     secure: AptXFEUQSTTPD5F/E82hMJslA9nk1cOUQOutic2xGDHy9UgTvfilPRuaRU8ERSOSQMdmIi38LXBK9dMOtkIx+pUaR2hKkejWi98pmVAjCujw4MHVfouOklGrqb+6vNETh/ZmD9QB/J8XM77f4O4pkISE4cg0GWf1ngK4L8Uwrgti/6ty5FdDoj15OvzoHHvQFLukXEEIUFKVoOzn3jUespiapGDOzBWCJIRIWjo59NLK+7YvAgsxTcfNTvdAWxIL0IIe1kXhHHQGHLA75SR3wvxY/+ffu6vcUlHIiQDmhDwE+kY8q9Yo3nE3wUpKJPzAv1jE5JhUCwLALuad04ghYtGbsge2NSZTKSDzVH1ecyCR1fUAbvbyq+KDrm3AlfGBeI1Jme5+xNKNVS6FvybxBMqHHSFHSl62G9v2xKoZZMR/MAO6Nz0RrOseq68Yz/PeT+O3jUPz3dmLjrr8ZVv4Mu0seSbVFhiN27Wr5qoObwHwdWRDPWoiKzORxiKY9sC4JkZoMcVV974I7p6rM9fQJCDFl5v9XUT7knY3QB5OACzsmh6nXOAVsR/CIPNEXrauWIkeRj2vEJKsvN+0MVzHvaaFBH0VDQfvL5jpWxWR0eNvEI/5jSA+i0h+EU9nstnFHEAz6ChRrmunojIW5g8gEilfXq4g60VdMzzbxHgZpu4=
