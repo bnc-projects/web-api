@@ -11,12 +11,9 @@ before_install:
 - npm install -g redoc-cli@0.6.1
 - pip install --user pip --upgrade
 - pip install --user awscli --upgrade
+- export PATH=$HOME/.local/bin:$PATH
 - python -V
 - pip -V
-- export PATH=$HOME/.local/bin:$PATH
-- export $AWS_ACCESS_KEY_ID
-- export $AWS_SECRET_ACCESS_KEY
-- export $AWS_DEFAULT_REGION
 script:
 - redoc-cli bundle openapi.yaml --output build/index.html --title "Brave New Coin
   API documentation" --template template.hbs --options.expandResponses=all --options.noAutoAuth
