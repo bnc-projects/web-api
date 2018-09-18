@@ -1,10 +1,20 @@
 language: node_js
 node_js:
 - '8'
+env:
+  global:
+    secure: CTLkajlm1+h1VybKvB0ru5kA1vNUrKYqC247FTgtmpc9Fd6pQm1ffd53isbWvA2gpN8zqTM2uqQZjscrIouN3AteK6UiyaOhZGPYlXtyoimjjJF+bnMlE6cm5My9QiP0QjqUjzBCUVZxPSDCoeiE4efBLEVpZ4Ng9VfcTP7e0RewG6Jzj4p6c4SxhqKCymu3Nk3WWCLcncNt2aH9TnCvV/j1tv61IoAZ1bgW8wzXt60uPB+GV+O/e5M5F7RXX7bp9+mjfq/wtHkEnC27w4c8zBFEp0HhrJKILpTq2gDY/Wvu3soASGfyfHIOB12rU6AGodSfJvep9hDQBu/3RHXRPILDnugWKw+XszIrY68yby6TqdRGFAbhNZ564y6FgMq7vvAXcVjbhT5mjM+jNW0FWaIqKTDcFFGl2IkGWq/DnjHo6/mgjZenA2cJW8ehxkw1p1wpp10ZutOzDJ/QDf91CTxUELmEvBsdg6lC7OfnRQpXEINNVNNxpnhQibpCLdirecXY7eCMIGcbUbuZXGAXeFFeu/ByUujGYbp5PYvF9qUDXRIllMwe66aOlfTZYH3YsQm2KDST7F6bOx3kMqd+7sDirLHDVg5jrJaBHkQg2GW1r2Db77eloub198Ori4pzO1fuVpaEcjnBsGJ6ua1cZ/63gIaDL2m4sY7ZR61SUls=
 before_install:
 - npm install -g redoc-cli@0.6.1
+- pip install --user pip --upgrade
+- pip install --user awscli --upgrade
+- export PATH=$HOME/.local/bin:$PATH
 script:
-- redoc-cli bundle openapi.yaml --output build/index.html --title "Brave New Coin API documentation" --template template.hbs --options.expandResponses=all --options.noAutoAuth --options.theme.colors.primary.main=#333F48 --options.theme.typography.links.color=#32329f --options.theme.typography.links.visited=#32329f --options.theme.typography.headings.fontFamily='Lato, sans-serif'
+- redoc-cli bundle openapi.yaml --output build/index.html --title "Brave New Coin
+  API documentation" --template template.hbs --options.expandResponses=all --options.noAutoAuth
+  --options.theme.colors.primary.main=#333F48 --options.theme.typography.links.color=#32329f
+  --options.theme.typography.links.visited=#32329f --options.theme.typography.headings.fontFamily='Lato,
+  sans-serif'
 - cp -R images build/
 cache:
   directories:
@@ -23,6 +33,8 @@ deploy:
     secure: t9ZEAkyhcUAsWStIzRiQ8FYmIxGsY5vM9PvGbNKxn4s7G9a3P1Q0ezcQ8lSf3bdBFYe/5F3sM3lRfBc0wrUb3eW/erqoAIbJtY7fR1ASgptvjE35EzWGhanaFnpFyH1anr/hMhlNaZN+w8Csjf+ylI6UUrBOWiGNzCfcfG+7naRIS3wPoIwMvCJYKjV9X5+2XD95xAAqArGwKD7YvUkleFtD+GkSMtogzx5ZC0os89ST46g6sfmkLsxiibVJoCMGNv7AcOp/X8GroZFqVLMMXWa1h0M01QT5J9RvIYiPQISGfKnr2iLeR/6F7/JSqb5HtNQKAQOy6U89Nn4NXBbvxPb6jtxzBjyIEeVrrbMNRk3+ixYNPxRmIumHG5owpNmlDILb7AqvUlVYQep3C9YnGYyEZef5I5EiUq8uQaJW6xCnADZ4eecI5zJVPm4a7RT4rVhQpmZQxiW0Ut6HsuYc6KPX9KSURJ4+gUHcFC4MYKQ4kTmkgGiU5zL9Z57O6w9NL49ARDrxgLXZK+PN5PWVwSZKfyaxqxLVBE1qMFOqGH0rkRDXs0keMYuIOyNFm51eZTCTnmoU22ZlPIRjq1KC93v63N81bL8ivO6H4ZzTVQ2pu7266N5YtScVcadFRqMZce1G+b+a+3O84VACDUN0M7nmT4BVJIOzSBy/eD0d8ys=
   on:
     branch: master
+after_deploy:
+- aws cloudfront create-invalidation --distribution-id $CF_DISTRIBUTION_ID
 notifications:
   slack:
     secure: AptXFEUQSTTPD5F/E82hMJslA9nk1cOUQOutic2xGDHy9UgTvfilPRuaRU8ERSOSQMdmIi38LXBK9dMOtkIx+pUaR2hKkejWi98pmVAjCujw4MHVfouOklGrqb+6vNETh/ZmD9QB/J8XM77f4O4pkISE4cg0GWf1ngK4L8Uwrgti/6ty5FdDoj15OvzoHHvQFLukXEEIUFKVoOzn3jUespiapGDOzBWCJIRIWjo59NLK+7YvAgsxTcfNTvdAWxIL0IIe1kXhHHQGHLA75SR3wvxY/+ffu6vcUlHIiQDmhDwE+kY8q9Yo3nE3wUpKJPzAv1jE5JhUCwLALuad04ghYtGbsge2NSZTKSDzVH1ecyCR1fUAbvbyq+KDrm3AlfGBeI1Jme5+xNKNVS6FvybxBMqHHSFHSl62G9v2xKoZZMR/MAO6Nz0RrOseq68Yz/PeT+O3jUPz3dmLjrr8ZVv4Mu0seSbVFhiN27Wr5qoObwHwdWRDPWoiKzORxiKY9sC4JkZoMcVV974I7p6rM9fQJCDFl5v9XUT7knY3QB5OACzsmh6nXOAVsR/CIPNEXrauWIkeRj2vEJKsvN+0MVzHvaaFBH0VDQfvL5jpWxWR0eNvEI/5jSA+i0h+EU9nstnFHEAz6ChRrmunojIW5g8gEilfXq4g60VdMzzbxHgZpu4=
