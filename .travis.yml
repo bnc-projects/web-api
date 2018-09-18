@@ -12,8 +12,6 @@ before_install:
 - pip install --user pip --upgrade
 - pip install --user awscli --upgrade
 - export PATH=$HOME/.local/bin:$PATH
-- python -V
-- pip -V
 script:
 - redoc-cli bundle openapi.yaml --output build/index.html --title "Brave New Coin
   API documentation" --template template.hbs --options.expandResponses=all --options.noAutoAuth
