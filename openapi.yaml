@@ -385,17 +385,38 @@ tags:
 
       Clients can send a Subscribe message to start receiving ticker data.
 
-      #### Subscribe to ticks
+
 
       Used subscribe to ticks for a market and/or exchange. To subscribe to all the ticks of an exchange only the exchangeId can be sent. To subscribe to all the ticks of an market only the marketId can be sent. Both exchangeId and marketId can be sent to subscribe to the market in an exchange. Clients can subscribe to multiple sources as required. Clients need to call the [Market](#tag/Market) and [Exchange](#tag/Exchange) REST API's to get the ids.
+
+      #### Subscribe to Exchange
 
       ```
       {
         "event": "SUBSCRIBE_TICKER",
-        "exchangeId": "359107d3-bd1a-418c-9470-58831ed9a45e",
+        "exchangeId": "359107d3-bd1a-418c-9470-58831ed9a45e"
+      }
+      ```
+
+      #### Subscribe to Market
+
+      ```
+      {
+        "event": "SUBSCRIBE_TICKER",
+        "marketId": "359107d3-bd1a-418c-9470-58831ed9a45e"
+      }
+      ```
+
+      #### Subscribe to a Market in an Exchange
+
+      ```
+      {
+        "event": "SUBSCRIBE_TICKER",
+        "exchangeId": "359107d3-bd1a-418c-9470-58831ed9a45e"
         "marketId": "f7cbc588-283e-41da-9c28-eee2113d7b8d"
       }
       ```
+      #### Resoponse
 
       The server will return ticks in this format
       ```
