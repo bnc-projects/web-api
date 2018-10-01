@@ -297,7 +297,18 @@ x-tagGroups:
 tags:
   - name: Authentication
     description: |
-      We use OAuth2 flows for security. If no bearer token is provided the following endpoints will return 5 minute delayed data:
+      We use OAuth2 flows for security.
+      ### Websocket API Authentication
+
+      Our websocket endpoint requires the bearer token to be sent as *access_token* parameter in the connection url. A token will have to be used within 5 minutes of being issued.
+
+      Sample URL
+
+      ``wss://ws.bravenewcoin.com/access_token=``
+
+      ### Rest API Authentication
+
+      If no bearer token is provided the following endpoints will return 5 minute delayed data:
       * [Asset](#tag/Asset)
       * [Market](#tag/Market)
       * [Exchange](#tag/Exchange)
