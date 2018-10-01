@@ -34,6 +34,7 @@ components:
             read:exchange: Read available exchanges
             read:ticker: Read delayed exchange ticker
             read:ticker_realtime: Read exchange ticker
+            read:websocket: Subscribe to websocket
   schemas:
     Error:
       type: object
@@ -538,6 +539,7 @@ paths:
                 grant_type:
                   description: Denotes the flow you are using. For Client Credentials use `client_credentials`.
                   type: string
+                  example: client_credentials
                 client_id:
                   description: Your application's Client ID.
                   type: string
@@ -545,8 +547,15 @@ paths:
                   description: Your application's Client Secret.
                   type: string
                 audience:
-                  description: The unique identifier of the target API you want to access.
+                  description: |
+                    The unique identifier of the target API you want to access. |
+
+                    Audience                     | Description
+                    -----------------------------|------------
+                    https://api.bravenewcoin.com | Access the Rest API
+                    wss://ws.bravenewcoin.com    | Subscribe to the Websocket Stream
                   type: string
+                  example: https://api.bravenewcoin.com
       responses:
         '200':
           description: The authentication response.
