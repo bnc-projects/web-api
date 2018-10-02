@@ -34,6 +34,7 @@ components:
             read:exchange: Read available exchanges
             read:ticker: Read delayed exchange ticker
             read:ticker_realtime: Read exchange ticker
+            read:websocket: Subscribe to websocket
   schemas:
     Error:
       type: object
@@ -96,6 +97,12 @@ components:
           type: string
         supplyUrl:
           description: The url where the asset supply information can be found.
+          type: string
+        freeFloatSupplyUrl:
+          description: The url where the assets free float (circulating) supply information can be found.
+          type: string
+        totalSupplyUrl:
+          description: The url where the assets total supply information can be found.
           type: string
     Market:
       type: object
@@ -296,7 +303,18 @@ x-tagGroups:
 tags:
   - name: Authentication
     description: |
-      We use OAuth2 flows for security. If no bearer token is provided the following endpoints will return 5 minute delayed data:
+      We use OAuth2 flows for security.
+      ### Websocket API Authentication
+
+      Our websocket endpoint requires the bearer token to be sent as *access_token* parameter in the connection url. A token will have to be used within 5 minutes of being issued.
+
+      Sample URL
+
+      ``wss://ws.bravenewcoin.com?access_token=``
+
+      ### Rest API Authentication
+
+      If no bearer token is provided the following endpoints will return 5 minute delayed data:
       * [Asset](#tag/Asset)
       * [Market](#tag/Market)
       * [Exchange](#tag/Exchange)
@@ -385,17 +403,38 @@ tags:
 
       Clients can send a Subscribe message to start receiving ticker data.
 
-      #### Subscribe to ticks
+
 
       Used subscribe to ticks for a market and/or exchange. To subscribe to all the ticks of an exchange only the exchangeId can be sent. To subscribe to all the ticks of an market only the marketId can be sent. Both exchangeId and marketId can be sent to subscribe to the market in an exchange. Clients can subscribe to multiple sources as required. Clients need to call the [Market](#tag/Market) and [Exchange](#tag/Exchange) REST API's to get the ids.
+
+      #### Subscribe to Exchange
 
       ```
       {
         "event": "SUBSCRIBE_TICKER",
-        "exchangeId": "359107d3-bd1a-418c-9470-58831ed9a45e",
+        "exchangeId": "359107d3-bd1a-418c-9470-58831ed9a45e"
+      }
+      ```
+
+      #### Subscribe to Market
+
+      ```
+      {
+        "event": "SUBSCRIBE_TICKER",
+        "marketId": "359107d3-bd1a-418c-9470-58831ed9a45e"
+      }
+      ```
+
+      #### Subscribe to a Market in an Exchange
+
+      ```
+      {
+        "event": "SUBSCRIBE_TICKER",
+        "exchangeId": "359107d3-bd1a-418c-9470-58831ed9a45e"
         "marketId": "f7cbc588-283e-41da-9c28-eee2113d7b8d"
       }
       ```
+      #### Resoponse
 
       The server will return ticks in this format
       ```
@@ -517,6 +556,7 @@ paths:
                 grant_type:
                   description: Denotes the flow you are using. For Client Credentials use `client_credentials`.
                   type: string
+                  example: client_credentials
                 client_id:
                   description: Your application's Client ID.
                   type: string
@@ -524,8 +564,15 @@ paths:
                   description: Your application's Client Secret.
                   type: string
                 audience:
-                  description: The unique identifier of the target API you want to access.
+                  description: |
+                    The unique identifier of the target API you want to access. |
+
+                    Audience                     | Description
+                    -----------------------------|------------
+                    https://api.bravenewcoin.com | Access the Rest API
+                    wss://ws.bravenewcoin.com    | Subscribe to the Websocket Stream
                   type: string
+                  example: https://api.bravenewcoin.com
       responses:
         '200':
           description: The authentication response.
