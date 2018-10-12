@@ -346,6 +346,10 @@ tags:
     description: |
       Brave New Coin Websocket API exposes exchange ticker data via Websockets. Clients need to send subscribe message to start recieving data. See [Exchange Ticker](#tag/Exchange-Ticker).
 
+      A sample project using the BNC Websocket API is available on Github :
+
+      * [Node.js](https://github.com/bnc-projects/bnc-websocket-client-sample)
+
       ### Common Message Types
 
       Websocket messages have an `event` field to identify them
