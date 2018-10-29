@@ -11,13 +11,8 @@ info:
     url: 'https://bravenewcoin.com/'
     email: support@bravenewcoin.com
 servers:
-  - url: 'https://demo-api.bravenewcoin.com/{basePath}'
-    description: Demo API Server.
-    variables:
-      basePath:
-        default: v3
   - url: 'https://api.bravenewcoin.com/{basePath}'
-    description: Production API Server.
+    description: Production API Server
     variables:
       basePath:
         default: v3
@@ -543,6 +538,9 @@ tags:
 paths:
   /oauth/token:
     post:
+      servers:
+        - url: https://auth.bravenewcoin.com
+          description: Authentication Endpoint
       tags:
         - Authentication
       summary: Client Credentials
@@ -550,6 +548,44 @@ paths:
         This is the OAuth 2.0 grant that server processes utilize in order to access an API.
         Use this endpoint to directly request an Access Token by using the Client Credentials (a Client ID and a Client Secret).
       operationId: clientCredentials
+      x-code-samples:
+        - lang: Shell
+          label: curl
+          source: |
+            curl -X POST https://auth.bravenewcoin.com/oauth/token -H 'Content-Type: application/json' -d '
+            {
+              "grant_type": "client_credentials",
+              "client_id": "your client id",
+              "client_secret": "your client secret",
+              "audience": "https://api.bravenewcoin.com"
+            }'
+        - lang: JavaScript
+          label: Node
+          source: |
+            var request = require("request");
+
+            var options = {
+              method: 'POST',
+              url: 'https://auth.bravenewcoin.com/oauth/token',
+              headers: {
+                'Content-Type': 'application/json'
+              },
+              body: {
+                grant_type: 'client_credentials',
+                client_id: 'your client id',
+                client_secret: 'your client secret',
+                audience: 'requested audience'
+              },
+              json: true
+            };
+
+            request(options, function (error, response, body) {
+              if (error) {
+                throw new Error(error);
+              }
+
+              let access_token = body.access_token;
+            });
       requestBody:
         required: true
         content:
@@ -569,7 +605,7 @@ paths:
                   type: string
                 audience:
                   description: |
-                    The unique identifier of the target API you want to access. |
+                    The unique identifier of the target API you want to access.
 
                     Audience                     | Description
                     -----------------------------|------------
