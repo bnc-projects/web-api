@@ -149,6 +149,12 @@ components:
                 enum:
                   - ACTIVE
                   - INACTIVE
+              qualified:
+                description: Indicates if the market on the exchange contributes to the BNC indices
+                type: string
+                enum:
+                  - YES
+                  - NO
     Tick:
       type: object
       properties:
