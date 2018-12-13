@@ -277,30 +277,30 @@ components:
           schema:
             $ref: '#/components/schemas/Error'
 x-tagGroups:
-- name: General
-  tags:
-  - Overview
-  - Authentication
-  - Pagination
-  - Timezones
-  - Versioning
-- name: Websocket API
-  tags:
-  - Websocket Overview
-  - Websocket Errors
-  - Websocket Ticker
-- name: Rest API
-  tags:
-  - Rest API Errors
-  - Asset
-  - Market
-  - Exchange
-  - Ticker
-  - Market Weighted Averages
-  - Global Weighted Averages
-  - Open, High, Low, Close, Volumes
-  - Market Capitalisation
-  - Rates
+  - name: General
+    tags:
+      - Overview
+      - Authentication
+      - Pagination
+      - Timezones
+      - Versioning
+  - name: Websocket API
+    tags:
+      - Websocket Overview
+      - Websocket Errors
+      - Websocket Ticker
+  - name: Rest API
+    tags:
+      - Rest API Errors
+      - Asset
+      - Market
+      - Exchange
+      - Ticker
+      - Market Weighted Averages
+      - Global Weighted Averages
+      - Open, High, Low, Close, Volumes
+      - Market Capitalisation
+      - Rates
 tags:
   - name: Authentication
     description: |
@@ -642,13 +642,12 @@ paths:
         - Asset
       summary: List all assets
       security:
-      - auth:
-        - read:asset
+        - auth:
+            - read:asset
       description: List all assets or provide a query parameter to search.
       operationId: listAssets
       x-code-samples:
-        -
-          lang: Shell
+        - lang: Shell
           label: curl
           source: "curl https://api.bravenewcoin.com/v3/asset/ -H 'Authorization: Bearer test_SiHrnL5NKsea0G2W4LHd' -G"
       parameters:
@@ -701,13 +700,12 @@ paths:
         - Asset
       summary: Retrieve an asset
       security:
-      - auth:
-        - read:asset
+        - auth:
+            - read:asset
       description: Retrieves the details of an asset that has previously been created. Supply the unique identifier of the asset.
       operationId: getAssetById
       x-code-samples:
-        -
-          lang: Shell
+        - lang: Shell
           label: curl
           source: "curl https://api.bravenewcoin.com/v3/asset/74182afb-c7ea-4856-a65d-a03ab5f72635 -H 'Authorization: Bearer test_SiHrnL5NKsea0G2W4LHd' -G"
       responses:
@@ -725,13 +723,12 @@ paths:
         - Market
       summary: List all markets
       security:
-      - auth:
-        - read:market
+        - auth:
+            - read:market
       description: List all markets or provide a query parameter to search.
       operationId: listMarkets
       x-code-samples:
-        -
-          lang: Shell
+        - lang: Shell
           label: curl
           source: "curl https://api.bravenewcoin.com/v3/market/ -H 'Authorization: Bearer test_SiHrnL5NKsea0G2W4LHd' -G"
       parameters:
@@ -774,13 +771,12 @@ paths:
         - Market
       summary: Retrieve a market
       security:
-      - auth:
-        - read:market
+        - auth:
+            - read:market
       description: Retrieves the details of a market that has previously been created. Supply the unique identifier of the market.
       operationId: getMarketById
       x-code-samples:
-        -
-          lang: Shell
+        - lang: Shell
           label: curl
           source: "curl https://api.bravenewcoin.com/v3/market/74182afb-c7ea-4856-a65d-a03ab5f72635 -H 'Authorization: Bearer test_SiHrnL5NKsea0G2W4LHd' -G"
       responses:
@@ -798,13 +794,12 @@ paths:
         - Exchange
       summary: List all exchanges
       security:
-      - auth:
-        - read:exchange
+        - auth:
+            - read:exchange
       description: List all exchanges or provide a query parameter to search.
       operationId: listExchanges
       x-code-samples:
-        -
-          lang: Shell
+        - lang: Shell
           label: curl
           source: "curl https://api.bravenewcoin.com/v3/exchange/ -H 'Authorization: Bearer test_SiHrnL5NKsea0G2W4LHd' -G"
       parameters:
@@ -842,13 +837,12 @@ paths:
         - Exchange
       summary: Retrieve an exchange
       security:
-      - auth:
-        - read:exchange
+        - auth:
+            - read:exchange
       description: Retrieves the details of an exchange that has previously been created. Supply the unique identifier of the exchange.
       operationId: getExchangeById
       x-code-samples:
-        -
-          lang: Shell
+        - lang: Shell
           label: curl
           source: "curl https://api.bravenewcoin.com/v3/exchange/74182afb-c7ea-4856-a65d-a03ab5f72635 -H 'Authorization: Bearer test_SiHrnL5NKsea0G2W4LHd' -G"
       responses:
@@ -866,17 +860,16 @@ paths:
         - Ticker
       summary: List all tickers
       security:
-       - auth:
-          - read:ticker
-          - read:ticker_realtime
+        - auth:
+            - read:ticker
+            - read:ticker_realtime
       description: |-
         This API provides ticker information by exchange and market. If no timestamp is provided, then only the most recent ticks will be provided.
 
         Using this API by **base and quote symbol is not recommended** as it may result in an error when duplicate symbols are found. Searching by marketId is recommended and will result in a faster response.
       operationId: listTicker
       x-code-samples:
-        -
-          lang: Shell
+        - lang: Shell
           label: curl
           source: "curl https://api.bravenewcoin.com/v3/ticker/?timestamp=2018-08-14T05:54:42.395Z&size=100 -H 'Authorization: Bearer test_SiHrnL5NKsea0G2W4LHd' -G"
       parameters:
@@ -960,8 +953,7 @@ paths:
         Using this API by **base and quote symbol is not recommended** as it may result in an error when duplicate symbols are found. Searching by marketId is recommended and will result in a faster response.
       operationId: listMarketWeightedAverages
       x-code-samples:
-        -
-          lang: Shell
+        - lang: Shell
           label: curl
           source: "curl https://api.bravenewcoin.com/v3/mwa/?timestamp=2018-08-14T05:54:42.395Z&size=100 -H 'Authorization: Bearer test_SiHrnL5NKsea0G2W4LHd' -G"
       parameters:
@@ -1024,8 +1016,7 @@ paths:
         This API provides the open, high, low, close and volume using market weighted averages. If no timestamp is provided, then only the latest averages are returned.
       operationId: listMwaOhlcv
       x-code-samples:
-        -
-          lang: Shell
+        - lang: Shell
           label: curl
           source: "curl https://api.bravenewcoin.com/v3/mwa/ohlcv/?timestamp=2018-08-14T05:54:42.395Z&size=100 -H 'Authorization: Bearer test_SiHrnL5NKsea0G2W4LHd' -G"
       parameters:
@@ -1090,8 +1081,7 @@ paths:
         Using this API by **symbol is not recommended** as it may result in an error when duplicate symbols are found. Searching by asset id is recommended and will result in a faster response.
       operationId: listGlobalWeightedAverages
       x-code-samples:
-        -
-          lang: Shell
+        - lang: Shell
           label: curl
           source: "curl https://api.bravenewcoin.com/v3/gwa/?timestamp=2018-08-14T05:54:42.395Z&size=100 -H 'Authorization: Bearer test_SiHrnL5NKsea0G2W4LHd' -G"
       parameters:
@@ -1154,8 +1144,7 @@ paths:
         This API provides the open, high, low, close and volume based on global weighted averages. If no timestamp is provided, then only the latest averages are returned.
       operationId: listGwaOhlcv
       x-code-samples:
-        -
-          lang: Shell
+        - lang: Shell
           label: curl
           source: "curl https://api.bravenewcoin.com/v3/gwa/ohlcv/?timestamp=2018-08-14T05:54:42.395Z&size=100 -H 'Authorization: Bearer test_SiHrnL5NKsea0G2W4LHd' -G"
       parameters:
@@ -1219,8 +1208,7 @@ paths:
         This API provides the market cap for the assets based on the GWA. This only provides the latest market cap is provided.
       operationId: listMarketCaps
       x-code-samples:
-        -
-          lang: Shell
+        - lang: Shell
           label: curl
           source: "curl https://api.bravenewcoin.com/v3/marketcap/?period=1 -H 'Authorization: Bearer test_SiHrnL5NKsea0G2W4LHd' -G"
       parameters:
