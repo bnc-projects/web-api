@@ -186,15 +186,21 @@ components:
           description: The timestamp from when the market data was collected from the exchange.
           type: string
           format: date-time
-    MarketWeightedAverage:
+    IndexTicker:
       type: object
       properties:
         id:
           description: Unique identifier for the resource.
           type: string
           format: uuid
-        marketId:
-          description: Unique identifier for the market.
+        type:
+          description: The type of the index
+          type: string
+          enum:
+            - MWA
+            - GWA
+        indexId:
+          description: Unique identifier for the constituent used to calculate the index.
           type: string
           format: uuid
         timestamp:
@@ -202,10 +208,10 @@ components:
           type: string
           format: date-time
         price:
-          description: The market weighted average price in the quote asset.
+          description: The calculated price.
           type: string
         volume:
-          description: The marked weighted average volume of the base asset in the last 24 hours.
+          description: The calculated volume in the last 24 hours.
           type: string
     GlobalWeightedAverage:
       type: object
@@ -277,30 +283,29 @@ components:
           schema:
             $ref: '#/components/schemas/Error'
 x-tagGroups:
-- name: General
-  tags:
-  - Overview
-  - Authentication
-  - Pagination
-  - Timezones
-  - Versioning
-- name: Websocket API
-  tags:
-  - Websocket Overview
-  - Websocket Errors
-  - Websocket Ticker
-- name: Rest API
-  tags:
-  - Rest API Errors
-  - Asset
-  - Market
-  - Exchange
-  - Ticker
-  - Market Weighted Averages
-  - Global Weighted Averages
-  - Open, High, Low, Close, Volumes
-  - Market Capitalisation
-  - Rates
+  - name: General
+    tags:
+      - Overview
+      - Authentication
+      - Pagination
+      - Timezones
+      - Versioning
+  - name: Websocket API
+    tags:
+      - Websocket Overview
+      - Websocket Errors
+      - Websocket Ticker
+  - name: Rest API
+    tags:
+      - Rest API Errors
+      - Asset
+      - Market
+      - Exchange
+      - Ticker
+      - Index Ticker
+      - Open, High, Low, Close, Volumes
+      - Market Capitalisation
+      - Rates
 tags:
   - name: Authentication
     description: |
@@ -642,13 +647,12 @@ paths:
         - Asset
       summary: List all assets
       security:
-      - auth:
-        - read:asset
+        - auth:
+            - read:asset
       description: List all assets or provide a query parameter to search.
       operationId: listAssets
       x-code-samples:
-        -
-          lang: Shell
+        - lang: Shell
           label: curl
           source: "curl https://api.bravenewcoin.com/v3/asset/ -H 'Authorization: Bearer test_SiHrnL5NKsea0G2W4LHd' -G"
       parameters:
@@ -701,13 +705,12 @@ paths:
         - Asset
       summary: Retrieve an asset
       security:
-      - auth:
-        - read:asset
+        - auth:
+            - read:asset
       description: Retrieves the details of an asset that has previously been created. Supply the unique identifier of the asset.
       operationId: getAssetById
       x-code-samples:
-        -
-          lang: Shell
+        - lang: Shell
           label: curl
           source: "curl https://api.bravenewcoin.com/v3/asset/74182afb-c7ea-4856-a65d-a03ab5f72635 -H 'Authorization: Bearer test_SiHrnL5NKsea0G2W4LHd' -G"
       responses:
@@ -725,13 +728,12 @@ paths:
         - Market
       summary: List all markets
       security:
-      - auth:
-        - read:market
+        - auth:
+            - read:market
       description: List all markets or provide a query parameter to search.
       operationId: listMarkets
       x-code-samples:
-        -
-          lang: Shell
+        - lang: Shell
           label: curl
           source: "curl https://api.bravenewcoin.com/v3/market/ -H 'Authorization: Bearer test_SiHrnL5NKsea0G2W4LHd' -G"
       parameters:
@@ -774,13 +776,12 @@ paths:
         - Market
       summary: Retrieve a market
       security:
-      - auth:
-        - read:market
+        - auth:
+            - read:market
       description: Retrieves the details of a market that has previously been created. Supply the unique identifier of the market.
       operationId: getMarketById
       x-code-samples:
-        -
-          lang: Shell
+        - lang: Shell
           label: curl
           source: "curl https://api.bravenewcoin.com/v3/market/74182afb-c7ea-4856-a65d-a03ab5f72635 -H 'Authorization: Bearer test_SiHrnL5NKsea0G2W4LHd' -G"
       responses:
@@ -798,13 +799,12 @@ paths:
         - Exchange
       summary: List all exchanges
       security:
-      - auth:
-        - read:exchange
+        - auth:
+            - read:exchange
       description: List all exchanges or provide a query parameter to search.
       operationId: listExchanges
       x-code-samples:
-        -
-          lang: Shell
+        - lang: Shell
           label: curl
           source: "curl https://api.bravenewcoin.com/v3/exchange/ -H 'Authorization: Bearer test_SiHrnL5NKsea0G2W4LHd' -G"
       parameters:
@@ -842,13 +842,12 @@ paths:
         - Exchange
       summary: Retrieve an exchange
       security:
-      - auth:
-        - read:exchange
+        - auth:
+            - read:exchange
       description: Retrieves the details of an exchange that has previously been created. Supply the unique identifier of the exchange.
       operationId: getExchangeById
       x-code-samples:
-        -
-          lang: Shell
+        - lang: Shell
           label: curl
           source: "curl https://api.bravenewcoin.com/v3/exchange/74182afb-c7ea-4856-a65d-a03ab5f72635 -H 'Authorization: Bearer test_SiHrnL5NKsea0G2W4LHd' -G"
       responses:
@@ -866,17 +865,16 @@ paths:
         - Ticker
       summary: List all tickers
       security:
-       - auth:
-          - read:ticker
-          - read:ticker_realtime
+        - auth:
+            - read:ticker
+            - read:ticker_realtime
       description: |-
         This API provides ticker information by exchange and market. If no timestamp is provided, then only the most recent ticks will be provided.
 
         Using this API by **base and quote symbol is not recommended** as it may result in an error when duplicate symbols are found. Searching by marketId is recommended and will result in a faster response.
       operationId: listTicker
       x-code-samples:
-        -
-          lang: Shell
+        - lang: Shell
           label: curl
           source: "curl https://api.bravenewcoin.com/v3/ticker/?timestamp=2018-08-14T05:54:42.395Z&size=100 -H 'Authorization: Bearer test_SiHrnL5NKsea0G2W4LHd' -G"
       parameters:
@@ -947,35 +945,66 @@ paths:
                     description: The next id which can be used for pagination
                     type: string
                     format: uuid
-  /mwa:
+  /index-ticker:
     get:
       tags:
-        - Market Weighted Averages
-      summary: List all market weighted averages
+        - Index Ticker
+      summary: List all the index tickers
       description: |
-        ** THIS ENDPOINT IS CURRENTLY NOT AVAILABLE **
+        This API provides support to get the index tickers. The API allows getting ticks for all the indices. Type parameter can be used
+        to filter the type of index being returned.
 
-        This API provides market weighted averages. If no timestamp is provided, then the most recent market weighted averages will be provided.
+        Currently the following types of indices are supported -
 
-        Using this API by **base and quote symbol is not recommended** as it may result in an error when duplicate symbols are found. Searching by marketId is recommended and will result in a faster response.
-      operationId: listMarketWeightedAverages
+        | Index Type  | Description                  |
+        | ------------|:----------------------------:|
+        | MWA         | The Market weighted averages |
+        | GWA         | The Global weighted averages |
+
+        Each index type will have an index id which identifies the constituent type used to build the index -
+
+        | Index Type | Index Id | Output |
+        | -----------|:---------:|:---------:|:---------:|
+        | MWA        | Market Id | Average of all tickers for that market |
+        | GWA        | Asset Id  | Average of all tickers for that coin / asset |
+
+        Clients are supposed to use this ID to call the other rest API's to get more information about the constituents
+        used while building the index.
+
+      operationId: getIndexTicker
       x-code-samples:
-        -
-          lang: Shell
+        - lang: Shell
           label: curl
-          source: "curl https://api.bravenewcoin.com/v3/mwa/?timestamp=2018-08-14T05:54:42.395Z&size=100 -H 'Authorization: Bearer test_SiHrnL5NKsea0G2W4LHd' -G"
+          source: "curl https://api.bravenewcoin.com/v3/index-ticker -H 'Authorization: Bearer test_SiHrnL5NKsea0G2W4LHd' -G"
       parameters:
         - name: timestamp
           in: query
-          description: >-
-            Retrieve all market weighted averages from the timestamp provided.
+          description: |
+            Retrieve all the indices from the timestamp provided. If no timestamp is provided,
+            then the most recent calculated value will be provided.
           required: false
           schema:
             type: string
             format: date-time
-        - name: marketId
+        - name: type
           in: query
-          description: Retrieve all market weighted avaerages for the particular market id provided.
+          description: Retrieve the index by the type.
+          required: false
+          schema:
+            type: string
+            enum:
+              - MWA
+              - GWA
+        - name: indexId
+          in: query
+          description: |
+            Retrieve all the indices by the particular index id. The index id will differ based on the index type.
+
+            | Index Type | Index Id  |
+            | -----------|:---------:|
+            | MWA        |Market Id  |
+            | GWA        |Asset Id   |
+
           required: false
           schema:
             type: string
@@ -998,17 +1027,17 @@ paths:
             maximum: 2000
       responses:
         '200':
-          description: The market weighted averages by market.
+          description: The index ticker.
           content:
             application/json:
               schema:
-                title: MarketWeightedAverageResponse
+                title: IndexTickerResponse
                 type: object
                 properties:
                   content:
                     type: array
                     items:
-                      $ref: '#/components/schemas/MarketWeightedAverage'
+                      $ref: '#/components/schemas/IndexTicker'
                   nextId:
                     description: The next id which can be used for pagination
                     type: string
@@ -1024,8 +1053,7 @@ paths:
         This API provides the open, high, low, close and volume using market weighted averages. If no timestamp is provided, then only the latest averages are returned.
       operationId: listMwaOhlcv
       x-code-samples:
-        -
-          lang: Shell
+        - lang: Shell
           label: curl
           source: "curl https://api.bravenewcoin.com/v3/mwa/ohlcv/?timestamp=2018-08-14T05:54:42.395Z&size=100 -H 'Authorization: Bearer test_SiHrnL5NKsea0G2W4LHd' -G"
       parameters:
@@ -1077,71 +1105,6 @@ paths:
                     description: The next id which can be used for pagination
                     type: string
                     format: uuid
-  /gwa:
-    get:
-      tags:
-        - Global Weighted Averages
-      summary: List all global weighted averages
-      description: |
-        ** THIS ENDPOINT IS CURRENTLY NOT AVAILABLE **
-
-        This API provides global weighted averages in USD. If no timestamp is provided, then the most recent global weighted averages will be provided.
-
-        Using this API by **symbol is not recommended** as it may result in an error when duplicate symbols are found. Searching by asset id is recommended and will result in a faster response.
-      operationId: listGlobalWeightedAverages
-      x-code-samples:
-        -
-          lang: Shell
-          label: curl
-          source: "curl https://api.bravenewcoin.com/v3/gwa/?timestamp=2018-08-14T05:54:42.395Z&size=100 -H 'Authorization: Bearer test_SiHrnL5NKsea0G2W4LHd' -G"
-      parameters:
-        - name: timestamp
-          in: query
-          description: Retrieve all global weighted averages from the timestamp provided.
-          required: false
-          schema:
-            type: string
-            format: date-time
-        - name: assetId
-          in: query
-          description: Retrieve all global weighted avaerages for the particular asset id provided.
-          required: false
-          schema:
-            type: string
-            format: uuid
-        - name: startAfter
-          in: query
-          description: Retrieve all global weighted averages starting after this particular id.
-          required: false
-          schema:
-            type: string
-            format: uuid
-        - name: size
-          description: The maximum size to return in the result set. This parameter is ignored if no timestamp is provided.
-          in: query
-          required: false
-          schema:
-            type: integer
-            default: 10
-            minimum: 1
-            maximum: 2000
-      responses:
-        '200':
-          description: The global weighted averages by asset.
-          content:
-            application/json:
-              schema:
-                title: GlobalWeightedAverageResponse
-                type: object
-                properties:
-                  content:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/GlobalWeightedAverage'
-                  nextId:
-                    description: The next id which can be used for pagination
-                    type: string
-                    format: uuid
   /gwa/ohlcv:
     get:
       tags:
@@ -1154,8 +1117,7 @@ paths:
         This API provides the open, high, low, close and volume based on global weighted averages. If no timestamp is provided, then only the latest averages are returned.
       operationId: listGwaOhlcv
       x-code-samples:
-        -
-          lang: Shell
+        - lang: Shell
           label: curl
           source: "curl https://api.bravenewcoin.com/v3/gwa/ohlcv/?timestamp=2018-08-14T05:54:42.395Z&size=100 -H 'Authorization: Bearer test_SiHrnL5NKsea0G2W4LHd' -G"
       parameters:
@@ -1219,8 +1181,7 @@ paths:
         This API provides the market cap for the assets based on the GWA. This only provides the latest market cap is provided.
       operationId: listMarketCaps
       x-code-samples:
-        -
-          lang: Shell
+        - lang: Shell
           label: curl
           source: "curl https://api.bravenewcoin.com/v3/marketcap/?period=1 -H 'Authorization: Bearer test_SiHrnL5NKsea0G2W4LHd' -G"
       parameters:
