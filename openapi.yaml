@@ -294,7 +294,7 @@ x-tagGroups:
     tags:
       - Websocket Overview
       - Websocket Errors
-      - Websocket Ticker
+      - Websocket Exchange Ticker
   - name: Rest API
     tags:
       - Rest API Errors
@@ -350,7 +350,7 @@ tags:
       * [Exchange](#tag/Exchange)
   - name: Websocket Overview
     description: |
-      Brave New Coin Websocket API exposes exchange ticker data via Websockets. Clients need to send subscribe message to start recieving data. See [Exchange Ticker](#tag/Exchange-Ticker).
+      Brave New Coin Websocket API exposes exchange ticker data via Websockets. Clients need to send subscribe message to start recieving data. See [Exchange Ticker](#tag/Websocket-Exchange-Ticker).
 
       A sample project using the BNC Websocket API is available on Github :
 
@@ -408,20 +408,20 @@ tags:
       404 - Not Found                    | Requested resource not found(typically the marketId or exchangeId passed through the subscription request not found)
 
       There may be other types of errors that may be returned and we recommend handling the ERROR type gracefully.
-  - name: Websocket Ticker
+  - name: Websocket Exchange Ticker
     description: |
 
-      Clients can send a Subscribe message to start receiving ticker data.
+      This endpoint can be used to subscribe to the raw ticker data from different exchanges. Clients can send a Subscribe message to start receiving.
 
 
 
-      Used subscribe to ticks for a market and/or exchange. To subscribe to all the ticks of an exchange only the exchangeId can be sent. To subscribe to all the ticks of an market only the marketId can be sent. Both exchangeId and marketId can be sent to subscribe to the market in an exchange. Clients can subscribe to multiple sources as required. Clients need to call the [Market](#tag/Market) and [Exchange](#tag/Exchange) REST API's to get the ids.
+      To subscribe to all the ticks of an exchange only the exchangeId can be sent. To subscribe to all the ticks of an market only the marketId can be sent. Both exchangeId and marketId can be sent to subscribe to the market in an exchange. Clients can subscribe to multiple sources as required. Clients need to call the [Market](#tag/Market) and [Exchange](#tag/Exchange) REST API's to get the ids.
 
       #### Subscribe to Exchange
 
       ```
       {
-        "event": "SUBSCRIBE_TICKER",
+        "event": "SUBSCRIBE_EXCHANGE_TICKER",
         "exchangeId": "359107d3-bd1a-418c-9470-58831ed9a45e"
       }
       ```
@@ -430,7 +430,7 @@ tags:
 
       ```
       {
-        "event": "SUBSCRIBE_TICKER",
+        "event": "SUBSCRIBE_EXCHANGE_TICKER",
         "marketId": "359107d3-bd1a-418c-9470-58831ed9a45e"
       }
       ```
@@ -439,7 +439,7 @@ tags:
 
       ```
       {
-        "event": "SUBSCRIBE_TICKER",
+        "event": "SUBSCRIBE_EXCHANGE_TICKER",
         "exchangeId": "359107d3-bd1a-418c-9470-58831ed9a45e"
         "marketId": "f7cbc588-283e-41da-9c28-eee2113d7b8d"
       }
@@ -449,7 +449,7 @@ tags:
       The server will return ticks in this format
       ```
       {
-        "event": "TICK"
+        "event": "EXCHANGE_TICKER"
         "id": "string",
         "exchangeId": "string",
         "marketId": "string",
