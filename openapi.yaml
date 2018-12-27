@@ -295,6 +295,8 @@ x-tagGroups:
       - Websocket Overview
       - Websocket Errors
       - Websocket Exchange Ticker
+      - Websocket Index Ticker
+
   - name: Rest API
     tags:
       - Rest API Errors
@@ -457,6 +459,54 @@ tags:
         "volume": "string",
         "bid": "string",
         "ask": "string",
+        "timestamp": "2018-09-06T04:35:44Z"
+      }
+      ```
+    x-traitTag: true
+  - name: Websocket Index Ticker
+    description: |
+
+      This endpoint can be used to subscribe to the index ticker data. These indices are calculated by BNC and published to the websocket endpoint. Clients need to send a Subscribe message to start receiving.
+      Indices can be subscribed by the indexId or the indexType.
+
+      The index id will differ based on the index type.
+
+      | Index Type | Index Id  |
+      | -----------|:---------:|
+      | MWA        |Market Id  |
+      | GWA        |Asset Id   |
+
+      Clients need to call the [Market](#tag/Market) and [Asset](#tag/Asset) REST API's to get the ids.
+
+      #### Subscribe by Index ID
+
+      ```
+      {
+        "event": "SUBSCRIBE_INDEX_TICKER",
+        "indexId": "359107d3-bd1a-418c-9470-58831ed9a45e"
+      }
+      ```
+
+      #### Subscribe by Index Type
+
+      ```
+      {
+        "event": "SUBSCRIBE_INDEX_TICKER",
+        "indexType": "MWA"
+      }
+      ```
+
+      #### Resoponse
+
+      The server will return ticks in this format
+      ```
+      {
+        "event": "INDEX_TICKER"
+        "id": "string",
+        "indexId": "string",
+        "indexType": "string",
+        "price": "string",
+        "volume": "string",
         "timestamp": "2018-09-06T04:35:44Z"
       }
       ```
