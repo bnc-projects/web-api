@@ -1013,8 +1013,8 @@ paths:
 
         Each index type will have an index id which identifies the constituent type used to build the index -
 
-        | Index Type | Index Id | Output |
-        | -----------|:---------:|:---------:|:---------:|
+        | Index Type | Index Id  | Output |
+        | -----------|:---------:|:---------:|
         | MWA        | Market Id | Average of all tickers for that market |
         | GWA        | Asset Id  | Average of all tickers for that coin / asset |
 
