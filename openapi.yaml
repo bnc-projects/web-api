@@ -90,15 +90,6 @@ components:
         url:
           description: The url of where information about the asset can be found.
           type: string
-        supplyUrl:
-          description: The url where the asset supply information can be found.
-          type: string
-        freeFloatSupplyUrl:
-          description: The url where the assets free float (circulating) supply information can be found.
-          type: string
-        totalSupplyUrl:
-          description: The url where the assets total supply information can be found.
-          type: string
     Market:
       type: object
       properties:
