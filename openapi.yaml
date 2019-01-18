@@ -180,27 +180,27 @@ components:
     IndexTicker:
       type: object
       properties:
-        id:
-          description: Unique identifier for the resource.
+        indexId:
+          description: Unique identifier for the constituent used to calculate the index.
           type: string
           format: uuid
-        type:
+        indexType:
           description: The type of the index
           type: string
           enum:
             - MWA
             - GWA
-        indexId:
-          description: Unique identifier for the constituent used to calculate the index.
+        price:
+          description: The calculated price.
           type: string
-          format: uuid
         timestamp:
           description: The timestamp the marketed weighted average was calculated.
           type: string
           format: date-time
-        price:
-          description: The calculated price.
+        id:
+          description: Unique identifier for the resource.
           type: string
+          format: uuid
         volume:
           description: The calculated volume in the last 24 hours.
           type: string
@@ -294,7 +294,7 @@ x-tagGroups:
       - Asset
       - Market
       - Exchange
-      - Ticker
+      - Exchange Ticker
       - Index Ticker
       - Open, High, Low, Close, Volumes
       - Market Capitalisation
@@ -305,7 +305,7 @@ tags:
       We use OAuth2 flows for security.
       ### Websocket API Authentication
 
-      Our websocket endpoint requires the bearer token to be sent as *access_token* parameter in the connection url. A token will have to be used within 5 minutes of being issued.
+      Our websocket endpoint requires the bearer token to be sent as *access_token* parameter in the connection url. A token will have to be used within 30 seconds of being issued.
 
       Sample URL
 
@@ -313,11 +313,11 @@ tags:
 
       ### Rest API Authentication
 
-      If no bearer token is provided the following endpoints will return 5 minute delayed data:
+      If no bearer token is provided, the following endpoints will return 5 minute delayed data:
       * [Asset](#tag/Asset)
       * [Market](#tag/Market)
       * [Exchange](#tag/Exchange)
-      * [Ticker](#tag/Ticker)
+      * [Exchange Ticker](#tag/Exchange-Ticker)
       <!-- ReDoc-Inject: <security-definitions> -->
   - name: Overview
     description: |
@@ -327,14 +327,14 @@ tags:
       * [Asset](#tag/Asset)
       * [Market](#tag/Market)
       * [Exchange](#tag/Exchange)
-      * [Ticker](#tag/Ticker)
+      * [Exchange Ticker](#tag/Exchange-Ticker)
 
       The Brave New Coin github organisation has example API clients for your usage:
       * [Java](https://github.com/bnc-projects/java-api-client)
 
       If the language which you are working in isn't found in our list, then feel free to download the OpenAPI specification and generate your own clients in the language of your choice. The download link can be found at the top of this page.
 
-      If you find any errors with our documentation feel free to create issues and/or pull requests on [github](https://github.com/bnc-projects/web-api).
+      If you find any errors with our documentation, feel free to create issues and/or pull requests on [github](https://github.com/bnc-projects/web-api).
 
       ### Usage of our APIs
       We recommend only querying using UUIDs to our market data APIs and using a local cache which is refreshed every 15 minutes for the information APIs. The following resources are our informational APIs:
@@ -355,7 +355,7 @@ tags:
 
       #### Connection Message
 
-      Once the client connection is successful the server will send back a connection message
+      Once the client connection is successful, the server will send back a connection message
       ```
       {
         "event" : "CONNECTED",
@@ -544,7 +544,7 @@ tags:
       Brave New Coin API's utilise cursor-based pagination using the `startAfter` parameter. The parameter should be an existing object ID and returns resources in reverse chronological order. The `startAfter` parameter returns resources listed after the named resource. For APIs which take both a `startAfter` and `timestamp` parameters, the `timestamp` is ignored if `startAfter` is provided.
 
       Arguments     |                         | Description
-      ----------------------------------------|------------
+      --------------|-------------------------|------------
       limit         | Optional, default is 10 | A limit on the number of resources to be returned, between 1 and 2000.
       startAfter    |                         | A cursor for use in pagination. startAfter is an resource ID that defines your place in the list.
       timestamp     |                         | The timestamp to start searching from.
@@ -575,8 +575,8 @@ tags:
     description: Retrieve information about markets.
   - name: Exchange
     description: Retrieve information about exchanges.
-  - name: Ticker
-    description: Retrieve the ticker information.
+  - name: Exchange Ticker
+    description: Retrieve the exchange ticker information.
   - name: Market Weighted Averages
     description: Retrieve the market weighted averages.
   - name: Global Weighted Averages
@@ -676,12 +676,15 @@ paths:
                   access_token:
                     description: The access token issued.
                     type: string
-                  token_type:
-                    description: The type of token type issued.
+                  scope:
+                    description: The scope issued.
                     type: string
                   expires_in:
                     description: The number of seconds in which the access token will expire.
                     type: integer
+                  token_type:
+                    description: The type of token type issued.
+                    type: string
   /asset:
     get:
       tags:
@@ -900,11 +903,11 @@ paths:
                 $ref: '#/components/schemas/Exchange'
         '404':
           description: The exchange resource cannot be found.
-  /ticker:
+  /exchange-ticker:
     get:
       tags:
-        - Ticker
-      summary: List all tickers
+        - Exchange Ticker
+      summary: List all exchange tickers
       security:
         - auth:
             - read:ticker
@@ -913,11 +916,11 @@ paths:
         This API provides ticker information by exchange and market. If no timestamp is provided, then only the most recent ticks will be provided.
 
         Using this API by **base and quote symbol is not recommended** as it may result in an error when duplicate symbols are found. Searching by marketId is recommended and will result in a faster response.
-      operationId: listTicker
+      operationId: listExchangeTicker
       x-code-samples:
         - lang: Shell
           label: curl
-          source: "curl https://api.bravenewcoin.com/v3/ticker/?timestamp=2018-08-14T05:54:42.395Z&size=100 -H 'Authorization: Bearer test_SiHrnL5NKsea0G2W4LHd' -G"
+          source: "curl https://api.bravenewcoin.com/v3/exchange-ticker/?timestamp=2018-08-14T05:54:42.395Z&size=100 -H 'Authorization: Bearer test_SiHrnL5NKsea0G2W4LHd' -G"
       parameters:
         - name: timestamp
           in: query
@@ -1027,7 +1030,7 @@ paths:
           schema:
             type: string
             format: date-time
-        - name: type
+        - name: indexType
           in: query
           description: Retrieve the index by the type.
           required: false
