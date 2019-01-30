@@ -436,7 +436,7 @@ tags:
         "marketId": "f7cbc588-283e-41da-9c28-eee2113d7b8d"
       }
       ```
-      #### Resoponse
+      #### Response
 
       The server will return ticks in this format
       ```
