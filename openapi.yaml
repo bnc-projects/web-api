@@ -27,9 +27,8 @@ components:
             read:asset: Read available assets
             read:market: Read available markets
             read:exchange: Read available exchanges
-            read:ticker: Read delayed exchange ticker
-            read:ticker_realtime: Read exchange ticker
-            read:websocket: Subscribe to websocket
+            read:exchange-ticker: Read exchange ticker
+            read:index-ticker: Read index ticker
   schemas:
     Error:
       type: object
