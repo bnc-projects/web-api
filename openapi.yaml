@@ -348,6 +348,16 @@ tags:
 
       * [Node.js](https://github.com/bnc-projects/bnc-websocket-client-sample)
 
+      ### Connection URL
+
+      `wss://ws.bravenewcoin.com`
+
+      ### Authentication
+
+      All websocket connections require authentication. For more information see -
+
+      * [Authentication](#tag/Authentication)
+
       ### Common Message Types
 
       Websocket messages have an `event` field to identify them
