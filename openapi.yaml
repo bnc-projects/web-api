@@ -417,7 +417,15 @@ tags:
 
 
 
-      To subscribe to all the ticks of an exchange only the exchangeId can be sent. To subscribe to all the ticks of an market only the marketId can be sent. Both exchangeId and marketId can be sent to subscribe to the market in an exchange. Clients can subscribe to multiple sources as required. Clients need to call the [Market](#tag/Market) and [Exchange](#tag/Exchange) REST API's to get the ids.
+      To subscribe to all the ticks of an exchange only the exchangeId can be sent. To subscribe to all the ticks of an market only the marketId or marketName can be sent. Both exchangeId and marketId can be sent to subscribe to the market in an exchange. Clients can subscribe to multiple sources as required. Clients need to call the [Market](#tag/Market) and [Exchange](#tag/Exchange) REST API's to get the ids.
+
+      ### Parameters
+
+      Name                      | Description
+      --------------------------|------------
+      marketId                  | Subscribe to the exchange ticks for this market
+      exchangId                 | Subscribe to the exchange ticks for this exchange
+      marketName                | Subscribe to the exchange ticks for this exchange by the trade pair. e.g. BTC_USD. It is recommended to subscribe by the marketId rather than the marketName
 
       #### Subscribe to Exchange
 
@@ -428,7 +436,7 @@ tags:
       }
       ```
 
-      #### Subscribe to Market
+      #### Subscribe to Market by Id
 
       ```
       {
@@ -436,7 +444,14 @@ tags:
         "marketId": "359107d3-bd1a-418c-9470-58831ed9a45e"
       }
       ```
+      #### Subscribe to Market by Name
 
+      ```
+      {
+        "event": "SUBSCRIBE_EXCHANGE_TICKER",
+        "marketName": "BTC_USD"
+      }
+      ```
       #### Subscribe to a Market in an Exchange
 
       ```
