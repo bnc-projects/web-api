@@ -2,7 +2,7 @@ openapi: 3.0.0
 info:
   title: Market Data API
   termsOfService: 'https://api.bravenewcoin.com/terms/'
-  version: 'v3-BETA'
+  version: 'v3'
   x-logo:
     url: 'https://docs.bravenewcoin.com/images/logo.png'
     altText: 'Brave New Coin'
@@ -294,10 +294,6 @@ x-tagGroups:
       - Market
       - Exchange
       - Exchange Ticker
-      - Index Ticker
-      - Open, High, Low, Close, Volumes
-      - Market Capitalisation
-      - Rates
 tags:
   - name: Authentication
     description: |
