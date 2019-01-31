@@ -2,7 +2,7 @@ openapi: 3.0.0
 info:
   title: Market Data API
   termsOfService: 'https://api.bravenewcoin.com/terms/'
-  version: 'v3-BETA'
+  version: 'v3'
   x-logo:
     url: 'https://docs.bravenewcoin.com/images/logo.png'
     altText: 'Brave New Coin'
@@ -27,9 +27,8 @@ components:
             read:asset: Read available assets
             read:market: Read available markets
             read:exchange: Read available exchanges
-            read:ticker: Read delayed exchange ticker
-            read:ticker_realtime: Read exchange ticker
-            read:websocket: Subscribe to websocket
+            read:exchange-ticker: Read exchange ticker
+            read:index-ticker: Read index ticker
   schemas:
     Error:
       type: object
@@ -295,10 +294,6 @@ x-tagGroups:
       - Market
       - Exchange
       - Exchange Ticker
-      - Index Ticker
-      - Open, High, Low, Close, Volumes
-      - Market Capitalisation
-      - Rates
 tags:
   - name: Authentication
     description: |
@@ -348,6 +343,16 @@ tags:
       A sample project using the BNC Websocket API is available on Github :
 
       * [Node.js](https://github.com/bnc-projects/bnc-websocket-client-sample)
+
+      ### Connection URL
+
+      `wss://ws.bravenewcoin.com`
+
+      ### Authentication
+
+      All websocket connections require authentication. For more information see -
+
+      * [Authentication](#tag/Authentication)
 
       ### Common Message Types
 
@@ -408,7 +413,15 @@ tags:
 
 
 
-      To subscribe to all the ticks of an exchange only the exchangeId can be sent. To subscribe to all the ticks of an market only the marketId can be sent. Both exchangeId and marketId can be sent to subscribe to the market in an exchange. Clients can subscribe to multiple sources as required. Clients need to call the [Market](#tag/Market) and [Exchange](#tag/Exchange) REST API's to get the ids.
+      To subscribe to all the ticks of an exchange only the exchangeId can be sent. To subscribe to all the ticks of an market only the marketId or marketName can be sent. Both exchangeId and marketId can be sent to subscribe to the market in an exchange. Clients can subscribe to multiple sources as required. Clients need to call the [Market](#tag/Market) and [Exchange](#tag/Exchange) REST API's to get the ids.
+
+      ### Parameters
+
+      Name                      | Description
+      --------------------------|------------
+      marketId                  | Subscribe to the exchange ticks for this market
+      exchangId                 | Subscribe to the exchange ticks for this exchange
+      marketName                | Subscribe to the exchange ticks for this exchange by the trade pair. e.g. BTC_USD. It is recommended to subscribe by the marketId rather than the marketName
 
       #### Subscribe to Exchange
 
@@ -419,7 +432,7 @@ tags:
       }
       ```
 
-      #### Subscribe to Market
+      #### Subscribe to Market by Id
 
       ```
       {
@@ -427,7 +440,14 @@ tags:
         "marketId": "359107d3-bd1a-418c-9470-58831ed9a45e"
       }
       ```
+      #### Subscribe to Market by Name
 
+      ```
+      {
+        "event": "SUBSCRIBE_EXCHANGE_TICKER",
+        "marketName": "BTC_USD"
+      }
+      ```
       #### Subscribe to a Market in an Exchange
 
       ```
@@ -437,7 +457,7 @@ tags:
         "marketId": "f7cbc588-283e-41da-9c28-eee2113d7b8d"
       }
       ```
-      #### Resoponse
+      #### Response
 
       The server will return ticks in this format
       ```
