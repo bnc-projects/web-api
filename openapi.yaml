@@ -123,6 +123,7 @@ components:
           enum:
             - ACTIVE
             - INACTIVE
+            - MAINTENANCE
         markets:
           description: The markets available on the exchange
           type: array
