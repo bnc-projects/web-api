@@ -299,44 +299,40 @@ tags:
   - name: Authentication
     description: |
       We use OAuth2 flows for security.
-      ### Websocket API Authentication
+      
+      ## Websocket API Authentication
 
-      Our websocket endpoint requires the bearer token to be sent as *access_token* parameter in the connection url. A token will have to be used within 30 seconds of being issued.
+      Our websocket endpoint requires the bearer token to be sent as *access_token* parameter in the connection url. The token will have to be used within 30 seconds of being issued.
 
-      Sample URL
+      ```
+      wss://ws.bravenewcoin.com?access_token=<token>
+      ```
+      
+      ## Rest API Authentication
 
-      ``wss://ws.bravenewcoin.com?access_token=``
-
-      ### Rest API Authentication
-
-      If no bearer token is provided, the following endpoints will return 5 minute delayed data:
-      * [Asset](#tag/Asset)
-      * [Market](#tag/Market)
-      * [Exchange](#tag/Exchange)
-      * [Exchange Ticker](#tag/Exchange-Ticker)
+      Our REST endpoints require a valid bearer token to be sent in the Authorization header.
+      ```
+      Authorization: Bearer <token>
+      ```
       <!-- ReDoc-Inject: <security-definitions> -->
   - name: Overview
     description: |
-      Brave New Coin has been tracking crypto asset ticker data from the worlds major exchanges since April 2014. Now we provide data from over 230 exchanges, collected every 30 seconds.
-
-      The following resources are currently available:
-      * [Asset](#tag/Asset)
-      * [Market](#tag/Market)
-      * [Exchange](#tag/Exchange)
-      * [Exchange Ticker](#tag/Exchange-Ticker)
+      Brave New Coin has been tracking crypto asset ticker data from the worlds major exchanges since April 2014. We now provide data from ~250 exchanges.
 
       The Brave New Coin github organisation has example API clients for your usage:
       * [Java](https://github.com/bnc-projects/java-api-client)
+      * [JavaScript](https://github.com/bnc-projects/bnc-websocket-client-sample)
 
-      If the language which you are working in isn't found in our list, then feel free to download the OpenAPI specification and generate your own clients in the language of your choice. The download link can be found at the top of this page.
+      If the language which you are working in isn't found in our list, then feel free to download the OpenAPI specification and generate your own clients in the language of your choice. The download link can be found at the top of this page; and is available on [github](https://github.com/bnc-projects/web-api).
 
       If you find any errors with our documentation, feel free to create issues and/or pull requests on [github](https://github.com/bnc-projects/web-api).
 
       ### Usage of our APIs
-      We recommend only querying using UUIDs to our market data APIs and using a local cache which is refreshed every 15 minutes for the information APIs. The following resources are our informational APIs:
+      We recommend using UUIDs to access data from this API. The following resources are our informational API that can be queried to provide UUIDs:
       * [Asset](#tag/Asset)
       * [Market](#tag/Market)
       * [Exchange](#tag/Exchange)
+
   - name: Websocket Overview
     description: |
       Brave New Coin Websocket API exposes exchange ticker data via Websockets. Clients need to send subscribe message to start recieving data. See [Exchange Ticker](#tag/Websocket-Exchange-Ticker).
@@ -347,7 +343,7 @@ tags:
 
       ### Connection URL
 
-      `wss://ws.bravenewcoin.com`
+      `wss://ws.bravenewcoin.com?access_token=<token>`
 
       ### Authentication
 
@@ -522,10 +518,9 @@ tags:
         "timestamp": "2018-09-06T04:35:44Z"
       }
       ```
-    x-traitTag: true
   - name: Rest API Errors
     description: |
-      Brave New Coin uses conventional HTTP response codes to indicate the success or failure of an API request. In general: Codes in the `2xx` range indicate success. Codes in the `4xx` range indicate an error that failed given the information provided (e.g. A  required parameter was missing). Codes in the `5xx` range indicate an error with Brave New Coin's servers (these will be rare).
+      Brave New Coin uses conventional HTTP response codes to indicate the success or failure of an API request. In general: Codes in the `2xx` range indicate success. Codes in the `4xx` range indicate an error that failed given the information provided (e.g. A  required parameter was missing). Codes in the `5xx` range indicate an error with Brave New Coin's servers.
 
       Some `4xx` errors that could be handled programmatically include an error code that briefly explains the error reported.
       ```
