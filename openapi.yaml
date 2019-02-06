@@ -1,7 +1,6 @@
 openapi: 3.0.0
 info:
   title: Market Data API
-  termsOfService: 'https://api.bravenewcoin.com/terms/'
   version: 'v3'
   x-logo:
     url: 'https://docs.bravenewcoin.com/images/logo.png'
@@ -299,7 +298,7 @@ tags:
   - name: Authentication
     description: |
       We use OAuth2 flows for security.
-      
+
       ## Websocket API Authentication
 
       Our websocket endpoint requires the bearer token to be sent as *access_token* parameter in the connection url. The token will have to be used within 30 seconds of being issued.
@@ -307,7 +306,7 @@ tags:
       ```
       wss://ws.bravenewcoin.com?access_token=<token>
       ```
-      
+
       ## Rest API Authentication
 
       Our REST endpoints require a valid bearer token to be sent in the Authorization header.
