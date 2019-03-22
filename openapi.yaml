@@ -254,7 +254,16 @@ components:
           description: The low price of the asset at the timestamp
           type: string
         volume:
+          description: The 24h volume of the asset
+          type: string
+        volumeUSD:
+          description: The 24h volume of the asset in USD. This is not populated in case the index type is GWA.
+          type: string
+        vwap:
           description: The 24h volume of the asset at the timestamp
+          type: string
+        twap:
+          description: The 24h time-weighted average price of the asset
           type: string
   parameters:
     idParam:
@@ -1101,20 +1110,35 @@ paths:
                     description: The next id which can be used for pagination
                     type: string
                     format: uuid
-  /mwa/ohlcv:
+  /ohlcv:
     get:
       tags:
         - Open, High, Low, Close, Volumes
-      summary: List the open, high, low, close and volumes (OHLCV) using market weighted averages
+      summary: |
+        List the open, high, low, close and volumes (OHLCV) using market weighted averages
+
+        Currently the following types of indices are supported -
+
+        | Index Type  | Description                  |
+        | ------------|:----------------------------:|
+        | MWA         | The Market weighted averages |
+        | GWA         | The Global weighted averages |
+
+        Each index type will have an index id which identifies the constituent type used to build the index -
+
+        | Index Type | Index Id  | Output |
+        | -----------|:---------:|:---------:|
+        | MWA        | Market Id | Average of all tickers for that market |
+        | GWA        | Asset Id  | Average of all tickers for that coin / asset |
       description: |
         ** THIS ENDPOINT IS CURRENTLY NOT AVAILABLE **
 
-        This API provides the open, high, low, close and volume using market weighted averages. If no timestamp is provided, then only the latest averages are returned.
-      operationId: listMwaOhlcv
+        This API provides the open, high, low, close and volume using the index type provided. If no timestamp is provided, then only the latest averages are returned.
+      operationId: listOhlcv
       x-code-samples:
         - lang: Shell
           label: curl
-          source: "curl https://api.bravenewcoin.com/v3/mwa/ohlcv/?timestamp=2018-08-14T05:54:42.395Z&size=100 -H 'Authorization: Bearer test_SiHrnL5NKsea0G2W4LHd' -G"
+          source: "curl https://api.bravenewcoin.com/v3/ohlcv -H 'Authorization: Bearer test_SiHrnL5NKsea0G2W4LHd' -G"
       parameters:
         - name: timestamp
           in: query
@@ -1124,9 +1148,25 @@ paths:
           schema:
             type: string
             format: date-time
-        - name: marketId
+        - name: indexType
           in: query
-          description: Retrieve all market weighted average OHLCV by the particular market id provided.
+          description: Retrieve the OHLCV end of day by the index type.
+          required: false
+          schema:
+            type: string
+            enum:
+              - MWA
+              - GWA
+        - name: indexId
+          in: query
+          description: |
+            Retrieve all the OHLCV values by the particular index id. The index id will differ based on the index type.
+
+            | Index Type | Index Id  |
+            | -----------|:---------:|
+            | MWA        |Market Id  |
+            | GWA        |Asset Id   |
+
           required: false
           schema:
             type: string
@@ -1144,76 +1184,12 @@ paths:
           required: false
           schema:
             type: integer
-            default: 10
+            default: 200
             minimum: 1
             maximum: 2000
       responses:
         '200':
           description: 'The market weighted average OHLCV by market'
-          content:
-            application/json:
-              schema:
-                title: OpenHighLowCloseVolumeResponse
-                type: object
-                properties:
-                  content:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/OpenHighLowCloseVolume'
-                  nextId:
-                    description: The next id which can be used for pagination
-                    type: string
-                    format: uuid
-  /gwa/ohlcv:
-    get:
-      tags:
-        - Open, High, Low, Close, Volumes
-      summary: |
-        List the open, high, low, close and volumes using global weighted averages
-      description: |
-        ** THIS ENDPOINT IS CURRENTLY NOT AVAILABLE **
-
-        This API provides the open, high, low, close and volume based on global weighted averages. If no timestamp is provided, then only the latest averages are returned.
-      operationId: listGwaOhlcv
-      x-code-samples:
-        - lang: Shell
-          label: curl
-          source: "curl https://api.bravenewcoin.com/v3/gwa/ohlcv/?timestamp=2018-08-14T05:54:42.395Z&size=100 -H 'Authorization: Bearer test_SiHrnL5NKsea0G2W4LHd' -G"
-      parameters:
-        - name: timestamp
-          in: query
-          description: |
-            Retrieve all global weighted average OHLCV from the timestamp provided.
-          required: false
-          schema:
-            type: string
-            format: date-time
-        - name: assetId
-          in: query
-          description: Retrieve all global weighted average OHLCV for a particular asset.
-          required: false
-          schema:
-            type: string
-            format: uuid
-        - name: startAfter
-          in: query
-          description: Retrieve all global weighted average OHLCV after this particular id
-          required: false
-          schema:
-            type: string
-            format: uuid
-        - name: size
-          description: The maximum size to return in the result set. This parameter is ignored if no timestamp is provided.
-          in: query
-          required: false
-          schema:
-            type: integer
-            default: 10
-            minimum: 1
-            maximum: 2000
-      responses:
-        '200':
-          description: 'The open, high, low, close and volume by asset'
           content:
             application/json:
               schema:
