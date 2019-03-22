@@ -1173,7 +1173,7 @@ paths:
             format: uuid
         - name: startAfter
           in: query
-          description: Retrieve market weighted average OHLCV by a particular id provided.
+          description: Retrieve OHLCV for the indexId or indexType required, starting after this date time.
           required: false
           schema:
             type: string
