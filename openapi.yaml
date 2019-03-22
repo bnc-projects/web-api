@@ -1189,7 +1189,7 @@ paths:
             maximum: 2000
       responses:
         '200':
-          description: 'The market weighted average OHLCV by market'
+           description: 'The open, high, low, close and volume.'
           content:
             application/json:
               schema:
