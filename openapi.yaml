@@ -1173,7 +1173,7 @@ paths:
             format: uuid
         - name: startAfter
           in: query
-          description: Retrieve OHLCV for the indexId or indexType required, starting after this date time.
+          description: Retrieve OHLCV for the indexId or indexType required, starting after this particular id.
           required: false
           schema:
             type: string
@@ -1189,7 +1189,7 @@ paths:
             maximum: 2000
       responses:
         '200':
-           description: 'The open, high, low, close and volume.'
+          description: 'The open, high, low, close and volume.'
           content:
             application/json:
               schema:
