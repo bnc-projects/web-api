@@ -237,33 +237,44 @@ components:
           description: Unique identifier for the resource.
           type: string
           format: uuid
+        indexId:
+          description: Unique identifier for the constituent used to calculate the index.
+          type: string
+          format: uuid
+        indexType:
+          description: The index type of thhe OHLCV
+          required: false
+          type: string
+          enum:
+            - MWA
+            - GWA
         timestamp:
-          description: The date and time for the period to which the OHLCV averages belong
+          description: Start of the period for which OHLCV belongs to in UTC
           type: string
           format: date-time
         open:
-          description: The opening price of the asset at the timestamp
+          description: The opening price of the index for the 24h period
           type: string
         close:
-          description: The closing price of the asset at the timestamp
+          description: The closing price of the index for the 24h period
           type: string
         high:
-          description: The high price of the asset at the timestamp
+          description: The high price of the index for the 24h period
           type: string
         low:
-          description: The low price of the asset at the timestamp
+          description: The low price of the index for the 24h period
           type: string
         volume:
-          description: The 24h volume of the asset
+          description: The 24h volume
           type: string
         volumeUSD:
-          description: The 24h volume of the asset in USD. This is not populated in case the index type is GWA.
+          description: The 24h volume in USD
           type: string
         vwap:
-          description: The 24h volume of the asset at the timestamp
+          description: The 24h volume-weighted average price of the index
           type: string
         twap:
-          description: The 24h time-weighted average price of the asset
+          description: The 24h time-weighted average price of the index
           type: string
   parameters:
     idParam:
@@ -1114,8 +1125,11 @@ paths:
     get:
       tags:
         - Open, High, Low, Close, Volumes
-      summary: |
+      summary: List all the end of day Open, High, Low, Close, Volumes
+      description: |
         List the open, high, low, close and volumes (OHLCV) using market weighted averages
+
+        This API provides the open, high, low, close and volume using the index type provided. If no timestamp is provided, then only the latest averages are returned.
 
         Currently the following types of indices are supported -
 
@@ -1130,10 +1144,6 @@ paths:
         | -----------|:---------:|:---------:|
         | MWA        | Market Id | Average of all tickers for that market |
         | GWA        | Asset Id  | Average of all tickers for that coin / asset |
-      description: |
-        ** THIS ENDPOINT IS CURRENTLY NOT AVAILABLE **
-
-        This API provides the open, high, low, close and volume using the index type provided. If no timestamp is provided, then only the latest averages are returned.
       operationId: listOhlcv
       x-code-samples:
         - lang: Shell
