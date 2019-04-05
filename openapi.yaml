@@ -945,8 +945,7 @@ paths:
       summary: List all exchange tickers
       security:
         - auth:
-            - read:ticker
-            - read:ticker_realtime
+            - read:exchange-ticker
       description: |-
         This API provides ticker information by exchange and market. If no timestamp is provided, then only the most recent ticks will be provided.
 
