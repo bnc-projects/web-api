@@ -1129,7 +1129,7 @@ paths:
         - Open, High, Low, Close, Volumes - Beta Version
       summary: Get end of day Open, High, Low, Close, Volumes
       description: |
-        Get end of day open, high, low, close and volumes (OHLCV) of market weighted averages or global weighted averages. The 24hr period for end of day is 00:00:00 UTgit poC
+        Get end of day open, high, low, close and volumes (OHLCV) of market weighted averages or global weighted averages. The 24hr period for end of day is 00:00:00 UTC.
 
         This API provides the open, high, low, close and volume using the index type provided. If no timestamp is provided, then only the latest averages are returned.
 
