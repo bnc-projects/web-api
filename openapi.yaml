@@ -305,7 +305,7 @@ x-tagGroups:
       - Websocket Overview
       - Websocket Errors
       - Websocket Exchange Ticker
-      - Websocket Index Ticker
+      - Websocket Index Ticker - Beta Version
 
   - name: Rest API
     tags:
@@ -314,8 +314,8 @@ x-tagGroups:
       - Market
       - Exchange
       - Exchange Ticker
-      - Index Ticker
-      - Open, High, Low, Close, Volumes
+      - Index Ticker - Beta Version
+      - Open, High, Low, Close, Volumes - Beta Version
 tags:
   - name: Authentication
     description: |
@@ -492,7 +492,7 @@ tags:
       }
       ```
     x-traitTag: true
-  - name: Websocket Index Ticker
+  - name: Websocket Index Ticker - Beta Version
     description: |
 
       This endpoint can be used to subscribe to the index ticker data. These indices are calculated by BNC and published to the websocket endpoint. Clients need to send a Subscribe message to start receiving.
@@ -1029,7 +1029,7 @@ paths:
   /index-ticker:
     get:
       tags:
-        - Index Ticker
+        - Index Ticker - Beta Version
       summary: List all the index tickers
       description: |
         This API provides support to get the index tickers. The API allows getting ticks for all the indices. Type parameter can be used
@@ -1126,7 +1126,7 @@ paths:
   /ohlcv:
     get:
       tags:
-        - Open, High, Low, Close, Volumes
+        - Open, High, Low, Close, Volumes - Beta Version
       summary: List all the end of day Open, High, Low, Close, Volumes
       description: |
         List the open, high, low, close and volumes (OHLCV) using market weighted averages
