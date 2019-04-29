@@ -525,7 +525,7 @@ tags:
       }
       ```
 
-      #### Resoponse
+      #### Response
 
       The server will return ticks in this format
       ```
@@ -1030,7 +1030,7 @@ paths:
     get:
       tags:
         - Index Ticker - Beta Version
-      summary: List all the index tickers
+      summary: Get all the index tickers
       description: |
         This API provides support to get the index tickers. The API allows getting ticks for all the indices. Type parameter can be used
         to filter the type of index being returned.
@@ -1127,9 +1127,9 @@ paths:
     get:
       tags:
         - Open, High, Low, Close, Volumes - Beta Version
-      summary: List all the end of day Open, High, Low, Close, Volumes
+      summary: Get end of day Open, High, Low, Close, Volumes
       description: |
-        List the open, high, low, close and volumes (OHLCV) using market weighted averages
+        Get end of day open, high, low, close and volumes (OHLCV) of market weighted averages or global weighted averages. The 24hr period for end of day is 00:00:00 UTgit poC
 
         This API provides the open, high, low, close and volume using the index type provided. If no timestamp is provided, then only the latest averages are returned.
 
