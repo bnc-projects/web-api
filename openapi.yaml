@@ -305,6 +305,7 @@ x-tagGroups:
       - Websocket Overview
       - Websocket Errors
       - Websocket Exchange Ticker
+      - Websocket Index Ticker
 
   - name: Rest API
     tags:
@@ -313,6 +314,8 @@ x-tagGroups:
       - Market
       - Exchange
       - Exchange Ticker
+      - Index Ticker
+      - Open, High, Low, Close, Volumes
 tags:
   - name: Authentication
     description: |
