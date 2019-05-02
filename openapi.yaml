@@ -267,7 +267,7 @@ components:
         volume:
           description: The 24h volume
           type: string
-        volumeUSD:
+        volumeUsd:
           description: The 24h volume in USD
           type: string
         vwap:
