@@ -203,7 +203,7 @@ components:
         volume:
           description: The calculated volume in the last 24 hours.
           type: string
-    GlobalWeightedAverage:
+    AssetRanking:
       type: object
       properties:
         id:
@@ -211,13 +211,19 @@ components:
           type: string
           format: uuid
         assetId:
-          description: The asset id of the global weighted average.
+          description: The asset id
           type: string
-          format: string
+          format: uuid
         timestamp:
-          description: The timestamp the global weighted average was calculated.
+          description: The timestamp the market capitalisation was calculated.
           type: string
           format: date-time
+        marketCapRank:
+          description: The market cap ranking order.
+          type: string
+        volumeRank:
+          description: The 24hr volume ranking order.
+          type: string
         price:
           description: The global weighted average price of the asset in USD.
           type: string
@@ -230,6 +236,49 @@ components:
         freeFloatSupply:
           description: The circulating supply of the asset.
           type: string
+        marketCap:
+          description: Market cap in USD based on the price and the free float supply.
+          type: string
+        totalMarketCap:
+          description: USD market cap figure based on total supply.
+          type: string
+        marketCapChange24h:
+          description: Percentage change in market cap since the last 24 hours.
+          type: string
+        totalMarketCapChange24h:
+          description: Percentage change in the total market cap since the last 24 hours.
+          type: string
+        volumeChange24h:
+          description: Percentage change in 24hr volume.
+          type: string
+        priceChange24h:
+          description: Percentage change in spot price since the last 24 hours.
+          type: string
+        marketCapChange7d:
+          description: Percentage change in market cap since the last 7 days.
+          type: string
+        totalMarketCapChange7d:
+          description: Percentage change in the total market cap since the last 7 days.
+          type: string
+        volumeChange7d:
+          description: Percentage change in 7 days.
+          type: string
+        priceChange7d:
+          description: Percentage change in spot price since the last 7 days.
+          type: string
+        marketCapChange30d:
+          description: Percentage change in market cap since the last 30 days.
+          type: string
+        totalMarketCapChange30d:
+          description: Percentage change in the total market cap since the last 30 days.
+          type: string
+        volumeChange30d:
+          description: Percentage change in 30 days.
+          type: string
+        priceChange30d:
+          description: Percentage change in spot price since the last 30 days.
+          type: string
+
     OpenHighLowCloseVolume:
       type: object
       properties:
@@ -621,8 +670,8 @@ tags:
     description: Retrieve the global weighted averages.
   - name: Open, High, Low, Close, Volumes
     description: Retrieve the open high low close volumes.
-  - name: Market Capitalisation
-    description: Retrieve the market capitalisation.
+  - name: Market Capitalization
+    description: Retrieve the market Capitalization.
   - name: Rates
     description: Retrieve the exchange rates between assets.
 paths:
@@ -1216,71 +1265,45 @@ paths:
                     description: The next id which can be used for pagination
                     type: string
                     format: uuid
-  /marketcap:
+  /asset-ranking:
     get:
       tags:
-        - Market Capitalisation
+        - Market Capitalization
       summary: |
-        List the market capitalisation for assets
+        List the Market Capitalization for assets and their ranking
       description: |
-        ** THIS ENDPOINT IS CURRENTLY NOT AVAILABLE **
+        This API will return a list of assets ranked by their market capitalization. This API also returns the movement in percentage of these values over a 24h, 7d and 30d period.
 
-        This API provides the market cap for the assets based on the GWA. This only provides the latest market cap is provided.
+
+        We use free float (or circulating) supply figures and the GWA index price as the basis for market Capitalization calculations. The Total Market Cap is calculated based on the total supply and the GWA index price.
+
       operationId: listMarketCaps
       x-code-samples:
         - lang: Shell
           label: curl
-          source: "curl https://api.bravenewcoin.com/v3/marketcap/?period=1 -H 'Authorization: Bearer test_SiHrnL5NKsea0G2W4LHd' -G"
+          source: "curl https://api.bravenewcoin.com/v3/asset-ranking -H 'Authorization: Bearer test_SiHrnL5NKsea0G2W4LHd' -G"
       parameters:
         - name: assetId
           in: query
-          description: The asset id to search
+          description: A specific asset id to search
           required: false
           schema:
             type: string
             format: uuid
-        - name: period
-          in: query
-          description: The period in days to look back for percentage movements
-          required: true
-          schema:
-            type: string
-            enum:
-              - 1
-              - 7
-              - 30
       responses:
         '200':
-          description: The market capitalisation of the assets
+          description: 'Market Capitalization by assets'
           content:
             application/json:
               schema:
-                title: MarketCapResponse
+                title: MarketCapitalizationResponse
                 type: object
                 properties:
                   content:
                     type: array
                     items:
-                      allOf:
-                        - $ref: '#/components/schemas/GlobalWeightedAverage'
-                        - type: object
-                          properties:
-                            marketCap:
-                              description: The market capitalisation in USD
-                              type: string
-                            priceChange:
-                              description: The percentage price change for the given period
-                              type: string
-                            volumeChange:
-                              description: The percentage volume change for the given period
-                              type: string
-                            marketCapChange:
-                              description: The percentage market cap change for the given period
-                              type: string
-                  nextId:
+                      $ref: '#/components/schemas/AssetRanking'
                     description: The next id which can be used for pagination
-                    type: string
-                    format: uuid
   /price:
     get:
       tags:
