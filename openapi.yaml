@@ -330,7 +330,6 @@ x-tagGroups:
       - Websocket Errors
       - Websocket Exchange Ticker
       - Websocket Index Ticker - Beta Version
-      - Market Cap
   - name: Rest API
     tags:
       - Rest API Errors
