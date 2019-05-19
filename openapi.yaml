@@ -203,33 +203,6 @@ components:
         volume:
           description: The calculated volume in the last 24 hours.
           type: string
-    GlobalWeightedAverage:
-      type: object
-      properties:
-        id:
-          description: Unique identifier for the resource.
-          type: string
-          format: uuid
-        assetId:
-          description: The asset id of the global weighted average.
-          type: string
-          format: string
-        timestamp:
-          description: The timestamp the global weighted average was calculated.
-          type: string
-          format: date-time
-        price:
-          description: The global weighted average price of the asset in USD.
-          type: string
-        volume:
-          description: The total global weighted average 24h volume of the asset.
-          type: string
-        totalSupply:
-          description: The total supply of the asset.
-          type: string
-        freeFloatSupply:
-          description: The circulating supply of the asset.
-          type: string
     OpenHighLowCloseVolume:
       type: object
       properties:
@@ -276,6 +249,57 @@ components:
         twap:
           description: The 24h time-weighted average price of the index
           type: string
+    MarketCap:
+      type: object
+      properties:
+        id:
+          description: Unique identifier for the resource.
+          type: string
+          format: uuid
+        assetId:
+          description: The asset id
+          type: string
+          format: uuid
+        timestamp:
+          description: The timestamp the market capitalisation was calculated.
+          type: string
+          format: date-time
+        marketCapRank:
+          description: The market cap ranking order.
+          type: string
+        volumeRank:
+          description: The 24hr volume ranking order.
+          type: string
+        price:
+          description: The global weighted average price of the asset in USD.
+          type: string
+        volume:
+          description: The total global weighted average 24h volume of the asset.
+          type: string
+        totalSupply:
+          description: The total supply of the asset.
+          type: string
+        freeFloatSupply:
+          description: The circulating supply of the asset.
+          type: string
+        marketCap:
+          description: Market cap in USD based on the price and the free float supply.
+          type: string
+        totalMarketCap:
+          description: USD market cap figure based on total supply.
+          type: string
+        marketCapChange:
+          description: Percentage change in market cap for the requested period.
+          type: string
+        totalMarketCapChange:
+          description: Percentage change in the total market cap for the requested period.
+          type: string
+        volumeChange:
+          description: Percentage change in 24hr volume.
+          type: string
+        priceChange:
+          description: Percentage change in spot price for the requested period.
+          type: string
   parameters:
     idParam:
       name: id
@@ -306,7 +330,7 @@ x-tagGroups:
       - Websocket Errors
       - Websocket Exchange Ticker
       - Websocket Index Ticker - Beta Version
-
+      - Market Cap
   - name: Rest API
     tags:
       - Rest API Errors
@@ -1219,13 +1243,17 @@ paths:
   /marketcap:
     get:
       tags:
-        - Market Capitalisation
+        - Market Cap
       summary: |
         List the market capitalisation for assets
       description: |
-        ** THIS ENDPOINT IS CURRENTLY NOT AVAILABLE **
 
-        This API provides the market cap for the assets based on the GWA. This only provides the latest market cap is provided.
+        This API will return a list of assets ranked by their market capitalization.
+
+        The Market Cap is calculated based on the free float (or circulating) supply figures and the GWA index price. The Total Market Cap is calculated based on the total supply and the GWA index price.
+
+        Period parameter can also be passed to it to returns the movement in percentage of these values over a 24h, 7d or 30d period.
+
       operationId: listMarketCaps
       x-code-samples:
         - lang: Shell
@@ -1242,7 +1270,7 @@ paths:
         - name: period
           in: query
           description: The period in days to look back for percentage movements
-          required: true
+          required: false
           schema:
             type: string
             enum:
@@ -1251,7 +1279,7 @@ paths:
               - 30
       responses:
         '200':
-          description: The market capitalisation of the assets
+          description: 'Market Capitalization by assets'
           content:
             application/json:
               schema:
@@ -1261,26 +1289,7 @@ paths:
                   content:
                     type: array
                     items:
-                      allOf:
-                        - $ref: '#/components/schemas/GlobalWeightedAverage'
-                        - type: object
-                          properties:
-                            marketCap:
-                              description: The market capitalisation in USD
-                              type: string
-                            priceChange:
-                              description: The percentage price change for the given period
-                              type: string
-                            volumeChange:
-                              description: The percentage volume change for the given period
-                              type: string
-                            marketCapChange:
-                              description: The percentage market cap change for the given period
-                              type: string
-                  nextId:
-                    description: The next id which can be used for pagination
-                    type: string
-                    format: uuid
+                      $ref: '#/components/schemas/MarketCap'
   /price:
     get:
       tags:
