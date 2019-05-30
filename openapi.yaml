@@ -249,6 +249,46 @@ components:
         twap:
           description: The 24h time-weighted average price of the index
           type: string
+    MarketCapPercentChange:
+      type: object
+      description: The percent change over a period of time.
+      properties:
+        marketCapChange_24h:
+          description: Percentage change in market cap for the 24 hour period.
+          type: string
+        totalMarketCapChange_24h:
+          description: Percentage change in the total market cap for the 24 hour period.
+          type: string
+        volumeChange_24h:
+          description: Percentage change in 24hr volume.
+          type: string
+        priceChange_24h:
+          description: Percentage change in spot price for the 24 hour period.
+          type: string
+        marketCapChange_7d:
+          description: Percentage change in market cap for the 7 day period.
+          type: string
+        totalMarketCapChange_7d:
+          description: Percentage change in the total market cap for the 7 day period.
+          type: string
+        volumeChange_7d:
+          description: Percentage change in 7 day period.
+          type: string
+        priceChange_7d:
+          description: Percentage change in spot price for the 7 day period.
+          type: string
+        marketCapChange_30d:
+          description: Percentage change in market cap for the 30 day period.
+          type: string
+        totalMarketCapChange_30d:
+          description: Percentage change in the total market cap for the 30 day period.
+          type: string
+        volumeChange_30d:
+          description: Percentage change in volume foe the 30 day period.
+          type: string
+        priceChange_30d:
+          description: Percentage change in spot price for the 30 day period.
+          type: string
     MarketCap:
       type: object
       properties:
@@ -288,18 +328,8 @@ components:
         totalMarketCap:
           description: USD market cap figure based on total supply.
           type: string
-        marketCapChange:
-          description: Percentage change in market cap for the requested period.
-          type: string
-        totalMarketCapChange:
-          description: Percentage change in the total market cap for the requested period.
-          type: string
-        volumeChange:
-          description: Percentage change in 24hr volume.
-          type: string
-        priceChange:
-          description: Percentage change in spot price for the requested period.
-          type: string
+        percentChange:
+          $ref: '#/components/schemas/MarketCapPercentChange'
   parameters:
     idParam:
       name: id
@@ -1266,16 +1296,12 @@ paths:
           schema:
             type: string
             format: uuid
-        - name: period
+        - name: returnPercentChange
           in: query
-          description: The period in days to look back for percentage movements
+          description: Return the percent change in the values. Currently we support change over 24hour, 7 Days and 30 Days.
           required: false
           schema:
-            type: string
-            enum:
-              - 1
-              - 7
-              - 30
+            type: boolean
       responses:
         '200':
           description: 'Market Capitalization by assets'
