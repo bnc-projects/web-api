@@ -253,13 +253,13 @@ components:
       type: object
       description: The percent change over a period of time.
       properties:
-        24h:
+        change24h:
           description: Percentage change for the 24 hour period.
           type: string
-        7d:
+        change7d:
           description: Percentage change for the 7 day period.
           type: string
-        30d:
+        change30d:
           description: Percentage change for the 30 day period.
           type: string
     MarketCap:
