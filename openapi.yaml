@@ -293,7 +293,7 @@ components:
           description: The total supply of the asset.
           type: string
         freeFloatSupply:
-          description: The circulating supply of the asset.
+          description: The circulating supply of the asset. It is the total supply less any supply that has been removed from circulation.
           type: string
         marketCap:
           description: Market cap in USD based on the price and the free float supply.
