@@ -253,41 +253,14 @@ components:
       type: object
       description: The percent change over a period of time.
       properties:
-        marketCapChange_24h:
-          description: Percentage change in market cap for the 24 hour period.
+        24h:
+          description: Percentage change for the 24 hour period.
           type: string
-        totalMarketCapChange_24h:
-          description: Percentage change in the total market cap for the 24 hour period.
+        7d:
+          description: Percentage change for the 7 day period.
           type: string
-        volumeChange_24h:
-          description: Percentage change in 24hr volume.
-          type: string
-        priceChange_24h:
-          description: Percentage change in spot price for the 24 hour period.
-          type: string
-        marketCapChange_7d:
-          description: Percentage change in market cap for the 7 day period.
-          type: string
-        totalMarketCapChange_7d:
-          description: Percentage change in the total market cap for the 7 day period.
-          type: string
-        volumeChange_7d:
-          description: Percentage change in 7 day period.
-          type: string
-        priceChange_7d:
-          description: Percentage change in spot price for the 7 day period.
-          type: string
-        marketCapChange_30d:
-          description: Percentage change in market cap for the 30 day period.
-          type: string
-        totalMarketCapChange_30d:
-          description: Percentage change in the total market cap for the 30 day period.
-          type: string
-        volumeChange_30d:
-          description: Percentage change in volume foe the 30 day period.
-          type: string
-        priceChange_30d:
-          description: Percentage change in spot price for the 30 day period.
+        30d:
+          description: Percentage change for the 30 day period.
           type: string
     MarketCap:
       type: object
@@ -328,7 +301,13 @@ components:
         totalMarketCap:
           description: USD market cap figure based on total supply.
           type: string
-        percentChange:
+        marketCapChange:
+          $ref: '#/components/schemas/MarketCapPercentChange'
+        totalMarketCapChange:
+          $ref: '#/components/schemas/MarketCapPercentChange'
+        volumeChange:
+          $ref: '#/components/schemas/MarketCapPercentChange'
+        priceChange:
           $ref: '#/components/schemas/MarketCapPercentChange'
   parameters:
     idParam:
@@ -1269,7 +1248,7 @@ paths:
                     description: The next id which can be used for pagination
                     type: string
                     format: uuid
-  /marketcap:
+  /market-cap:
     get:
       tags:
         - Market Cap
@@ -1281,13 +1260,13 @@ paths:
 
         The Market Cap is calculated based on the free float (or circulating) supply figures and the GWA index price. The Total Market Cap is calculated based on the total supply and the GWA index price.
 
-        Period parameter can also be passed to it to returns the movement in percentage of these values over a 24h, 7d or 30d period.
+        If the percentChange parameter is set to true this API will also return movement in percentage of these values over a 24h, 7d or 30d period.
 
       operationId: listMarketCaps
       x-code-samples:
         - lang: Shell
           label: curl
-          source: "curl https://api.bravenewcoin.com/v3/marketcap/?period=1 -H 'Authorization: Bearer test_SiHrnL5NKsea0G2W4LHd' -G"
+          source: "curl https://api.bravenewcoin.com/v3/market-cap -H 'Authorization: Bearer test_SiHrnL5NKsea0G2W4LHd' -G"
       parameters:
         - name: assetId
           in: query
@@ -1296,9 +1275,9 @@ paths:
           schema:
             type: string
             format: uuid
-        - name: returnPercentChange
+        - name: percentChange
           in: query
-          description: Return the percent change in the values. Currently we support change over 24hour, 7 Days and 30 Days.
+          description: Return the percent change in the values. Currently we support change over 24hour, 7 Days and 30 Days. It is false by default.
           required: false
           schema:
             type: boolean
