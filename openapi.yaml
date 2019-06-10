@@ -609,20 +609,21 @@ tags:
     x-traitTag: true
   - name: Pagination
     description: |
-      All top-level API resources have supported listing all resources which they hold. For instance, you can [list assets](#operation/listAssets), [list markets](#operation/listMarkets) and [list exchanges](#operation/listExchanges) etc. These list API methods share a common structure and where Brave New Coin determines the number of resources is too large, the list APIs have the ability to take at least these two parameters: `size` and `startAfter`. But the numbers of assets, markets and exchanges are still not large enough now, the settings of `size` and `startAfter` for these resources will not take effect.
+      All top-level API resources have support for bulk fetches via "list" API methods. For instance, you can list assets, list exchange tickers, and list index tickers. These list API methods share a common structure, taking at least these three parameters: `size`, `timestamp` or `startAfter`.
 
       Brave New Coin API's utilise cursor-based pagination using the `startAfter` parameter. The parameter should be an existing object ID and returns resources in reverse chronological order. The `startAfter` parameter returns resources listed after the named resource. For APIs which take both a `startAfter` and `timestamp` parameters, the `timestamp` is ignored if `startAfter` is provided.
 
       Arguments     |                         | Description
       --------------|-------------------------|------------
-      limit         | Optional, default is 10 | A limit on the number of resources to be returned, between 1 and 2000.
+      size          | Optional, default is 10 | The number of resources to be returned, between 1 and 2000.
       startAfter    |                         | A cursor for use in pagination. startAfter is an resource ID that defines your place in the list.
-      timestamp     |                         | The timestamp to start searching from.
+      timestamp     |                         | The timestamp to start searching from going backwards in time.
 
       List Response Format | Description
       ---------------------|------------
       content              | An array containing the actual response elements, paginated by any request parameters.
       nextId               | The value to be provided in the `startAfter` to get the next page.
+
   - name: Timezones
     description: |
       Brave New Coin APIs will return datetime values in ISO8601 format. Datetime values are always returned in UTC time (as indicated by the `Z` at the end of the datetime value).
@@ -669,6 +670,8 @@ paths:
       description: |
         This is the OAuth 2.0 grant that server processes utilize in order to access an API.
         Use this endpoint to directly request an Access Token by using the Client Credentials (a Client ID and a Client Secret).
+
+        The BNC authentication endpoint is https://auth.bravenewcoin.com/oauth/token
       operationId: clientCredentials
       x-code-samples:
         - lang: Shell
@@ -807,10 +810,6 @@ paths:
                     type: array
                     items:
                       $ref: '#/components/schemas/Asset'
-                  nextId:
-                    description: The next id which can be used for pagination
-                    type: string
-                    format: uuid
   '/asset/{id}':
     parameters:
       - $ref: '#/components/parameters/idParam'
@@ -878,10 +877,6 @@ paths:
                     type: array
                     items:
                       $ref: '#/components/schemas/Market'
-                  nextId:
-                    description: The next id which can be used for pagination
-                    type: string
-                    format: uuid
   '/market/{id}':
     parameters:
       - $ref: '#/components/parameters/idParam'
@@ -944,10 +939,6 @@ paths:
                     type: array
                     items:
                       $ref: '#/components/schemas/Exchange'
-                  nextId:
-                    description: The next id which can be used for pagination
-                    type: string
-                    format: uuid
   '/exchange/{id}':
     parameters:
       - $ref: '#/components/parameters/idParam'
@@ -1055,7 +1046,7 @@ paths:
                     items:
                       $ref: '#/components/schemas/Tick'
                   nextId:
-                    description: The next id which can be used for pagination
+                    description: The next id which can be used as startAfter for pagination
                     type: string
                     format: uuid
   /index-ticker:
@@ -1152,7 +1143,7 @@ paths:
                     items:
                       $ref: '#/components/schemas/IndexTicker'
                   nextId:
-                    description: The next id which can be used for pagination
+                    description: The next id which can be used as startAfter for pagination
                     type: string
                     format: uuid
   /ohlcv:
@@ -1245,7 +1236,7 @@ paths:
                     items:
                       $ref: '#/components/schemas/OpenHighLowCloseVolume'
                   nextId:
-                    description: The next id which can be used for pagination
+                    description: The next id which can be used as startAfter for pagination
                     type: string
                     format: uuid
   /market-cap:

@@ -8,12 +8,12 @@ npm i -g redoc-cli
 
 ## Build documentation
 ```
-redoc-cli bundle openapi.yaml --output build/index.html --title "Brave New Coin API documentation" --template template.hbs --options.theme.colors.primary.main=#333F48 --options.theme.typography.links.color=#32329f --options.theme.typography.links.visited=#32329f --options.theme.typography.headings.fontFamily='Lato, sans-serif' --options.noAutoAuth
+redoc-cli bundle openapi.yaml --output build/index.html --title "Brave New Coin API documentation" --template template.hbs --options.theme.colors.primary.main=#333F48 --options.theme.typography.links.color=#32329f --options.theme.typography.links.visited=#32329f --options.theme.typography.headings.fontFamily='Lato, sans-serif' --options.noAutoAuth --options.expandResponses=all
 ```
 
 ## Run Locally
 ```
-redoc-cli serve openapi.yaml --output build/index.html --title "Brave New Coin API documentation" --template template.hbs --options.theme.colors.primary.main=#333F48 --options.theme.typography.links.color=#32329f --options.theme.typography.links.visited=#32329f --options.theme.typography.headings.fontFamily='Lato, sans-serif' --options.noAutoAuth --watch
+redoc-cli serve openapi.yaml --output build/index.html --title "Brave New Coin API documentation" --template template.hbs --options.theme.colors.primary.main=#333F48 --options.theme.typography.links.color=#32329f --options.theme.typography.links.visited=#32329f --options.theme.typography.headings.fontFamily='Lato, sans-serif' --options.noAutoAuth --options.expandResponses=all --watch
 ```
 
 ## ReDoc Documentation
