@@ -669,6 +669,8 @@ paths:
       description: |
         This is the OAuth 2.0 grant that server processes utilize in order to access an API.
         Use this endpoint to directly request an Access Token by using the Client Credentials (a Client ID and a Client Secret).
+
+        The BNC authentication endpoint is https://auth.bravenewcoin.com/oauth/token
       operationId: clientCredentials
       x-code-samples:
         - lang: Shell
