@@ -28,6 +28,8 @@ components:
             read:exchange: Read available exchanges
             read:exchange-ticker: Read exchange ticker
             read:index-ticker: Read index ticker
+            read:ohlcv: Read end of day open, high, low, close and volume
+            read:market-cap: Read the market capatilization
   schemas:
     Error:
       type: object
@@ -338,7 +340,9 @@ x-tagGroups:
       - Websocket Overview
       - Websocket Errors
       - Websocket Exchange Ticker
-      - Websocket Index Ticker - Beta Version
+  - name: Beta Websocket API
+    tags:
+      - Websocket Index Ticker
   - name: Rest API
     tags:
       - Rest API Errors
@@ -346,8 +350,11 @@ x-tagGroups:
       - Market
       - Exchange
       - Exchange Ticker
-      - Index Ticker - Beta Version
-      - Open, High, Low, Close, Volumes - Beta Version
+  - name: Beta Rest API
+    tags:
+      - Index Ticker
+      - Open, High, Low, Close, Volumes
+      - Market Cap
 tags:
   - name: Authentication
     description: |
@@ -524,7 +531,7 @@ tags:
       }
       ```
     x-traitTag: true
-  - name: Websocket Index Ticker - Beta Version
+  - name: Websocket Index Ticker
     description: |
 
       This endpoint can be used to subscribe to the index ticker data. These indices are calculated by BNC and published to the websocket endpoint. Clients need to send a Subscribe message to start receiving.
@@ -1052,8 +1059,11 @@ paths:
   /index-ticker:
     get:
       tags:
-        - Index Ticker - Beta Version
+        - Index Ticker
       summary: Get all the index tickers
+      security:
+        - auth:
+            - read:index-ticker
       description: |
         This API provides support to get the index tickers. The API allows getting ticks for all the indices. Type parameter can be used
         to filter the type of index being returned.
@@ -1149,8 +1159,11 @@ paths:
   /ohlcv:
     get:
       tags:
-        - Open, High, Low, Close, Volumes - Beta Version
+        - Open, High, Low, Close, Volumes
       summary: Get end of day Open, High, Low, Close, Volumes
+      security:
+        - auth:
+            - read:ohlcv
       description: |
         Get end of day open, high, low, close and volumes (OHLCV) of market weighted averages or global weighted averages. The 24hr period for end of day is 00:00:00 UTC.
 
@@ -1245,6 +1258,9 @@ paths:
         - Market Cap
       summary: |
         List the market capitalisation for assets
+      security:
+        - auth:
+            - read:market-cap
       description: |
 
         This API will return a list of assets ranked by their market capitalization.
