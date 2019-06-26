@@ -459,8 +459,8 @@ tags:
       -----------------------------------|------------
       400 - Bad Request                  | The request was unacceptable, often due to missing a required parameter.
       401 - Unauthorized                 | No valid OAuth2 token provided
-      403 - Forbidden                    | Not authorized to access this resource
-      404 - Not Found                    | Requested resource not found(typically the marketId or exchangeId passed through the subscription request not found)
+      403 - Forbidden                    | Not authorized to access this resource (please contact sales about adding access to your profile).
+      404 - Not Found                    | Requested resource not found (typically the marketId or exchangeId passed through the subscription request not found)
 
       There may be other types of errors that may be returned and we recommend handling the ERROR type gracefully.
   - name: Websocket Exchange Ticker
@@ -606,6 +606,7 @@ tags:
       200 - OK                           | Everything worked as expected
       400 - Bad Request                  | The request was unacceptable, often due to missing a required parameter.
       401 - Unauthorized                 | No valid OAuth2 token provided
+      403 - Forbidden 	                 | Not authorized to access this resource (please contact sales about adding access to your profile).
       404 - Not Found                    | The requested resource doesn't exist
       409 - Conflict                     | The request conflicts with another request (perhaps due the resource was updated)
       429 - Too Many Requests            | Too many requests hit the API too quickly. We recommend an expontential backoff of your requests.
