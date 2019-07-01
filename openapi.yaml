@@ -213,7 +213,7 @@ components:
           format: uuid
         indexType:
           description: The index type of thhe OHLCV
-          required: false
+          required: true
           type: string
           enum:
             - MWA
@@ -1185,7 +1185,7 @@ paths:
         - name: indexType
           in: query
           description: Retrieve the index by the type.
-          required: false
+          required: true
           schema:
             type: string
             enum:
