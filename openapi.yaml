@@ -331,6 +331,7 @@ x-tagGroups:
   - name: General
     tags:
       - Overview
+      - Quickstart
       - Authentication
       - Pagination
       - Timezones
@@ -394,6 +395,35 @@ tags:
       * [Market](#tag/Market)
       * [Exchange](#tag/Exchange)
 
+- name: Quickstart
+    description: |
+      Brave New Coin produces two indexes; MWA and GWA at the crypto market and asset level. These indexes can be obtained by querying the Index-Ticker API endpoint:
+      * [Index Ticker](#tag/Index-Ticker)
+      ### Get all Indexes:
+      The below API endpoint will get the list of all the indices which comprises of both GWA and MWA. The documentation for this can be found under Beta REST API - Index-Ticker section.
+      For example: curl https://api.bravenewcoin.com/v3/index-ticker -H 'Authorization: Bearer test_SiHrnL5NKsea0G2W4LHd' -G
+      ### Global weighted average price index (GWA):
+      The Global Weighted Average Price for an asset can be obtained by passing the indexType query paramter as GWA along with the indexId which is the Asset Id(UUID) for GWA.
+      You can find detailed explanation under:
+      * [GWA](#tag/Index-Ticker)
+      In order to get the Asset Id(UUID), you need to query the Asset API:
+      * [Asset](#tag/Asset)
+      The process is similar for Websocket Index Ticker(GWA)
+      ### Market weighted average price index (MWA):
+      The Market weighted average price for a market(baseAsset and quoteAsset) can be obtained by passing the indexType query paramter as MWA along with the indexId which is the Market Id(UUID) for MWA.
+      You can find detailed explanation under:
+      * [MWA](#tag/Index-Ticker)
+      In order to get the Market Id(UUID), you need to query the Market API:
+      * [Market](#tag/Market)
+      The process is similar for Websocket Index Ticker(MWA)
+      ### XchangeFeed (Exchange Tickers):
+      The XchangeFeed API will provide ticker information by exchange and market.
+      You can find its detailed explanation below:
+      * [Exchange Ticker](#tag/Exchange-Ticker)
+      For obtaining the Exchange Id and Market Id, you need to query the Exchange and Market API respectively:
+      * [Exchange](#tag/Exchange)
+      * [Market](#tag/Market)
+      The process is similar for Websocket Exchange Ticker(XchangeFeed)
   - name: Websocket Overview
     description: |
       Brave New Coin Websocket API exposes exchange ticker data via Websockets. Clients need to send subscribe message to start recieving data. See [Exchange Ticker](#tag/Websocket-Exchange-Ticker).
@@ -460,8 +490,7 @@ tags:
       -----------------------------------|------------
       400 - Bad Request                  | The request was unacceptable, often due to missing a required parameter.
       401 - Unauthorized                 | No valid OAuth2 token provided
-      403 - Forbidden                    | Not authorized to access this resource
-      (please contact sales about adding access to your profile).
+      403 - Forbidden                    | Not authorized to access this resource (please contact sales about adding access to your profile).
       404 - Not Found                    | Requested resource not found(typically the marketId or exchangeId passed through the subscription request not found)
 
       There may be other types of errors that may be returned and we recommend handling the ERROR type gracefully.
@@ -607,7 +636,7 @@ tags:
       -----------------------------------|------------
       200 - OK                           | Everything worked as expected
       400 - Bad Request                  | The request was unacceptable, often due to missing a required parameter.
-      401 - Unauthorized                 | No valid OAuth2 token provided
+      401 - Unauthorized                 | No valid OAuth2 token provided (please contact sales about adding access to your profile).
       404 - Not Found                    | The requested resource doesn't exist
       409 - Conflict                     | The request conflicts with another request (perhaps due the resource was updated)
       429 - Too Many Requests            | Too many requests hit the API too quickly. We recommend an expontential backoff of your requests.
