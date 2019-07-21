@@ -21,7 +21,7 @@ components:
       type: oauth2
       flows:
         clientCredentials:
-          tokenUrl: 'https://auth.bravenewcoin.com/oauth/token'
+          tokenUrl: 'https://api.bravenewcoin.com/v3/oauth/token'
           scopes:
             read:asset: Read available assets
             read:market: Read available markets
@@ -218,7 +218,7 @@ components:
           format: uuid
         indexType:
           description: The index type of thhe OHLCV
-          required: false
+          required: true
           type: string
           enum:
             - MWA
@@ -461,6 +461,7 @@ tags:
       400 - Bad Request                  | The request was unacceptable, often due to missing a required parameter.
       401 - Unauthorized                 | No valid OAuth2 token provided
       403 - Forbidden                    | Not authorized to access this resource
+      (please contact sales about adding access to your profile).
       404 - Not Found                    | Requested resource not found(typically the marketId or exchangeId passed through the subscription request not found)
 
       There may be other types of errors that may be returned and we recommend handling the ERROR type gracefully.
@@ -669,9 +670,6 @@ tags:
 paths:
   /oauth/token:
     post:
-      servers:
-        - url: https://auth.bravenewcoin.com
-          description: Authentication Endpoint
       tags:
         - Authentication
       summary: Client Credentials
@@ -679,13 +677,13 @@ paths:
         This is the OAuth 2.0 grant that server processes utilize in order to access an API.
         Use this endpoint to directly request an Access Token by using the Client Credentials (a Client ID and a Client Secret).
 
-        The BNC authentication endpoint is https://auth.bravenewcoin.com/oauth/token
+        The BNC authentication endpoint is https://api.bravenewcoin.com/v3/oauth/token
       operationId: clientCredentials
       x-code-samples:
         - lang: Shell
           label: curl
           source: |
-            curl -X POST https://auth.bravenewcoin.com/oauth/token -H 'Content-Type: application/json' -d '
+            curl -X POST https://api.bravenewcoin.com/v3/oauth/token -H 'Content-Type: application/json' -d '
             {
               "grant_type": "client_credentials",
               "client_id": "your client id",
@@ -699,7 +697,7 @@ paths:
 
             var options = {
               method: 'POST',
-              url: 'https://auth.bravenewcoin.com/oauth/token',
+              url: 'https://api.bravenewcoin.com/v3/oauth/token',
               headers: {
                 'Content-Type': 'application/json'
               },
@@ -1104,7 +1102,7 @@ paths:
         - name: indexType
           in: query
           description: Retrieve the index by the type.
-          required: false
+          required: true
           schema:
             type: string
             enum:
