@@ -21,7 +21,7 @@ components:
       type: oauth2
       flows:
         clientCredentials:
-          tokenUrl: 'https://api.bravenewcoin.com/v3/oauth/token'
+          tokenUrl: 'https://auth.bravenewcoin.com/oauth/token'
           scopes:
             read:asset: Read available assets
             read:market: Read available markets
@@ -218,7 +218,7 @@ components:
           format: uuid
         indexType:
           description: The index type of thhe OHLCV
-          required: true
+          required: false
           type: string
           enum:
             - MWA
@@ -331,7 +331,6 @@ x-tagGroups:
   - name: General
     tags:
       - Overview
-      - Quickstart
       - Authentication
       - Pagination
       - Timezones
@@ -356,6 +355,7 @@ x-tagGroups:
       - Index Ticker
       - Open, High, Low, Close, Volumes
       - Market Cap
+      - Taxonomy
 tags:
   - name: Authentication
     description: |
@@ -393,48 +393,6 @@ tags:
       * [Asset](#tag/Asset)
       * [Market](#tag/Market)
       * [Exchange](#tag/Exchange)
-
-  - name: Quickstart
-    description: |
-      Brave New Coin produces two indexes; MWA and GWA at the crypto market and asset level. These indexes can be obtained by querying the Index-Ticker API endpoint:
-      * [Index Ticker](#tag/Index-Ticker)
-
-      ### Get all Indexes:
-      The below API endpoint will get the list of all the indices which comprises of both GWA and MWA. The documentation for this can be found under Beta REST API - Index-Ticker section.
-
-      For example: curl https://api.bravenewcoin.com/v3/index-ticker -H 'Authorization: Bearer test_SiHrnL5NKsea0G2W4LHd' -G
-
-      ### Global weighted average price index (GWA):
-      The Global Weighted Average Price for an asset can be obtained by passing the indexType query paramter as GWA along with the indexId which is the Asset Id(UUID) for GWA.
-      You can find detailed explanation under:
-      * [GWA](#tag/Index-Ticker)
-
-      In order to get the Asset Id(UUID), you need to query the Asset API:
-      * [Asset](#tag/Asset)
-
-      The process is similar for Websocket Index Ticker(GWA)
-
-      ### Market weighted average price index (MWA):
-      The Market weighted average price for a market(baseAsset and quoteAsset) can be obtained by passing the indexType query paramter as MWA along with the indexId which is the Market Id(UUID) for MWA.
-      You can find detailed explanation under:
-      * [MWA](#tag/Index-Ticker)
-
-      In order to get the Market Id(UUID), you need to query the Market API:
-      * [Market](#tag/Market)
-
-      The process is similar for Websocket Index Ticker(MWA)
-
-      ### XchangeFeed (Exchange Tickers):
-      The XchangeFeed API will provide ticker information by exchange and market.
-
-      You can find its detailed explanation below:
-      * [Exchange Ticker](#tag/Exchange-Ticker)
-
-      For obtaining the Exchange Id and Market Id, you need to query the Exchange and Market API respectively:
-      * [Exchange](#tag/Exchange)
-      * [Market](#tag/Market)
-
-      The process is similar for Websocket Exchange Ticker(XchangeFeed)
 
   - name: Websocket Overview
     description: |
@@ -502,8 +460,8 @@ tags:
       -----------------------------------|------------
       400 - Bad Request                  | The request was unacceptable, often due to missing a required parameter.
       401 - Unauthorized                 | No valid OAuth2 token provided
-      403 - Forbidden                    | Not authorized to access this resource (please contact sales about adding access to your profile).
-      404 - Not Found                    | Requested resource not found (typically the marketId or exchangeId passed through the subscription request not found)
+      403 - Forbidden                    | Not authorized to access this resource
+      404 - Not Found                    | Requested resource not found(typically the marketId or exchangeId passed through the subscription request not found)
 
       There may be other types of errors that may be returned and we recommend handling the ERROR type gracefully.
   - name: Websocket Exchange Ticker
@@ -649,7 +607,6 @@ tags:
       200 - OK                           | Everything worked as expected
       400 - Bad Request                  | The request was unacceptable, often due to missing a required parameter.
       401 - Unauthorized                 | No valid OAuth2 token provided
-      403 - Forbidden 	                 | Not authorized to access this resource (please contact sales about adding access to your profile).
       404 - Not Found                    | The requested resource doesn't exist
       409 - Conflict                     | The request conflicts with another request (perhaps due the resource was updated)
       429 - Too Many Requests            | Too many requests hit the API too quickly. We recommend an expontential backoff of your requests.
@@ -712,6 +669,9 @@ tags:
 paths:
   /oauth/token:
     post:
+      servers:
+        - url: https://auth.bravenewcoin.com
+          description: Authentication Endpoint
       tags:
         - Authentication
       summary: Client Credentials
@@ -719,13 +679,13 @@ paths:
         This is the OAuth 2.0 grant that server processes utilize in order to access an API.
         Use this endpoint to directly request an Access Token by using the Client Credentials (a Client ID and a Client Secret).
 
-        The BNC authentication endpoint is https://api.bravenewcoin.com/v3/oauth/token
+        The BNC authentication endpoint is https://auth.bravenewcoin.com/oauth/token
       operationId: clientCredentials
       x-code-samples:
         - lang: Shell
           label: curl
           source: |
-            curl -X POST https://api.bravenewcoin.com/v3/oauth/token -H 'Content-Type: application/json' -d '
+            curl -X POST https://auth.bravenewcoin.com/oauth/token -H 'Content-Type: application/json' -d '
             {
               "grant_type": "client_credentials",
               "client_id": "your client id",
@@ -739,7 +699,7 @@ paths:
 
             var options = {
               method: 'POST',
-              url: 'https://api.bravenewcoin.com/v3/oauth/token',
+              url: 'https://auth.bravenewcoin.com/oauth/token',
               headers: {
                 'Content-Type': 'application/json'
               },
@@ -1144,7 +1104,7 @@ paths:
         - name: indexType
           in: query
           description: Retrieve the index by the type.
-          required: true
+          required: false
           schema:
             type: string
             enum:
@@ -1498,3 +1458,1370 @@ paths:
                               rate:
                                 description: the exchange rate
                                 type: string
+  /taxonomy/general:
+    get:
+      tags:
+        - Taxonomy
+      operationId: getTaxonomyGenerals
+      summary: Get a restricted subset of taxonomy data for all assets
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                properties:
+                  content:
+                    items:
+                      properties:
+                        assetProfile:
+                          type: object
+                          properties:
+                            assetId: 
+                                description: Unique ID used to identify a asset
+                                format: uuid 
+                                type: string
+                            assetDescription: 
+                                description: 'Brief explanation of the assets main features, purpose and specifications.'
+                                type: string
+                            bncAssetIconUrl: 
+                                description: Official cryptographic asset logo 
+                                format: uri 
+                                type: string
+                            bncUrl: 
+                                description: BNC stable asset URL
+                                format: uri
+                                type: string
+                            classification: {description: 'The General Taxonomy
+                              divides the superclass of Cryptographic Assets into two
+                              broad families. General Cryptographic Assets and Protocol
+                              Tokens. General Cryptographic Assets represent programmable
+                              value that can be used by anyone, in any sector of industry
+                              and society, as  a capital, transformable/consumable,
+                              or a store of value asset. These assets also serve as
+                              the foundation where Protocol Tokens are created, issued
+                              and operated. Protocol Tokens represent a claim to a capital,
+                              transformable/consumable, or a store of value asset. However,
+                              since they can only capture a specific market segment
+                              this effectively limits their use as store of value. Define
+                              whether a token is either "General Cryptographic Asset"
+                              or "Protocol Token." GCAs have an underlying CONSENSUS  ALGORITHM
+                              (e.g. PoW, PoS, DPoS, etc) while PTs are issued on top
+                              of a GCA. These sources will detail wether the asset has
+                              an underlying consensus algorithm/protocol (therefore
+                              a GCA) or a token standard (e.g. ERC20 and therefore a
+                              PT)' , type: string}
+                            codebase: {description: 'Source code from original
+                              protocol (if applicable). Specify whether a given GCA
+                              has been "FORKED" from a previous project. ' , type: string}
+                            economicproperties:
+                              type: object
+                              properties:
+                                capitalAsset: {description: 'Describes
+                                  if the asset provides an ongoing source of value and can
+                                  be priced on the basis of the net present value of its
+                                  expected returns. Answers the question: Does the asset
+                                  provide a periodic source of value/income (e.g. from network
+                                  fees, revenue stream, profit sharing, dividend payout)
+                                  whether by token burning, buyback, or token distribution
+                                  (airdrop)?' , type: string}
+                                commodity: {description: 'Describe
+                                  if the asset can be used as a primary input to build other
+                                  products, services, platforms, applications.  Answers
+                                  the question: Can the asset be used as a building block
+                                  for other platforms/applications?' , type: boolean}
+                                storeOfValue: {description: 'Describe
+                                  if the asset has value and can successfully store it over
+                                  the long term. Answers the question: Does the asset represent
+                                  a viable form of long term store of value?' , type: boolean}
+                                genesisDateUtc: {description: 'First block creation
+                                  time (UTC) or the token generation date.', format: date-time,
+                                  type: string}
+                                governingBody: {description: 'Name and link to
+                                  website of team, institution or system in charge of protocol
+                                  development, maintenance and implementation decisions.',
+                                  type: string}
+                            homeUrl: {description: "Official asset's URL.",
+                              format: uri , type: string}
+                            name: {description: 'Official name of the cryptographic
+                                asset.' , type: string}
+                            nicheMarket: {description: 'The General Taxonomy
+                              niche market is the most granular level of BNCs 3 Tiered
+                              propriety industry classification system. This define
+                              the industry that a Cryptoasset will impact.' , type: string}
+                            parentChain: {description: 'Underlying protocol
+                              used to issue a Protocol Token. This metric only applies
+                              to Protocol Tokens. Specify the underlying protocol where
+                              this token has been issued.' , type: string}
+                            scriptingLanguages:
+                              description: 'System to perform computations and validate
+                              trace data.'
+                              items: {type: string}
+                              type: array
+                            sector: {description: 'The General Taxonomy sector
+                              is the first level of BNCs 3 Tiered propriety industry
+                              classification system. This defines the industry that
+                              a Crypoasset will impact.' , type: string}
+                            smartContractSupport: {description: 'Current
+                              support for Turing-Complete, or computationally equivalent,
+                              applications with a state stored in the distributed ledger,
+                              facilitating, verifying, or enforcing the negotiation
+                              or performance of a contract.' , type: boolean}
+                            subClassification: {description: 'The Asset Classification
+                              can be further divided into a range of sub classifications',
+                              type: string}
+                            subSector: {description: 'The General Taxonomy
+                              sub-sector is the second level of BNCs 3 Tiered propriety
+                              industry classification system. This define the industry
+                              that a Cryptoasset will impact.' , type: string}
+                            symbol: {description: 'Alphanumerical asset code.',
+                              type: string}
+                            tokenStandard: {description: 'Common set of rules
+                              for Protocol Tokens issued under a specific protocol.
+                              "Token standard field is only applicable for Protocol
+                              Tokens, i.e. tokens issued on an underlying blockchain.  N/A  is
+                              assigned when a token is native to underlying protocol;
+                              and ""NO INFO"" when the protocol token has no issue standard"',
+                              type: string}
+                            transactionIdentity: {description: 'Degree of
+                              transparency and traceability of transactions in the protocols
+                              network. A value of "Anonymous" is assigned if transactions
+                              cannot be traced nor identified by anyone, "Pseudonymous"
+                              when transactions and users can be identified only by
+                              specialized analysis, "Private" when transactions and
+                              users identities are only known to the organization running
+                              the protocol, "Transparent" when transactions and users
+                              identities are public, and "Selective Transparency" when
+                              is possible to optionally send transactions anonymously
+                              or transparently.' , type: string}
+                        blockchainData:
+                          type: object
+                          properties:
+                            averageBlockTime: {description: 'Average block
+                              confirmation time in seconds as stated in the documentation
+                              of the latest protocol version release.' , type: number}
+                            consensusModel: {description: 'Economic measure
+                              by which the protocol executes and validates the outcome
+                              of a transaction on the network by all involved members.
+                              Specify the assets (generally only applicable to GCAs)
+                              consensus algorithm (e.g. PoW, PoS, DPoS, etc.)' , type: string}
+                            consensusModelGroup: {description: 'This groups
+                              the individual consensus models into a broader category.
+                              Ie Proof-of-Work-Time would be selected into the "Proof-of-Work"
+                              group.' , type: string}
+                            distributions:
+                              description: Mining or minting compatibility of how the
+                                network is secured.
+                              
+                              items: {type: object, 
+                                properties: {
+                                  id: {
+                                    description: 'ID for the distribution method',
+                                    format: uuid,
+                                    type: string
+                                  },
+                                  process: {
+                                    description: 'The process used to distribute the asset',
+                                    type: string
+                                  },
+                                  processType: {
+                                    description: 'The type of process used to distribute the asset',
+                                    type: string
+                                  }
+                                }
+                              }
+                              type: array
+                            contractAddress: {description: 'Address of the
+                              account holding object on a specific blockchain.' , type: string}
+                            creatorAddress: {description: 'Protocol address
+                              of the creating/issuing entity of a token/contract' , type: string}
+                            creatorTransactionHash: {description: 'Transaction
+                              hash of the token/contract creation' , type: string}
+                            explorer: {description: 'An explorer url to
+                              the associated address.', format: uri , type: string}
+                            hashingAlgorithms:
+                              description: The collection of hashing algorithm related
+                                information for this asset
+                              items: {
+                                type: object, 
+                                properties: {
+                                  id: {
+                                    description: 'ID for the hashing algorithm',
+                                    format: uuid,
+                                    type: string
+                                  },
+                                  hashingAlgorithm: {description: 'Secure
+                                    hashing algorithm used by the protocol' , type: "string"},
+                                  hashingAlgorithmGroup: {
+                                    description: ' A top level group where individual hashing algorithms have
+                                    been categorized. Eg SHA-256, SHA-512 and SHA-512d have
+                                    been grouped into the "SHA Family"', type: "string"}
+                                }
+                              }
+                              type: array
+                            masternodeSupport: {description: 'Protocols
+                              support for Masternodes, i.e. computers that run a full
+                              protocols client to validate transactions and provide
+                              network functionality.' , type: boolean}
+                        marketData:
+                          type: object
+                          properties:
+                            dailyPctChangePrice: {description: 'The percentage
+                              change for the price for the whole day', type: number}
+                            dailyVolumeUsd: {description: 'The daily volume
+                              for the asset/usd market' , type: number}
+                            freeFloatMarketCapitalization: {description: 'Free Float Market Capitalization 
+                              is used to determine the relative size of a Cryptoasset. This
+                              is calculated by multiplying the price by the Free Float Supply.'}
+                            freeFloatSupply: {description: 'The circulating supply of the asset. It is the total 
+                              supply less any supply that has been removed from circulation.' , type: number}
+                            maxSupply: {description: 'The maximum supply of the asset that
+                              could possibly be in circulation' , type: number}
+                            spotPriceUsd: {description: 'The spot price in USD
+                              for the asset' , type: number}
+                            totalMarketCapitalization: {description: 'Total Market Capitalization
+                              is used to determine the relative size of a Cryptoasset.
+                              This is calculated by multiplying the price by the Total
+                              Supply.' , type: number}
+                            totalSupply: 
+                              description: 'The total supply of the asset'
+                              type: number
+                        semver:
+                          type: object
+                          properties:
+                            sourceCode: {description: 'The main repository for a
+                            projects codebase', format: uri , type: string}
+                            sourceCodeChildRepo: {description: 'The most active
+                              source code repository for a given project', format: uri,
+                              type: string}
+                            whitepaper: {description: 'Link to stable URL of the
+                              assets whitepaper', format: uri , type: string}
+                            announcementUrl: {description: 'URL of the initial project
+                            announcement in a public form', format: uri , type: string}
+                        social:
+                          type: object
+                          properties:
+                            blogUrl: {description: 'URL of projects official Blog
+                              page', format: uri , type: string}
+                            facebookUrl: {description: 'URL of projects official
+                              Facebook page', format: uri , type: string}
+                            forumUrl: {description: 'URL of projects official Forum
+                              page', format: uri , type: string}
+                            googleplusUrl: {description: 'URL of projects official
+                              Googleplus page', format: uri , type: string}
+                            instagramUrl: {description: 'URL of projects official
+                              Instagram page', format: uri , type: string}
+                            linkedinUrl: {description: 'URL of projects official
+                              LinkedIn page', format: uri , type: string}
+                            pinterestUrl: {description: 'URL of projects official
+                              Pinterest page', format: uri , type: string}
+                            redditUrl: {description: 'URL of projects official Reddit
+                              page', format: uri , type: string}
+                            slackUrl: {description: 'URL of projects official Slack
+                              page', format: uri , type: string}
+                            telegramUrl: {description: 'URL of projects official
+                              Telegram page', format: uri , type: string}
+                            twitterUrl: {description: 'URL of projects official
+                              Twitter page', format: uri , type: string}
+                            youtubeUrl: {description: 'URL of projects official
+                              Youtube page', format: uri , type: string}
+                      type: object
+                    type: array
+                title: TaxonomyGeneralResponse
+                type: object
+      security:
+      - auth: ['read:taxonomy-general']
+  '/taxonomy/general/{id}':
+    get:
+      tags:
+        - Taxonomy
+      operationId: getTaxonomyGeneral
+      summary: Get a restricted subset of taxonomy data for specific assets
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                properties:
+                    assetProfile:
+                      type: object
+                      properties:
+                        assetId: 
+                            description: Unique ID used to identify a asset
+                            format: uuid 
+                            type: string
+                        assetDescription: 
+                            description: 'Brief explanation of the assets main features, purpose and specifications.'
+                            type: string
+                        bncAssetIconUrl: 
+                            description: Official cryptographic asset logo 
+                            format: uri 
+                            type: string
+                        bncUrl: 
+                            description: BNC stable asset URL
+                            format: uri
+                            type: string
+                        classification: {description: 'The General Taxonomy
+                          divides the superclass of Cryptographic Assets into two
+                          broad families. General Cryptographic Assets and Protocol
+                          Tokens. General Cryptographic Assets represent programmable
+                          value that can be used by anyone, in any sector of industry
+                          and society, as  a capital, transformable/consumable,
+                          or a store of value asset. These assets also serve as
+                          the foundation where Protocol Tokens are created, issued
+                          and operated. Protocol Tokens represent a claim to a capital,
+                          transformable/consumable, or a store of value asset. However,
+                          since they can only capture a specific market segment
+                          this effectively limits their use as store of value. Define
+                          whether a token is either "General Cryptographic Asset"
+                          or "Protocol Token." GCAs have an underlying CONSENSUS  ALGORITHM
+                          (e.g. PoW, PoS, DPoS, etc) while PTs are issued on top
+                          of a GCA. These sources will detail wether the asset has
+                          an underlying consensus algorithm/protocol (therefore
+                          a GCA) or a token standard (e.g. ERC20 and therefore a
+                          PT)' , type: string}
+                        codebase: {description: 'Source code from original
+                          protocol (if applicable). Specify whether a given GCA
+                          has been "FORKED" from a previous project. ' , type: string}
+                        economicproperties:
+                          type: object
+                          properties:
+                            capitalAsset: {description: 'Describes
+                              if the asset provides an ongoing source of value and can
+                              be priced on the basis of the net present value of its
+                              expected returns. Answers the question: Does the asset
+                              provide a periodic source of value/income (e.g. from network
+                              fees, revenue stream, profit sharing, dividend payout)
+                              whether by token burning, buyback, or token distribution
+                              (airdrop)?' , type: string}
+                            commodity: {description: 'Describe
+                              if the asset can be used as a primary input to build other
+                              products, services, platforms, applications.  Answers
+                              the question: Can the asset be used as a building block
+                              for other platforms/applications?' , type: boolean}
+                            storeOfValue: {description: 'Describe
+                              if the asset has value and can successfully store it over
+                              the long term. Answers the question: Does the asset represent
+                              a viable form of long term store of value?' , type: boolean}
+                            genesisDateUtc: {description: 'First block creation
+                              time (UTC) or the token generation date.', format: date-time,
+                              type: string}
+                            governingBody: {description: 'Name and link to
+                              website of team, institution or system in charge of protocol
+                              development, maintenance and implementation decisions.',
+                              type: string}
+                        homeUrl: {description: 'Official asset’s URL.',
+                          format: uri , type: string}
+                        name: {description: 'Official name of the cryptographic
+                            asset.' , type: string}
+                        nicheMarket: {description: 'The General Taxonomy
+                          niche market is the most granular level of BNCs 3 Tiered
+                          propriety industry classification system. This define
+                          the industry that a Cryptoasset will impact.' , type: string}
+                        parentChain: {description: 'Underlying protocol
+                          used to issue a Protocol Token. This metric only applies
+                          to Protocol Tokens. Specify the underlying protocol where
+                          this token has been issued.' , type: string}
+                        scriptingLanguages:
+                          description: 'System to perform computations and validate
+                          trace data.'
+                          items: {type: string}
+                          type: array
+                        sector: {description: 'The General Taxonomy sector
+                          is the first level of BNCs 3 Tiered propriety industry
+                          classification system. This defines the industry that
+                          a Crypoasset will impact.' , type: string}
+                        smartContractSupport: {description: 'Current
+                          support for Turing-Complete, or computationally equivalent,
+                          applications with a state stored in the distributed ledger,
+                          facilitating, verifying, or enforcing the negotiation
+                          or performance of a contract.' , type: boolean}
+                        subClassification: {description: 'The Asset Classification
+                          can be further divided into a range of sub classifications',
+                          type: string}
+                        subSector: {description: 'The General Taxonomy
+                          sub-sector is the second level of BNCs 3 Tiered propriety
+                          industry classification system. This define the industry
+                          that a Cryptoasset will impact.' , type: string}
+                        symbol: {description: 'Alphanumerical asset code.',
+                          type: string}
+                        tokenStandard: {description: 'Common set of rules
+                          for Protocol Tokens issued under a specific protocol.
+                          "Token standard field is only applicable for Protocol
+                          Tokens, i.e. tokens issued on an underlying blockchain.  N/A  is
+                          assigned when a token is native to underlying protocol;
+                          and ""NO INFO"" when the protocol token has no issue standard"',
+                          type: string}
+                        transactionIdentity: {description: 'Degree of
+                          transparency and traceability of transactions in the protocols
+                          network. A value of "Anonymous" is assigned if transactions
+                          cannot be traced nor identified by anyone, "Pseudonymous"
+                          when transactions and users can be identified only by
+                          specialized analysis, "Private" when transactions and
+                          users identities are only known to the organization running
+                          the protocol, "Transparent" when transactions and users
+                          identities are public, and "Selective Transparency" when
+                          is possible to optionally send transactions anonymously
+                          or transparently.' , type: string}
+                    blockchainData:
+                      type: object
+                      properties:
+                        averageBlockTime: {description: 'Average block
+                          confirmation time in seconds as stated in the documentation
+                          of the latest protocol version release.' , type: number}
+                        consensusModel: {description: 'Economic measure
+                          by which the protocol executes and validates the outcome
+                          of a transaction on the network by all involved members.
+                          Specify the assets (generally only applicable to GCAs)
+                          consensus algorithm (e.g. PoW, PoS, DPoS, etc.)' , type: string}
+                        consensusModelGroup: {description: 'This groups
+                          the individual consensus models into a broader category.
+                          Ie Proof-of-Work-Time would be selected into the "Proof-of-Work"
+                          group.' , type: string}
+                        contractAddress: {description: 'Address of the
+                          account holding object on a specific blockchain.' , type: string}
+                        creatorAddress: {description: 'Protocol address
+                          of the creating/issuing entity of a token/contract' , type: string}
+                        creatorTransactionHash: {description: 'Transaction
+                          hash of the token/contract creation' , type: string}
+                        explorer: {description: 'An explorer url to
+                          the associated address.', format: uri , type: string}
+                        hashingAlgorithms:
+                          description: The collection of hashing algorithm related
+                            information for this asset
+                          items: {
+                            type: object, 
+                            properties: {
+                              hashingAlgorithm: {description: 'Secure
+                                hashing algorithm used by the protocol' , type: string},
+                              hashingAlgorithmGroup: {description: 'A
+                                top level group where individual hashing algorithms have
+                                been categorized. Eg SHA-256, SHA-512 and SHA-512d have
+                                been group into the "SHA Family"' , type: string}
+                            }
+                          }
+                          type: array
+                        masternodeSupport: {description: 'Protocols
+                          support for Masternodes, i.e. computers that run a full
+                          protocols client to validate transactions and provide
+                          network functionality.' , type: boolean}
+                    marketData:
+                      type: object
+                      properties:
+                        dailyPctChangePrice: {description: 'The percentage
+                          change for the price for the whole day', type: number}
+                        dailyVolumeUsd: {description: 'The daily volume
+                          for the asset/usd market' , type: number}
+                        freeFloatMarketCapitalization: {description: 'Free Float Market Capitalization 
+                          is used to determine the relative size of a Cryptoasset. This
+                          is calculated by multiplying the price by the Free Float Supply.'}
+                        freeFloatSupply: {description: 'The circulating supply of the asset. It is the total 
+                          supply less any supply that has been removed from circulation.' , type: number}
+                        maxSupply: {description: 'The maximum supply of the asset that
+                          could possibly be in circulation' , type: number}
+                        spotPriceUsd: {description: 'The spot price in USD
+                          for the asset' , type: number}
+                        totalMarketCapitalization: {description: 'Total Market Capitalization
+                          is used to determine the relative size of a Cryptoasset.
+                          This is calculated by multiplying the price by the Total
+                          Supply.' , type: number}
+                        totalSupply: 
+                          description: 'The total supply of the asset'
+                          type: number
+                    semver:
+                      type: object
+                      properties:
+                        sourceCode: {description: 'The main repository for a
+                        projects codebase', format: uri , type: string}
+                        sourceCodeChildRepo: {description: 'The most active
+                          source code repository for a given project', format: uri,
+                          type: string}
+                        whitepaper: {description: 'Link to stable URL of the
+                          assets whitepaper', format: uri , type: string}
+                        announcementUrl: {description: 'URL of the initial project
+                        announcement in a public form', format: uri , type: string}
+                    social:
+                      type: object
+                      properties:
+                        blogUrl: {description: 'URL of projects official Blog
+                          page', format: uri , type: string}
+                        facebookUrl: {description: 'URL of projects official
+                          Facebook page', format: uri , type: string}
+                        forumUrl: {description: 'URL of projects official Forum
+                          page', format: uri , type: string}
+                        googleplusUrl: {description: 'URL of projects official
+                          Googleplus page', format: uri , type: string}
+                        instagramUrl: {description: 'URL of projects official
+                          Instagram page', format: uri , type: string}
+                        linkedinUrl: {description: 'URL of projects official
+                          LinkedIn page', format: uri , type: string}
+                        pinterestUrl: {description: 'URL of projects official
+                          Pinterest page', format: uri , type: string}
+                        redditUrl: {description: 'URL of projects official Reddit
+                          page', format: uri , type: string}
+                        slackUrl: {description: 'URL of projects official Slack
+                          page', format: uri , type: string}
+                        telegramUrl: {description: 'URL of projects official
+                          Telegram page', format: uri , type: string}
+                        twitterUrl: {description: 'URL of projects official
+                          Twitter page', format: uri , type: string}
+                        youtubeUrl: {description: 'URL of projects official
+                          Youtube page', format: uri , type: string}
+                title: TaxonomyGeneralResponse
+                type: object
+      security:
+      - auth: ['read:taxonomy-general']
+    parameters:
+    - {$ref: '#/components/parameters/idParam'}
+  /taxonomy/asset:
+    get:
+      tags:
+        - Taxonomy
+      summary: Get all the taxonomy fields for all the assets
+      operationId: getTaxonomyAssets
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                properties:
+                  content:
+                    items:
+                      properties:
+                        announcementUrl: {description: 'URL of the initial project
+                            announcement in a public form', format: uri , type: string}
+                        annualStakingInterest: {description: 'The interest earned on
+                            a staking token for holding the asset.' , type: string}
+                        assetDescription: {description: 'Brief explanation of the
+                            assets main features, purpose and specifications.' , type: string}
+                        assetId: {description: 'Unique ID used to identify asset.',
+                          format: uuid' , type: string}
+                        averageBlockTime: {description: 'Average block confirmation
+                            time in seconds as stated in the documentation of the
+                            latest protocol version release.' , type: number}
+                        blockHalving: {description: 'Interval of blocks between block
+                            reward halving.' , type: string}
+                        blockHeight: {description: 'Number of blocks in the chain between
+                            the latest measurement and the genesis block.' , type: string}
+                        blockReward: {description: 'Number of native tokens created
+                            each time a transaction validator discovers a new block
+                            during the current Reward Era.' , type: string}
+                        blogUrl: {description: 'URL of projects official Blog page',
+                          format: uri , type: string}
+                        bncAssetIconUrl: {description: 'Official cryptographic asset
+                            logo.', format: uri , type: string}
+                        bncCurrencyDetailsId: {description: 'The ID that maps to the
+                            V1 Market Data system.' , type: number}
+                        bncUrl: {description: 'BNC stable asset URL.', format: uri ,
+                          type: string}
+                        btcBlockHeightOnCreationDate: {description: 'The latest block
+                            height of the Bitcoin chain when the asset was created.' ,
+                          type: string}
+                        burned: {description: 'Total amount of tokens that have been
+                            verifiably burned or removed from the maximum supply.',
+                          type: string}
+                        classification: {description: 'The General Taxonomy divides
+                            the superclass of Cryptographic Assets into two broad
+                            families. General Cryptographic Assets and Protocol Tokens.
+                            General Cryptographic Assets represent programmable value
+                            that can be used by anyone, in any sector of industry
+                            and society, as  a capital, transformable/consumable,
+                            or a store of value asset. These assets also serve as
+                            the foundation where Protocol Tokens are created, issued
+                            and operated. Protocol Tokens represent a claim to a capital,
+                            transformable/consumable, or a store of value asset. However,
+                            since they can only capture a specific market segment
+                            this effectively limits their use as store of value. Define
+                            whether a token is either "General Cryptographic Asset"
+                            or "Protocol Token." GCAs have an underlying CONSENSUS  ALGORITHM
+                            (e.g. PoW, PoS, DPoS, etc) while PTs are issued on top
+                            of a GCA. These sources will detail wether the asset has
+                            an underlying consensus algorithm/protocol (therefore
+                            a GCA) or a token standard (e.g. ERC20 and therefore a
+                            PT)' , type: string}
+                        codebase: {description: 'Source code from original protocol
+                            (if applicable). Specify whether a given GCA has been
+                            "FORKED" from a previous project. ' , type: string}
+                        consensusModel: {description: 'Economic measure by which the
+                            protocol executes and validates the outcome of a transaction
+                            on the network by all involved members. Specify the assets
+                            (generally only applicable to GCAs) consensus algorithm
+                            (e.g. PoW, PoS, DPoS, etc.)' , type: string}
+                        consensusModelGroup: {description: 'This groups the individual
+                            consensus models into a broader category. Ie Proof-of-Work-Time
+                            would be selected into the "Proof-of-Work" group.' , type: string}
+                        contractAddress: {description: 'Address of the account holding
+                            object on a specific blockchain.' , type: string}
+                        creatorAddress: {description: 'Protocol address of the creating/issuing
+                            entity of a token/contract' , type: string}
+                        creatorTransactionHash: {description: 'Transaction hash of
+                            the token/contract creation' , type: string}
+                        difficulty: {description: 'Measure of how difficult it is to
+                            find the hash of a blocks header below a given target',
+                          type: string}
+                        difficultyAlgorithm: {description: 'Algorithm used to define
+                            the networks difficulty target' , type: string}
+                        difficultyCycle: {description: 'Number of blocks between difficulty
+                            adjustment' , type: string}
+                        distributions:
+                          description: Mining or minting compatibility of how the
+                            network is secured.
+                          items: {type: object, 
+                            properties: {
+                              id: {
+                                description: 'ID for the distribution method',
+                                format: uuid,
+                                type: string
+                              },
+                              process: {
+                                description: 'The process used to distribute the asset',
+                                type: string
+                              },
+                              processType: {
+                                description: 'The type of process used to distribute the asset',
+                                type: string
+                              }
+                            }
+                          }
+                          type: array
+                        economicpropertiesCapitalAsset: {description: 'Describes if
+                            the asset provides an ongoing source of value and can
+                            be priced on the basis of the net present value of its
+                            expected returns. Answers the question: Does the asset
+                            provide a periodic source of value/income (e.g. from network
+                            fees, revenue stream, profit sharing, dividend payout)
+                            whether by token burning, buyback, or token distribution
+                            (airdrop)?' , type: string}
+                        economicpropertiesCommodity: {description: 'Describe if the
+                            asset can be used as a primary input to build other products,
+                            services, platforms, applications.  Answers the question:
+                            Can the asset be used as a building block for other platforms/applications?',
+                          type: boolean}
+                        economicpropertiesSov: {description: 'Describe if the asset
+                            has value and can successfully store it over the long
+                            term. Answers the question: Does the asset represent a
+                            viable form of long term store of value?' , type: boolean}
+                        ethBlockHeightOnCreationDate: {description: 'The latest block
+                            height of the Ethereum chain when the asset was created.',
+                          type: string}
+                        explorer: {description: 'An explorer url to the associated
+                            address.', format: uri , type: string}
+                        facebookUrl: {description: 'URL of projects official Facebook
+                            page', format: uri , type: string}
+                        forumUrl: {description: 'URL of projects official Forum page',
+                          format: uri , type: string}
+                        freeFloatMarketCapitalization: {description: 'Free Float Market
+                            Capitalization is used to determine the relative size
+                            of a Cryptoasset. This is calculated by multiplying the
+                            price by the Free Float Supply.' , type: number}
+                        genesisDateUtc: {description: 'First block creation time (UTC)
+                            or the token generation date.', format: date-time' , type: string}
+                        googleplusUrl: {description: 'URL of projects official Googleplus
+                            page', format: uri , type: string}
+                        governingBody: {description: 'Name and link to website of
+                            team, institution or system in charge of protocol development,
+                            maintenance and implementation decisions.' , type: string}
+                        hashingAlgorithms:
+                          description: The collection of hashing algorithm related
+                            information for this asset
+                          items: {
+                            type: object, 
+                            properties: {
+                              hashingAlgorithm: {description: 'Secure
+                                hashing algorithm used by the protocol' , type: string},
+                              hashingAlgorithmGroup: {description: 'A
+                                top level group where individual hashing algorithms have
+                                been categorized. Eg SHA-256, SHA-512 and SHA-512d have
+                                been group into the "SHA Family"' , type: string}
+                            }
+                          }
+                          type: array
+                        hashrate: {description: 'The daily amount of hashes it takes
+                            to compute an operation, measured as number of Giga hashes
+                            per second (billions of hashes per second) the protocols
+                            network is performing. Only applicable to General Cryptographic
+                            Assets.' , type: string}
+                        homeUrl: {description: 'Official asset’s URL.', format: uri,
+                          type: string}
+                        instagramUrl: {description: 'URL of projects official Instagram
+                            page', format: uri , type: string}
+                        interimToken: {description: 'Describes if the Cryptoasset which
+                            is currently a Protocol Token is meant to evolve into
+                            his own blockchain in further roadmap stages.' , type: string}
+                        linkedinUrl: {description: 'URL of projects official Linkedin
+                            page', format: uri , type: string}
+                        masternodeCollateral: {description: 'The amount of that asset
+                            that is required to become a masternode.', format: uuid,
+                          type: string}
+                        masternodeSupport: {description: 'Protocol’s support for Masternodes,
+                            i.e. computers that run a full protocol’s client to validate
+                            transactions and provide network functionality.' , type: boolean}
+                        maxSupply: {description: 'The maximum supply of the asset that
+                            could possibly be in circulation' , type: string}
+                        maximumStakeAge: {description: 'Number of days required to
+                            achieve the greatest probability of signing the next block.',
+                          type: string}
+                        minimumStakeAgeDays: {description: 'Number of days required
+                            to achieve a reasonable probability of signing the next
+                            block.' , type: string}
+                        minimumStakeQuantity: {description: 'The minimum amount of
+                            the asset that needs to be held to earn interest from
+                            staking.' , type: string}
+                        minimumTransactionFee: {description: 'The minimum fee to pay
+                            in order to complete a transaction on the assets blockchain.',
+                          type: string}
+                        name: {description: 'Official name of the cryptographic asset.',
+                          type: string}
+                        nicheMarket: {description: 'The General Taxonomy niche market
+                            is the most granular level of BNCs 3 Tiered propriety
+                            industry classification system. This define the industry
+                            that a Cryptoasset will impact.' , type: string}
+                        parentChain: {description: 'Underlying protocol used to issue
+                            a Protocol Token. This metric only applies to Protocol
+                            Tokens. Specify the underlying protocol where this token
+                            has been issued.' , type: string}
+                        pinterestUrl: {description: 'URL of projects official Pinterest
+                            page', format: uri , type: string}
+                        premine: {description: 'Number of tokens allocated previous
+                            to public circulation and have been premined in the genesis
+                            block.' , type: string}
+                        redditUrl: {description: 'URL of projects official Reddit page',
+                          format: uri , type: string}
+                        reserved: {description: 'Number of tokens allocated previous
+                            to public circulation and or reserved in a vesting period
+                            which cant be spent.' , type: string}
+                        scriptingLanguages:
+                          description: System to perform computations and validate
+                            trace data.
+                          items: {type: string}
+                          type: array
+                        sector: {description: 'The General Taxonomy sector is the first
+                            level of BNCs 3 Tiered propriety industry classification
+                            system. This defines the industry that a Crypoasset will
+                            impact.' , type: string}
+                        slackUrl: {description: 'URL of projects official Slack page',
+                          format: uri , type: string}
+                        smartContractSupport: {description: 'Current support for Turing-Complete,
+                            or computationally equivalent, applications with a state
+                            stored in the distributed ledger, facilitating, verifying,
+                            or enforcing the negotiation or performance of a contract.',
+                          type: boolean}
+                        sourceCode: {description: 'The main repository for a projects
+                            codebase', format: uri , type: string}
+                        sourceCodeChildRepo: {description: 'The most active source
+                            code repository for a given project', format: uri , type: string}
+                        subClassification: {description: 'The Asset Classification
+                            can be further divided into a range of sub classifications',
+                          type: string}
+                        subSector: {description: 'The General Taxonomy sub-sector is
+                            the second level of BNCs 3 Tiered propriety industry classification
+                            system. This define the industry that a Cryptoasset will
+                            impact.' , type: string}
+                        symbol: {description: 'Alphanumerical asset code.' , type: string}
+                        telegramUrl: {description: 'URL of projects official Telegram
+                            page', format: uri , type: string}
+                        tokenStandard: {description: 'Common set of rules for Protocol
+                            Tokens issued under a specific protocol. "Token standard
+                            field is only applicable for Protocol Tokens, i.e. tokens
+                            issued on an underlying blockchain.  N/A  is assigned
+                            when a token is native to underlying protocol; and ""NO
+                            INFO"" when the protocol token has no issue standard"',
+                          type: string}
+                        totalMarketCapitalization: {description: 'Total Market Capitalization
+                            is used to determine the relative size of a Cryptoasset.
+                            This is calculated by multiplying the price by the Total
+                            Supply.' , type: number}
+                        transactionIdentity: {description: 'Degree of transparency
+                            and traceability of transactions in the protocols network.
+                            A value of "Anonymous" is assigned if transactions cannot
+                            be traced nor identified by anyone, "Pseudonymous" when
+                            transactions and users can be identified only by specialized
+                            analysis, "Private" when transactions and users identities
+                            are only known to the organization running the protocol,
+                            "Transparent" when transactions and users identities are
+                            public, and "Selective Transparency" when is possible
+                            to optionally send transactions anonymously or transparently.',
+                          type: string}
+                        twitterUrl: {description: 'URL of projects official Twitter
+                            page', format: uri , type: string}
+                        whitepaper: {description: 'Link to stable URL of the assets
+                            whitepaper', format: uri , type: string}
+                        youtubeUrl: {description: 'URL of projects official Youtube
+                            page', format: uri , type: string}
+                      type: object
+                    type: array
+                title: TaxonomyAssetResponse
+                type: object
+      security:
+      - auth: ['read:taxonomy-asset']
+  '/taxonomy/asset/{id}':
+    get:
+      operationId: getTaxonomyAsset
+      tags:
+        - Taxonomy
+      summary: Get all the taxonomy fields for specific assets
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                properties:
+                  announcementUrl: {description: 'URL of the initial project announcement
+                      in a public form', format: uri , type: string}
+                  annualStakingInterest: {description: 'The interest earned on a staking
+                      token for holding the asset.' , type: string}
+                  assetDescription: {description: 'Brief explanation of the assets
+                      main features, purpose and specifications.' , type: string}
+                  assetId: {description: 'Unique ID used to identify asset.', format: uuid,
+                    type: string}
+                  averageBlockTime: {description: 'Average block confirmation time
+                      in seconds as stated in the documentation of the latest protocol
+                      version release.' , type: number}
+                  blockHalving: {description: 'Interval of blocks between block reward
+                      halving.' , type: string}
+                  blockHeight: {description: 'Number of blocks in the chain between
+                      the latest measurement and the genesis block.' , type: string}
+                  blockReward: {description: 'Number of native tokens created each
+                      time a transaction validator discovers a new block during the
+                      current Reward Era.' , type: string}
+                  blogUrl: {description: 'URL of projects official Blog page', format: uri,
+                    type: string}
+                  bncAssetIconUrl: {description: 'Official cryptographic asset logo.',
+                    format: uri , type: string}
+                  bncCurrencyDetailsId: {description: 'The ID that maps to the V1 Market
+                      Data system.' , type: number}
+                  bncUrl: {description: 'BNC stable asset URL.', format: uri , type: string}
+                  btcBlockHeightOnCreationDate: {description: 'The latest block height
+                      of the Bitcoin chain when the asset was created.' , type: string}
+                  burned: {description: 'Total amount of tokens that have been verifiably
+                      burned or removed from the maximum supply.' , type: string}
+                  classification: {description: 'The General Taxonomy divides the
+                      superclass of Cryptographic Assets into two broad families.
+                      General Cryptographic Assets and Protocol Tokens. General Cryptographic
+                      Assets represent programmable value that can be used by anyone,
+                      in any sector of industry and society, as  a capital, transformable/consumable,
+                      or a store of value asset. These assets also serve as the foundation
+                      where Protocol Tokens are created, issued and operated. Protocol
+                      Tokens represent a claim to a capital, transformable/consumable,
+                      or a store of value asset. However, since they can only capture
+                      a specific market segment this effectively limits their use
+                      as store of value. Define whether a token is either "General
+                      Cryptographic Asset" or "Protocol Token." GCAs have an underlying
+                      CONSENSUS  ALGORITHM (e.g. PoW, PoS, DPoS, etc) while PTs are
+                      issued on top of a GCA. These sources will detail wether the
+                      asset has an underlying consensus algorithm/protocol (therefore
+                      a GCA) or a token standard (e.g. ERC20 and therefore a PT)',
+                    type: string}
+                  codebase: {description: 'Source code from original protocol (if
+                      applicable). Specify whether a given GCA has been "FORKED" from
+                      a previous project. ' , type: string}
+                  consensusModel: {description: 'Economic measure by which the protocol
+                      executes and validates the outcome of a transaction on the network
+                      by all involved members. Specify the assets (generally only
+                      applicable to GCAs) consensus algorithm (e.g. PoW, PoS, DPoS,
+                      etc.)' , type: string}
+                  consensusModelGroup: {description: 'This groups the individual consensus
+                      models into a broader category. Ie Proof-of-Work-Time would
+                      be selected into the "Proof-of-Work" group.' , type: string}
+                  contractAddress: {description: 'Address of the account holding object
+                      on a specific blockchain.' , type: string}
+                  creatorAddress: {description: 'Protocol address of the creating/issuing
+                      entity of a token/contract' , type: string}
+                  creatorTransactionHash: {description: 'Transaction hash of the token/contract
+                      creation' , type: string}
+                  difficulty: {description: 'Measure of how difficult it is to find
+                      the hash of a blocks header below a given target' , type: string}
+                  difficultyAlgorithm: {description: 'Algorithm used to define the
+                      networks difficulty target' , type: string}
+                  difficultyCycle: {description: 'Number of blocks between difficulty
+                    adjustment' , type: string}
+                  distributions:
+                    description: Mining or minting compatibility of how the
+                      network is secured.
+                    items: {type: object, 
+                      properties: {
+                        id: {
+                          description: 'ID for the distribution method',
+                          format: uuid,
+                          type: string
+                        },
+                        process: {
+                          description: 'The process used to distribute the asset',
+                          type: string
+                        },
+                        processType: {
+                          description: 'The type of process used to distribute the asset',
+                          type: string
+                        }
+                      }
+                    }
+                    type: array
+                  economicpropertiesCapitalAsset: {description: 'Describes if the
+                      asset provides an ongoing source of value and can be priced
+                      on the basis of the net present value of its expected returns.
+                      Answers the question: Does the asset provide a periodic source
+                      of value/income (e.g. from network fees, revenue stream, profit
+                      sharing, dividend payout) whether by token burning, buyback,
+                      or token distribution (airdrop)?' , type: string}
+                  economicpropertiesCommodity: {description: 'Describe if the asset
+                      can be used as a primary input to build other products, services,
+                      platforms, applications.  Answers the question: Can the asset
+                      be used as a building block for other platforms/applications?',
+                    type: boolean}
+                  economicpropertiesSov: {description: 'Describe if the asset has
+                      value and can successfully store it over the long term. Answers
+                      the question: Does the asset represent a viable form of long
+                      term store of value?' , type: boolean}
+                  ethBlockHeightOnCreationDate: {description: 'The latest block height
+                      of the Ethereum chain when the asset was created.' , type: string}
+                  explorer: {description: 'An explorer url to the associated address.',
+                    format: uri , type: string}
+                  facebookUrl: {description: 'URL of projects official Facebook page',
+                    format: uri , type: string}
+                  forumUrl: {description: 'URL of projects official Forum page', format: uri,
+                    type: string}
+                  freeFloatMarketCapitalization: {description: 'Free Float Market Capitalization
+                      is used to determine the relative size of a Cryptoasset. This
+                      is calculated by multiplying the price by the Free Float Supply.',
+                    type: number}
+                  genesisDateUtc: {description: 'First block creation time (UTC) or
+                      the token generation date.', format: date-time' , type: string}
+                  googleplusUrl: {description: 'URL of projects official Googleplus
+                      page', format: uri , type: string}
+                  governingBody: {description: 'Name and link to website of team,
+                      institution or system in charge of protocol development, maintenance
+                      and implementation decisions.' , type: string}
+                  hashingAlgorithms:
+                    description: The collection of hashing algorithm related
+                      information for this asset
+                    items: {
+                      type: object, 
+                      properties: {
+                        hashingAlgorithm: {description: 'Secure
+                          hashing algorithm used by the protocol' , type: string},
+                        hashingAlgorithmGroup: {description: 'A
+                          top level group where individual hashing algorithms have
+                          been categorized. Eg SHA-256, SHA-512 and SHA-512d have
+                          been group into the "SHA Family"' , type: string}
+                      }
+                    }
+                    type: array
+                  hashrate: {description: 'The daily amount of hashes it takes to
+                      compute an operation, measured as number of Giga hashes per
+                      second (billions of hashes per second) the protocols network
+                      is performing. Only applicable to General Cryptographic Assets.',
+                    type: string}
+                  homeUrl: {description: 'Official asset’s URL.', format: uri , type: string}
+                  instagramUrl: {description: 'URL of projects official Instagram page',
+                    format: uri , type: string}
+                  interimToken: {description: 'Describes if the Cryptoasset which is
+                      currently a Protocol Token is meant to evolve into his own blockchain
+                      in further roadmap stages.' , type: string}
+                  linkedinUrl: {description: 'URL of projects official Linkedin page',
+                    format: uri , type: string}
+                  masternodeCollateral: {description: 'The amount of that asset that
+                      is required to become a masternode.', format: uuid' , type: string}
+                  masternodeSupport: {description: 'Protocol’s support for Masternodes,
+                      i.e. computers that run a full protocol’s client to validate
+                      transactions and provide network functionality.' , type: boolean}
+                  maxSupply: {description: 'The maximum supply of the asset that could
+                      possibly be in circulation' , type: string}
+                  maximumStakeAge: {description: 'Number of days required to achieve
+                      the greatest probability of signing the next block.' , type: string}
+                  minimumStakeAgeDays: {description: 'Number of days required to achieve
+                      a reasonable probability of signing the next block.' , type: string}
+                  minimumStakeQuantity: {description: 'The minimum amount of the asset
+                      that needs to be held to earn interest from staking.' , type: string}
+                  minimumTransactionFee: {description: 'The minimum fee to pay in order
+                      to complete a transaction on the assets blockchain.' , type: string}
+                  name: {description: 'Official name of the cryptographic asset.' , type: string}
+                  nicheMarket: {description: 'The General Taxonomy niche market is
+                      the most granular level of BNCs 3 Tiered propriety industry
+                      classification system. This define the industry that a Cryptoasset
+                      will impact.' , type: string}
+                  parentChain: {description: 'Underlying protocol used to issue a Protocol
+                      Token. This metric only applies to Protocol Tokens. Specify
+                      the underlying protocol where this token has been issued.' , type: string}
+                  pinterestUrl: {description: 'URL of projects official Pinterest page',
+                    format: uri , type: string}
+                  premine: {description: 'Number of tokens allocated previous to public
+                      circulation and have been premined in the genesis block.' , type: string}
+                  redditUrl: {description: 'URL of projects official Reddit page', format: uri,
+                    type: string}
+                  reserved: {description: 'Number of tokens allocated previous to public
+                      circulation and or reserved in a vesting period which cant be
+                      spent.' , type: string}
+                  scriptingLanguages:
+                    description: System to perform computations and validate trace
+                      data.
+                    items: {type: string}
+                    type: array
+                  sector: {description: 'The General Taxonomy sector is the first level
+                      of BNCs 3 Tiered propriety industry classification system. This
+                      defines the industry that a Crypoasset will impact.' , type: string}
+                  slackUrl: {description: 'URL of projects official Slack page', format: uri,
+                    type: string}
+                  smartContractSupport: {description: 'Current support for Turing-Complete,
+                      or computationally equivalent, applications with a state stored
+                      in the distributed ledger, facilitating, verifying, or enforcing
+                      the negotiation or performance of a contract.' , type: boolean}
+                  sourceCode: {description: 'The main repository for a projects codebase',
+                    format: uri , type: string}
+                  sourceCodeChildRepo: {description: 'The most active source code repository
+                      for a given project', format: uri , type: string}
+                  subClassification: {description: 'The Asset Classification can be
+                      further divided into a range of sub classifications' , type: string}
+                  subSector: {description: 'The General Taxonomy sub-sector is the
+                      second level of BNCs 3 Tiered propriety industry classification
+                      system. This define the industry that a Cryptoasset will impact.',
+                    type: string}
+                  symbol: {description: 'Alphanumerical asset code.' , type: string}
+                  telegramUrl: {description: 'URL of projects official Telegram page',
+                    format: uri , type: string}
+                  tokenStandard: {description: 'Common set of rules for Protocol Tokens
+                      issued under a specific protocol. "Token standard field is only
+                      applicable for Protocol Tokens, i.e. tokens issued on an underlying
+                      blockchain.  N/A  is assigned when a token is native to underlying
+                      protocol; and ""NO INFO"" when the protocol token has no issue
+                      standard"' , type: string}
+                  totalMarketCapitalization: {description: 'Total Market Capitalization
+                      is used to determine the relative size of a Cryptoasset. This
+                      is calculated by multiplying the price by the Total Supply.',
+                    type: number}
+                  transactionIdentity: {description: 'Degree of transparency and traceability
+                      of transactions in the protocols network. A value of "Anonymous"
+                      is assigned if transactions cannot be traced nor identified
+                      by anyone, "Pseudonymous" when transactions and users can be
+                      identified only by specialized analysis, "Private" when transactions
+                      and users identities are only known to the organization running
+                      the protocol, "Transparent" when transactions and users identities
+                      are public, and "Selective Transparency" when is possible to
+                      optionally send transactions anonymously or transparently.',
+                    type: string}
+                  twitterUrl: {description: 'URL of projects official Twitter page',
+                    format: uri , type: string}
+                  whitepaper: {description: 'Link to stable URL of the assets whitepaper',
+                    format: uri , type: string}
+                  youtubeUrl: {description: 'URL of projects official Youtube page',
+                    format: uri , type: string}
+                title: TaxonomyAssetResponse
+                type: object
+      security:
+      - auth: ['read:taxonomy-asset']
+    parameters:
+    - {$ref: '#/components/parameters/idParam'}
+  /taxonomy/social:
+    get:
+      operationId: getTaxonomySocials
+      tags:
+        - Taxonomy
+      summary: Get all the social data for the current day available for all assets.
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                properties:
+                  content:
+                    items:
+                      properties:
+                        assetId: {description: 'Unique ID used to identify asset.', format: uuid,
+                          type: string}
+                        github:
+                          type: object
+                          properties:
+                            branchCount: {description: 'Total number of branches in the
+                                repository' , type: number}
+                            closedIssues: {description: 'Total Closed issues on the most
+                                active codebase' , type: number}
+                            cumulativeTotalCommits: {description: 'Cumulative total commits
+                                on the most active codebase' , type: number}
+                            forkCount: {description: 'Total number of Forks on the most
+                                active codebase' , type: number}
+                            mergedPullRequests: {description: 'Daily merged Pull Requests
+                                on the most active codebase' , type: number}
+                            numContributors: {description: 'Total number of Contributors
+                                on the most active codebase' , type: number}
+                            openIssues: {description: 'Daily open issues on the most active
+                                codebase' , type: number}
+                            releaseDescription: {description: 'The description of the
+                                latest codebase release' , type: string}
+                            releaseName: {description: 'The name of the latest codebase
+                                release' , type: string}
+                            releaseTag: {description: 'The tag version of the latest codebase
+                                release' , type: string}
+                            releaseUrl: {description: 'The url of the latest codebase
+                                release' , type: string}
+                            repoDescription: {description: 'A description of the repository',
+                              type: string}
+                            stargazers: {description: 'Total number of Stargazers on the
+                                most active codebase' , type: number}
+                            totalIssues: {description: 'Cumulative total issues on the
+                                most active codebase' , type: number}
+                            ts: {description: 'The timestamp for when the github metric
+                                record was recorded', format: date-time' , type: string}
+                            watchers: {description: 'Total number of Watchers on the most
+                                active codebase' , type: number}
+                            weekAdditions: {description: 'The total amount of lines added
+                                that week ' , type: number}
+                            weekDeletions: {description: 'The total amount of lines deleted
+                                that week ' , type: number}
+                        reddit:
+                          type: object
+                          properties:
+                            accountsActive: {description: 'The daily sum of active subreddit
+                              accounts with the possibility of numbers rounding or hidden
+                              if the account has been set to fuzzed.' , type: number}
+                            accountsActiveIsFuzzed: {description: 'This true or false
+                              boolean flag will display whether a given subreddit has the
+                              active acount number in the UI of the webpage fuzzed, meaning,
+                              where they make the count on the UI look different if a subreddit
+                              owner doesn’t want to display the real number, or it shows a
+                              rounded up version something like 2000+ active users instead
+                              of a number like 2146.' , type: boolean}
+                            activeUserCount: {description: 'The daily sum of active subreddit
+                              accounts' , type: number}
+                            numPosts: {description: 'The number of daily posts' , type: number}
+                            redditUrl: {description: 'URL of projects official Reddit
+                              page' , type: string}
+                            subscribers: {description: 'The number of daily subscribers',
+                              type: number}
+                            ts: {description: 'The timestamp for when the reddit metric
+                              record was recorded', format: date-time' , type: string}
+                        twitter:
+                          type: object
+                          properties:
+                            followers: {description: 'The number of daily twitter followers',
+                              type: number}
+                            likes: {description: 'The number of daily twitter likes',
+                              type: number}
+                            numFollowing: {description: 'The amount of followers for
+                              an account on a given day' , type: number}
+                            numTimesListed: {description: 'This is the number of times
+                              an account has been added to a Twitter list created by another
+                              user on Twitter' , type: number}
+                            screenName: {description: 'The twitter handle for a given
+                              project' , type: string}
+                            ts: {description: 'The timestamp for when the twitter metric
+                              record was recorded', format: date-time' , type: string}
+                            tweets: {description: 'The number of daily tweets published
+                              by the account' , type: number}
+                      type: object                   
+                    type: array
+                title: TaxonomySocialResponse
+                type: object
+      security:
+      - auth: ['read:taxonomy-social']
+  '/taxonomy/social/{id}':
+    get:
+      operationId: getTaxonomySocial
+      tags:
+        - Taxonomy
+      summary: Get all the social data for the current day for specific assets.
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                properties:
+                  assetId: {description: 'Unique ID used to identify asset.', format: uuid,
+                    type: string}
+                  github:
+                    type: object
+                    properties:
+                      branchCount: {description: 'Total number of branches in the
+                          repository' , type: number}
+                      closedIssues: {description: 'Total Closed issues on the most
+                          active codebase' , type: number}
+                      cumulativeTotalCommits: {description: 'Cumulative total commits
+                          on the most active codebase' , type: number}
+                      forkCount: {description: 'Total number of Forks on the most
+                          active codebase' , type: number}
+                      mergedPullRequests: {description: 'Daily merged Pull Requests
+                          on the most active codebase' , type: number}
+                      numContributors: {description: 'Total number of Contributors
+                          on the most active codebase' , type: number}
+                      openIssues: {description: 'Daily open issues on the most active
+                          codebase' , type: number}
+                      releaseDescription: {description: 'The description of the
+                          latest codebase release' , type: string}
+                      releaseName: {description: 'The name of the latest codebase
+                          release' , type: string}
+                      releaseTag: {description: 'The tag version of the latest codebase
+                          release' , type: string}
+                      releaseUrl: {description: 'The url of the latest codebase
+                          release' , type: string}
+                      repoDescription: {description: 'A description of the repository',
+                        type: string}
+                      stargazers: {description: 'Total number of Stargazers on the
+                          most active codebase' , type: number}
+                      totalIssues: {description: 'Cumulative total issues on the
+                          most active codebase' , type: number}
+                      ts: {description: 'The timestamp for when the github metric
+                          record was recorded', format: date-time' , type: string}
+                      watchers: {description: 'Total number of Watchers on the most
+                          active codebase' , type: number}
+                      weekAdditions: {description: 'The total amount of lines added
+                          that week ' , type: number}
+                      weekDeletions: {description: 'The total amount of lines deleted
+                          that week ' , type: number}
+                  reddit:
+                    type: object
+                    properties:
+                      accountsActive: {description: 'The daily sum of active subreddit
+                        accounts with the possibility of numbers rounding or hidden
+                        if the account has been set to fuzzed.' , type: number}
+                      accountsActiveIsFuzzed: {description: 'This true or false
+                        boolean flag will display whether a given subreddit has the
+                        active acount number in the UI of the webpage fuzzed, meaning,
+                        where they make the count on the UI look different if a subreddit
+                        owner doesn’t want to display the real number, or it shows a
+                        rounded up version something like 2000+ active users instead
+                        of a number like 2146.' , type: boolean}
+                      activeUserCount: {description: 'The daily sum of active subreddit
+                        accounts' , type: number}
+                      numPosts: {description: 'The number of daily posts' , type: number}
+                      redditUrl: {description: 'URL of projects official Reddit
+                        page' , type: string}
+                      subscribers: {description: 'The number of daily subscribers',
+                        type: number}
+                      ts: {description: 'The timestamp for when the reddit metric
+                        record was recorded', format: date-time' , type: string}
+                  twitter:
+                    type: object
+                    properties:
+                      followers: {description: 'The number of daily twitter followers',
+                        type: number}
+                      likes: {description: 'The number of daily twitter likes',
+                        type: number}
+                      numFollowing: {description: 'The amount of followers for
+                        an account on a given day' , type: number}
+                      numTimesListed: {description: 'This is the number of times
+                        an account has been added to a Twitter list created by another
+                        user on Twitter' , type: number}
+                      screenName: {description: 'The twitter handle for a given
+                        project' , type: string}
+                      ts: {description: 'The timestamp for when the twitter metric
+                        record was recorded', format: date-time' , type: string}
+                      tweets: {description: 'The number of daily tweets published
+                        by the account' , type: number}
+                title: TaxonomySocialResponse
+                type: object
+      security:
+      - auth: ['read:taxonomy-social']
+    parameters:
+    - {$ref: '#/components/parameters/idParam'}
+  /taxonomy/filter:
+    get:
+      tags:
+        - Taxonomy
+      summary: Get all the taxonomy fields that are useful for filtering for all the assets
+      operationId: getTaxonomyFilters
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                properties:
+                  content:
+                    items:
+                      properties:
+                        assetId: {description: 'Unique ID used to identify asset.',
+                          format: uuid' , type: string}
+                        classification: {description: 'The General Taxonomy divides
+                            the superclass of Cryptographic Assets into two broad
+                            families. General Cryptographic Assets and Protocol Tokens.
+                            General Cryptographic Assets represent programmable value
+                            that can be used by anyone, in any sector of industry
+                            and society, as  a capital, transformable/consumable,
+                            or a store of value asset. These assets also serve as
+                            the foundation where Protocol Tokens are created, issued
+                            and operated. Protocol Tokens represent a claim to a capital,
+                            transformable/consumable, or a store of value asset. However,
+                            since they can only capture a specific market segment
+                            this effectively limits their use as store of value. Define
+                            whether a token is either "General Cryptographic Asset"
+                            or "Protocol Token." GCAs have an underlying CONSENSUS  ALGORITHM
+                            (e.g. PoW, PoS, DPoS, etc) while PTs are issued on top
+                            of a GCA. These sources will detail wether the asset has
+                            an underlying consensus algorithm/protocol (therefore
+                            a GCA) or a token standard (e.g. ERC20 and therefore a
+                            PT)' , type: string}
+                        consensusModelGroup: {description: 'This groups the individual
+                            consensus models into a broader category. Ie Proof-of-Work-Time
+                            would be selected into the "Proof-of-Work" group.' , type: string}
+                        parentChain: {description: 'Underlying protocol used to issue
+                            a Protocol Token. This metric only applies to Protocol
+                            Tokens. Specify the underlying protocol where this token
+                            has been issued.' , type: string}
+                        transactionIdentity: {description: 'Degree of transparency
+                            and traceability of transactions in the protocols network.
+                            A value of "Anonymous" is assigned if transactions cannot
+                            be traced nor identified by anyone, "Pseudonymous" when
+                            transactions and users can be identified only by specialized
+                            analysis, "Private" when transactions and users identities
+                            are only known to the organization running the protocol,
+                            "Transparent" when transactions and users identities are
+                            public, and "Selective Transparency" when is possible
+                            to optionally send transactions anonymously or transparently.',
+                          type: string}
+                      type: object
+                    type: array
+                title: TaxonomyFilterResponse
+                type: object
+      security:
+      - auth: ['read:taxonomy-filters']
+  '/taxonomy/filter/{id}':
+    get:
+      tags:
+        - Taxonomy
+      summary: Get all the taxonomy fields that are useful for filtering for specific assets
+      operationId: getTaxonomyFilter
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                properties:
+                    assetId: {description: 'Unique ID used to identify asset.',
+                      format: uuid' , type: string}
+                    classification: {description: 'The General Taxonomy divides
+                        the superclass of Cryptographic Assets into two broad
+                        families. General Cryptographic Assets and Protocol Tokens.
+                        General Cryptographic Assets represent programmable value
+                        that can be used by anyone, in any sector of industry
+                        and society, as  a capital, transformable/consumable,
+                        or a store of value asset. These assets also serve as
+                        the foundation where Protocol Tokens are created, issued
+                        and operated. Protocol Tokens represent a claim to a capital,
+                        transformable/consumable, or a store of value asset. However,
+                        since they can only capture a specific market segment
+                        this effectively limits their use as store of value. Define
+                        whether a token is either "General Cryptographic Asset"
+                        or "Protocol Token." GCAs have an underlying CONSENSUS  ALGORITHM
+                        (e.g. PoW, PoS, DPoS, etc) while PTs are issued on top
+                        of a GCA. These sources will detail wether the asset has
+                        an underlying consensus algorithm/protocol (therefore
+                        a GCA) or a token standard (e.g. ERC20 and therefore a
+                        PT)' , type: string}
+                    consensusModelGroup: {description: 'This groups the individual
+                        consensus models into a broader category. Ie Proof-of-Work-Time
+                        would be selected into the "Proof-of-Work" group.' , type: string}
+                    parentChain: {description: 'Underlying protocol used to issue
+                        a Protocol Token. This metric only applies to Protocol
+                        Tokens. Specify the underlying protocol where this token
+                        has been issued.' , type: string}
+                    transactionIdentity: {description: 'Degree of transparency
+                        and traceability of transactions in the protocols network.
+                        A value of "Anonymous" is assigned if transactions cannot
+                        be traced nor identified by anyone, "Pseudonymous" when
+                        transactions and users can be identified only by specialized
+                        analysis, "Private" when transactions and users identities
+                        are only known to the organization running the protocol,
+                        "Transparent" when transactions and users identities are
+                        public, and "Selective Transparency" when is possible
+                        to optionally send transactions anonymously or transparently.',
+                      type: string}
+                title: TaxonomyFilterResponse
+                type: object
+      security:
+      - auth: ['read:taxonomy-filters']
