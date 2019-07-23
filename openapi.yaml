@@ -22,7 +22,7 @@ components:
           tokenUrl: 'https://api.bravenewcoin.com/v3/oauth/token'
           scopes:
             read:exchange-ticker: Read exchange ticker
-            read:index-ticker: Read GWA and MWA
+            read:index-ticker: Read index ticker
             read:ohlcv: Read end of day open, high, low, close and volume
             read:market-cap: Read the market capatilization
   schemas:
@@ -323,21 +323,29 @@ components:
           schema:
             $ref: '#/components/schemas/Error'
 x-tagGroups:
-  - name: Overview
+  - name: Quickstart
     tags:
-      - Introduction
+      - Overview
       - Authentication
       - IDs
       - Pagination
       - Timezones
+      - GWA
+      - MWA
+      - MCAP
+      - XchangeFeed
+      - MarketCap
+      - LX Series - Coming Soon
+      - BNC Newsfeed - Coming soon
       - Support
       - Versioning
 
-  - name: Quickstart
+  - name: Websocket API
     tags:
-      - GWA
-      - MWA
-
+      - Websocket Overview
+      - Websocket Errors
+      - Websocket Exchange Ticker
+      - Websocket Index Ticker
   - name: Rest API
     tags:
       - Rest API Overview
@@ -345,71 +353,11 @@ x-tagGroups:
       - Asset
       - Market
       - Exchange
-      - XchangeFeed
-      - GWA / MWA
+      - Exchange Ticker
+      - Index Ticker
+      - Open, High, Low, Close, Volumes
       - Market Cap
-
-  - name: Websocket API
-    tags:
-      - Websocket Overview
-      - Websocket Errors
-      - Websocket XchangeFeed
-      - Websocket GWA / MWA
 tags:
-  - name: GWA
-    description: |
-      ### Global weighted average Spot Rates:
-      The Global Weighted Average for an asset, say Litecoin (LTC), can be obtained by passing the indexType query parameter as GWA and indexId as the Asset Id(UUID) for LTC.
-
-      You can find detailed explanation under:
-      * [GWA](#tag/GWA-MWA)
-
-      In order to get the Asset Id(UUID) for LTC, you need to query the Asset API:
-      * [Asset](#tag/Asset)
-
-      ```
-      curl https://api.bravenewcoin.com/v3/asset?symbol=LTC
-      ```
-      ### Example API call for GWA Intraday LTC:
-      ```
-      curl https://api.bravenewcoin.com/v3/index-ticker?indexType=GWA&indexId={LTC_Asset_Id} -H 'Authorization: Bearer test_SiHrnL5NKsea0G2W4LHd' -G
-      ```
-      In the above example, with no other parameters set, the API will return the latest 30 second values.
-
-      ### Example API call for GWA Open, High, Low, Close, Volume for LTC:
-      ```
-      curl https://api.bravenewcoin.com/v3/ohlcv?indexType=GWA&indexId={LTC_Asset_Id} -H 'Authorization: Bearer test_SiHrnL5NKsea0G2W4LHd' -G
-      ```
-      In the above example, with no other parameters set, the API will return the latest OHLCV values for the last 24 hour period.
-
-  - name: MWA
-    description: |
-      ### Market Weighted Average Reference Rates:
-      The Market weighted average for a market, say BTC/USD (base/quote) can be obtained by passing the indexType query parameter as MWA and indexId as the Market Id(UUID) for BTC/USD.
-
-      You can find detailed explanation under:
-      * [MWA](#tag/GWA-MWA)
-
-      In order to get the Market Id(UUID) for BTC/USD, you need to query the Market API:
-      * [Market](#tag/Market)
-
-      ```
-      curl https://api.bravenewcoin.com/v3/market?baseAssetId={BTC_Asset_Id}&quoteAssetId={USD_Asset_Id}
-      ```
-      The respective asset Ids can be obtained by querying the Asset API as shown in the GWA section.
-
-      ### Example API call for MWA Intraday BTC/USD:
-      ```
-      curl https://api.bravenewcoin.com/v3/index-ticker?indexType=MWA&indexId={BTC_USD_Market_Id} -H 'Authorization: Bearer test_SiHrnL5NKsea0G2W4LHd' -G
-      ```
-      In the above example, with no other parameters set, the API will return the latest 30 second values.
-
-      ### Example API call for MWA Open, High, Low, Close, Volume for BTC/USD:
-      ```
-      curl https://api.bravenewcoin.com/v3/ohlcv?indexType=MWA&indexId={BTC_USD_Market_Id} -H 'Authorization: Bearer test_SiHrnL5NKsea0G2W4LHd' -G
-      ```
-      In the above example, with no other parameters set, the API will return the latest OHLCV values for the last 24 hour period.
-
   - name: Authentication
     description: |
       BNC uses OAuth2 flows for security. When on-boarding to the BNC API platform for the first time, clients are provided with API credentials that allow them to be authenticated and authorised to make API calls. With these credentials a user may obtain an access token which must be submitted as a Header with each API request. The token will contain the information to permit the client to make the call and the scopes that define which endpoints will be accessible to them depending on their contract.
@@ -430,13 +378,13 @@ tags:
       ```
       <!-- ReDoc-Inject: <security-definitions> -->
 
-  - name: Introduction
+  - name: Overview
     description: |
       Brave New Coin (BNC) has been providing data for the cryptographic asset marketplace since April 2014. BNC makes this data available through its API's. The V3 platform is the latest iteration, currently presenting market data but expanding to include indices, taxonomy and newsfeeds through a single interface. Access is either via REST or Websockets. In both cases authentication is by OAuth token. Contact support@bravenewcoin.com to obtain the API credentials.
 
       Market data includes the ticker data from over 200 exchanges representing the markets for more than 1500 crypto assets.
 
-      BNC aggregates market prices from across exchanges to provide reference rates - the market weighted average (MWA) - for the 6000+ traded market pairs being tracked. These international market reference rates provide the basis to derive a single USD rate, the global weighted average (GWA), for each asset.
+      BNC aggregates market prices from across exchanges to provide reference rates - the market weighted average or MWA - for the 6000+ traded market pairs being tracked. These international market reference rates provide the basis to derive a single USD rate, the global weighted average (GWA), for each asset.
 
       Market data is available both as intraday values or as daily summaries (EOD) based on a midnight UTC close providing the open, high, low and close for the 24hr period. Intraday data is limited to a 200 day trailing window. Historic datasets covering the full history back to April 2014 are available on request by contacting support@bravenewcoin.com
 
@@ -445,7 +393,104 @@ tags:
       * A call to one of the lookups to get the UUID for an asset, market or an exchange.
       * A call to the API endpoint to get the response.
 
-      The following sections provide further details about the general features of the API. You can jump to the [Quickstart](#tag/GWA) section if preferred or to the full details of the [REST API](#tag/Rest-API-Overview) or [Websocket](#tag/Websocket-Overview)
+      These points are covered in more detail below.
+
+  - name: GWA
+    description: |
+      ### Global weighted average Spot Rates:
+      The Global Weighted Average for an asset, say Litecoin (LTC), can be obtained by passing the indexType query parameter as GWA and indexId as the Asset Id(UUID) for LTC.
+
+      You can find detailed explanation under:
+      * [GWA](#tag/Index-Ticker)
+
+      In order to get the Asset Id(UUID) for LTC, you need to query the Asset API:
+      * [Asset](#tag/Asset)
+      ```
+      curl https://api.bravenewcoin.com/v3/asset?symbol=LTC
+      ```
+      ### Example API call for GWA Intraday LTC:
+      ```
+      curl https://api.bravenewcoin.com/v3/index-ticker?indexType=GWA&indexId={asset_id_LTC} -H 'Authorization: Bearer test_SiHrnL5NKsea0G2W4LHd' -G
+      ```
+      In the above example, with no other parameters set, the API will return the latest 30 second values.
+
+      ### Example API call for GWA Open, High, Low, Close, Volume for LTC:
+      ```
+      curl https://api.bravenewcoin.com/v3/ohlcv?indexType=GWA&indexId={asset_id_LTC} -H 'Authorization: Bearer test_SiHrnL5NKsea0G2W4LHd' -G
+      ```
+      In the above example, with no other parameters set, the API will return the latest OHLCV values for the last 24 hour period.
+
+  - name: MCAP
+    description: |
+      ### Market Cap
+
+      The Market Cap API returns a list of assets ranked by their market cap and volume, providing details of the GWA price and the asset supply figures. Optionally, the API will return the percentage changes in values for 24hr, 7 day and 30 day periods.
+
+      You can find detailed explanation under:
+      * [Market Cap](#tag/Market-Cap)
+
+      ### Example API call for Market Cap:
+      ```
+      curl https://api.bravenewcoin.com/v3/market-cap -H 'Authorization: Bearer test_SiHrnL5NKsea0G2W4LHd' -G
+      ```
+      In the above example, with no other parameters set, the API will return a list of assets ranked by market cap and volume.
+
+      ### Example API call for Market Cap with Percent Change:
+      ```
+      curl https://api.bravenewcoin.com/v3/market-cap?percentChange=true -H 'Authorization: Bearer test_SiHrnL5NKsea0G2W4LHd' -G
+      ```
+      In the above example, with the `percentChange` query parameter set to true, the API will return a ranked list of assets and the percentage changes in 24hr, 7d and 30d periods.
+
+  - name: MWA
+    description: |
+      ### Market Weighted Average Reference Rates:
+      The Market weighted average for a market, say BTC/USD (base/quote) can be obtained by passing the indexType query parameter as MWA and indexId as the Market Id(UUID) for BTC/USD.
+
+      You can find detailed explanation under:
+      * [MWA](#tag/Index-Ticker)
+
+      In order to get the Market Id(UUID) for BTC/USD, you need to query the Market API:
+      * [Market](#tag/Market)
+      ```
+      curl https://api.bravenewcoin.com/v3/market?baseAssetId={asset_id_BTC}&quoteAssetId={asset_id_USD}
+      ```
+      The respective asset Ids can be obtained by querying the Asset API as shown in the GWA section.
+
+      ### Example API call for MWA Intraday BTC/USD:
+      ```
+      curl https://api.bravenewcoin.com/v3/index-ticker?indexType=MWA&indexId={market_id_BTC_USD} -H 'Authorization: Bearer test_SiHrnL5NKsea0G2W4LHd' -G
+      ```
+      In the above example, with no other parameters set, the API will return the latest 30 second values.
+
+      ### Example API call for MWA Open, High, Low, Close, Volume for BTC/USD:
+      ```
+      curl https://api.bravenewcoin.com/v3/ohlcv?indexType=MWA&indexId={market_id_BTC_USD} -H 'Authorization: Bearer test_SiHrnL5NKsea0G2W4LHd' -G
+      ```
+      In the above example, with no other parameters set, the API will return the latest OHLCV values for the last 24 hour period.
+
+  - name: XchangeFeed
+    description: |
+      The XchangeFeed service provides near real-time price & volume data from over 250 exchanges via Websocket or REST API.
+
+      BNC’s XchangeFeed integrates and normalizes data feeds from multiple exchanges and delivers the data via a single API.
+
+      The API allows you to query:
+      * All the markets for an individual exchange
+      * For a particular market on an individual exchange
+      * For a particular market across all the exchanges that trades the pair
+      * Returns all when unparameterized
+
+      To obtain an Exchange Id or Market Id to use as a parameter for REST or Websocket, you need to query the Exchange or Market API respectively:
+      * [Exchange](#tag/Exchange)
+      * [Market](#tag/Market)
+
+      You can find the detailed explanation below:
+
+      ### REST API:
+      [Exchange Ticker](#tag/Exchange-Ticker)
+
+      ### Websocket
+      [Exchange Ticker](#tag/Websocket-Exchange-Ticker)
 
   - name: Support
     description: |
@@ -465,10 +510,10 @@ tags:
   - name: Rest API Overview
     description: |
       Brave New Coin REST API exposes the following endpoints:
-      * [GWA / MWA](#tag/GWA-MWA): Data from intraday API's is limited to a 200 day trailing window and refreshed every 30 seconds from June 1st, 2019.
+      * [Index Ticker](#tag/Index-Ticker): Data from intraday API's is limited to a 200 day trailing window and refreshed every 30 seconds from June 1st, 2019.
       * [OHLCV](#tag/Open-High-Low-Close-Volumes): OHLCV API's can provide the full historic dataset.
       * [Market Cap](#tag/Market-Cap): Latest ranking within the last 5 minutes.
-      * [XchangeFeed](#tag/XchangeFeed): Standardized exchange market tickers updated every 30 seconds.
+      * [Exchange Ticker](#tag/Exchange-Ticker): Standardized exchange market tickers updated every 30 seconds.
 
       There are currently no rate limits on API requests, but pagination is enforced on API responses to limit the payload of any one call. See [Pagination](#tag/Pagination)
 
@@ -482,7 +527,7 @@ tags:
 
   - name: Websocket Overview
     description: |
-      Brave New Coin Websocket API exposes GWA / MWA data and XchangeFeed data via Websockets. Clients need to send a subscribe message to authenticate and start receiving data. See [XchangeFeed](#tag/Websocket-XchangeFeed), [GWA / MWA](#tag/Websocket-GWA-MWA).
+      Brave New Coin Websocket API exposes Index Ticker data and Exchange ticker data via Websockets. Clients need to send a subscribe message to authenticate and start receiving data. See [Exchange Ticker](#tag/Websocket-Exchange-Ticker), [Index Ticker](#tag/Websocket-Index-Ticker).
 
       A sample project using the BNC Websocket API is available on Github :
 
@@ -550,7 +595,7 @@ tags:
       404 - Not Found                    | Requested resource not found (typically the marketId or exchangeId passed through the subscription request not found)
 
       There may be other types of errors that may be returned and we recommend handling the ERROR type gracefully.
-  - name: Websocket XchangeFeed
+  - name: Websocket Exchange Ticker
     description: |
 
       This endpoint can be used to subscribe to the raw ticker data from different exchanges. Clients can send a Subscribe message to start receiving.
@@ -618,10 +663,10 @@ tags:
       }
       ```
     x-traitTag: true
-  - name: Websocket GWA / MWA
+  - name: Websocket Index Ticker
     description: |
 
-      This endpoint can be used to subscribe to the GWA / MWA data. These indices are calculated by BNC and published to the websocket endpoint. Clients need to send a Subscribe message to start receiving.
+      This endpoint can be used to subscribe to the index ticker data. These indices are calculated by BNC and published to the websocket endpoint. Clients need to send a Subscribe message to start receiving.
       Indices can be subscribed by the indexId or the indexType.
 
       The index id will differ based on the index type.
@@ -704,7 +749,7 @@ tags:
     x-traitTag: true
   - name: Pagination
     description: |
-      All top-level API resources have support for bulk fetches via "list" API methods. For instance, you can list assets, list exchange tickers, and list GWA / MWA. These list API methods share a common structure, taking at least these three parameters: `size`, `timestamp` or `startAfter`.
+      All top-level API resources have support for bulk fetches via "list" API methods. For instance, you can list assets, list exchange tickers, and list index tickers. These list API methods share a common structure, taking at least these three parameters: `size`, `timestamp` or `startAfter`.
 
       Brave New Coin API's utilise cursor-based pagination using the `startAfter` parameter. The parameter should be an existing object ID and returns resources in reverse chronological order. The `startAfter` parameter returns resources listed after the named resource. For APIs which take both a `startAfter` and `timestamp` parameters, the `timestamp` is ignored if `startAfter` is provided.
 
@@ -735,6 +780,8 @@ tags:
         * Changing the order of properties in existing API responses
         * Changing the length or format of object IDs or other opaque strings
 
+      Future changes will be logged here.
+
     x-traitTag: true
   - name: Asset
     description: Retrieve information about assets.
@@ -742,30 +789,16 @@ tags:
     description: Retrieve information about markets.
   - name: Exchange
     description: Retrieve information about exchanges.
-  - name: XchangeFeed
-    description: |
-      BNC’s XchangeFeed integrates and normalizes data feeds from multiple exchanges and delivers the data via a single API.
-
-      The API allows you to query:
-      * All the markets for an individual exchange
-      * For a particular market on an individual exchange
-      * For a particular market across all the exchanges that trades the pair
-      * Returns all when unparameterized
-
-      To obtain an Exchange Id or Market Id to use as a parameter for REST or Websocket, you need to query the Exchange or Market API respectively:
-      * [Exchange](#tag/Exchange)
-      * [Market](#tag/Market)
+  - name: Exchange Ticker
+    description: Retrieve the exchange ticker information.
   - name: Market Weighted Averages
     description: Retrieve the market weighted averages.
   - name: Global Weighted Averages
     description: Retrieve the global weighted averages.
   - name: Open, High, Low, Close, Volumes
     description: Retrieve the open high low close volumes.
-  - name: Market Cap
-    description: |
-      The Market Cap is calculated based on the free float (or circulating) supply figures and the GWA index price. The Total Market Cap is calculated based on the total supply and the GWA index price.
-
-      If the percentChange parameter is set to true this API will also return movement in percentage of these values over a 24h, 7d or 30d period.
+  - name: Market Capitalisation
+    description: Retrieve the market capitalisation.
   - name: Rates
     description: Retrieve the exchange rates between assets.
 paths:
@@ -1056,7 +1089,7 @@ paths:
   /exchange-ticker:
     get:
       tags:
-        - XchangeFeed
+        - Exchange Ticker
       summary: List all exchange tickers
       security:
         - auth:
@@ -1141,13 +1174,13 @@ paths:
   /index-ticker:
     get:
       tags:
-        - GWA / MWA
-      summary: Get intraday GWA or MWAs
+        - Index Ticker
+      summary: Get all the index tickers
       security:
         - auth:
             - read:index-ticker
       description: |
-        This API provides support to get GWA or MWAs. A Type parameter is used
+        This API provides support to get the index tickers. The API allows getting ticks for all the indices. Type parameter can be used
         to filter the type of index being returned.
 
         Currently the following types of indices are supported -
@@ -1157,12 +1190,15 @@ paths:
         | MWA         | The Market weighted averages |
         | GWA         | The Global weighted averages |
 
-        Each index type can take an Index Id parameter which identifies the constituent type used to build the index -
+        Each index type will have an index id which identifies the constituent type used to build the index -
 
         | Index Type | Index Id  | Output |
         | -----------|:---------:|:---------:|
-        | MWA        | Market Id | The Market Weighted Average for that market  |
-        | GWA        | Asset Id  | The Global Weighted Average for that coin / asset |
+        | MWA        | Market Id | Average of all tickers for that market |
+        | GWA        | Asset Id  | Average of all tickers for that coin / asset |
+
+        Clients are supposed to use this ID to call the other rest API's to get more information about the constituents
+        used while building the index.
 
       operationId: getIndexTicker
       x-code-samples:
@@ -1238,15 +1274,15 @@ paths:
   /ohlcv:
     get:
       tags:
-        - GWA / MWA
+        - Open, High, Low, Close, Volumes
       summary: Get end of day Open, High, Low, Close, Volumes
       security:
         - auth:
             - read:ohlcv
       description: |
-        Get end of day open, high, low, close and volumes (OHLCV) for market weighted averages (MWA) or global weighted averages (GWA). The 24hr period for end of day is 00:00:00 UTC.
+        Get end of day open, high, low, close and volumes (OHLCV) of market weighted averages or global weighted averages. The 24hr period for end of day is 00:00:00 UTC.
 
-        This API provides the open, high, low, close and volume using the index type provided. If no timestamp is provided, then only the latest values are returned.
+        This API provides the open, high, low, close and volume using the index type provided. If no timestamp is provided, then only the latest averages are returned.
 
         Currently the following types of indices are supported -
 
@@ -1259,8 +1295,8 @@ paths:
 
         | Index Type | Index Id  | Output |
         | -----------|:---------:|:---------:|
-        | MWA        | Market Id | OHLCV for that market |
-        | GWA        | Asset Id  | OHLCV for that coin / asset |
+        | MWA        | Market Id | Average of all tickers for that market |
+        | GWA        | Asset Id  | Average of all tickers for that coin / asset |
       operationId: listOhlcv
       x-code-samples:
         - lang: Shell
@@ -1341,7 +1377,13 @@ paths:
         - auth:
             - read:market-cap
       description: |
+
         This API will return a list of assets ranked by their market capitalization.
+
+        The Market Cap is calculated based on the free float (or circulating) supply figures and the GWA index price. The Total Market Cap is calculated based on the total supply and the GWA index price.
+
+        If the percentChange parameter is set to true this API will also return movement in percentage of these values over a 24h, 7d or 30d period.
+
       operationId: listMarketCaps
       x-code-samples:
         - lang: Shell
@@ -1357,11 +1399,10 @@ paths:
             format: uuid
         - name: percentChange
           in: query
-          description: Return the percent change in the response.
+          description: Return the percent change in the values. Currently we support change over 24hour, 7 Days and 30 Days. It is false by default.
           required: false
           schema:
             type: boolean
-            default: false
       responses:
         '200':
           description: 'Market Capitalization by assets'
