@@ -323,11 +323,6 @@ components:
           schema:
             $ref: '#/components/schemas/Error'
 x-tagGroups:
-  - name: Quickstart
-    tags:
-      - GWA
-      - MWA
-
   - name: Overview
     tags:
       - Introduction
@@ -337,6 +332,11 @@ x-tagGroups:
       - Timezones
       - Support
       - Versioning
+
+  - name: Quickstart
+    tags:
+      - GWA
+      - MWA
 
   - name: Rest API
     tags:
@@ -436,7 +436,7 @@ tags:
 
       Market data includes the ticker data from over 200 exchanges representing the markets for more than 1500 crypto assets.
 
-      BNC aggregates market prices from across exchanges to provide reference rates - the market weighted average or MWA - for the 6000+ traded market pairs being tracked. These international market reference rates provide the basis to derive a single USD rate, the global weighted average (GWA), for each asset.
+      BNC aggregates market prices from across exchanges to provide reference rates - the market weighted average (MWA) - for the 6000+ traded market pairs being tracked. These international market reference rates provide the basis to derive a single USD rate, the global weighted average (GWA), for each asset.
 
       Market data is available both as intraday values or as daily summaries (EOD) based on a midnight UTC close providing the open, high, low and close for the 24hr period. Intraday data is limited to a 200 day trailing window. Historic datasets covering the full history back to April 2014 are available on request by contacting support@bravenewcoin.com
 
@@ -444,6 +444,8 @@ tags:
       * A call to obtain an OAuth token based on client credentials.
       * A call to one of the lookups to get the UUID for an asset, market or an exchange.
       * A call to the API endpoint to get the response.
+
+      The following sections provide further details about the general features of the API. You can jump to the [Quickstart](#tag/GWA) section if preferred or to the full details of the [REST API](#tag/Rest-API-Overview) or [Websocket](#tag/Websocket-Overview)
 
   - name: Support
     description: |
@@ -732,8 +734,6 @@ tags:
         * Adding new properties to existing API responses
         * Changing the order of properties in existing API responses
         * Changing the length or format of object IDs or other opaque strings
-
-      Future changes will be logged here.
 
     x-traitTag: true
   - name: Asset
@@ -1142,13 +1142,13 @@ paths:
     get:
       tags:
         - GWA / MWA
-      summary: Get all of the intraday GWA / MWAs
+      summary: Get intraday GWA or MWAs
       security:
         - auth:
             - read:index-ticker
       description: |
-        This API provides support to get the GWA / MWAs. The API allows getting ticks for all the indices. Type parameter can be used
-        to filter the type of index being returned.
+        This API provides support to get GWA or MWAs. A Type parameter is used
+                to filter the type of index being returned.
 
         Currently the following types of indices are supported -
 
@@ -1161,8 +1161,8 @@ paths:
 
         | Index Type | Index Id  | Output |
         | -----------|:---------:|:---------:|
-        | MWA        | Market Id | Average of all tickers for that market |
-        | GWA        | Asset Id  | Average of all tickers for that coin / asset |
+        | MWA        | Market Id | The Market Weighted Average for that market |
+        | GWA        | Asset Id  | The Global Weighted Average for that coin / asset |
 
         Clients are supposed to use this ID to call the other rest API's to get more information about the constituents
         used while building the index.
@@ -1247,9 +1247,9 @@ paths:
         - auth:
             - read:ohlcv
       description: |
-        Get end of day open, high, low, close and volumes (OHLCV) of market weighted averages or global weighted averages. The 24hr period for end of day is 00:00:00 UTC.
+        Get end of day open, high, low, close and volumes (OHLCV) for market weighted averages (MWA) or global weighted averages (GWA). The 24hr period for end of day is 00:00:00 UTC.
 
-        This API provides the open, high, low, close and volume using the index type provided. If no timestamp is provided, then only the latest averages are returned.
+        This API provides the open, high, low, close and volume using the index type provided. If no timestamp is provided, then only the latest values are returned.
 
         Currently the following types of indices are supported -
 
@@ -1262,8 +1262,8 @@ paths:
 
         | Index Type | Index Id  | Output |
         | -----------|:---------:|:---------:|
-        | MWA        | Market Id | Average of all tickers for that market |
-        | GWA        | Asset Id  | Average of all tickers for that coin / asset |
+        | MWA        | Market Id | OHLCV for that market |
+        | GWA        | Asset Id  | OHLCV for that coin / asset |
       operationId: listOhlcv
       x-code-samples:
         - lang: Shell
