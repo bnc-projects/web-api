@@ -735,8 +735,6 @@ tags:
         * Changing the order of properties in existing API responses
         * Changing the length or format of object IDs or other opaque strings
 
-      Future changes will be logged here.
-
     x-traitTag: true
   - name: Asset
     description: Retrieve information about assets.
