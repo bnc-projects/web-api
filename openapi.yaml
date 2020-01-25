@@ -348,6 +348,7 @@ x-tagGroups:
       - XchangeFeed
       - GWA / MWA
       - Market Cap
+      - Convert
 
   - name: Websocket API
     tags:
@@ -766,8 +767,8 @@ tags:
       The Market Cap is calculated based on the free float (or circulating) supply figures and the GWA index price. The Total Market Cap is calculated based on the total supply and the GWA index price.
 
       If the percentChange parameter is set to true this API will also return movement in percentage of these values over a 24h, 7d or 30d period.
-  - name: Rates
-    description: Retrieve the exchange rates between assets.
+  - name: Convert
+    description: Retrieve the conversion rates between assets.
 paths:
   /oauth/token:
     post:
@@ -1378,61 +1379,12 @@ paths:
                     type: array
                     items:
                       $ref: '#/components/schemas/MarketCap'
-  /price:
-    get:
-      tags:
-        - Rates
-      summary: List all prices for a particular asset
-      description: |
-        ** THIS ENDPOINT IS CURRENTLY NOT AVAILABLE **
-
-        Provides the ability to get the price of a specific asset in all other assets.
-      operationId: listAssetPrice
-      parameters:
-        - name: assetId
-          in: query
-          description: The asset id to get the prices for
-          required: false
-          schema:
-            type: string
-            format: uuid
-      responses:
-        '200':
-          description: All of the prices for the asset
-          content:
-            application/json:
-              schema:
-                title: PriceResponse
-                type: object
-                properties:
-                  content:
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        assetId:
-                          description: The asset the converted price is for
-                          type: string
-                        prices:
-                          description: The list of prices for the asset
-                          type: array
-                          items:
-                            type: object
-                            properties:
-                              assetId:
-                                description: The asset id the exchange rate is for
-                                type: string
-                              price:
-                                description: the exchange rate
-                                type: string
   /convert:
     get:
       tags:
-        - Rates
+        - Convert
       summary: Convert the value of one asset into another asset
       description: |
-        ** THIS ENDPOINT IS CURRENTLY NOT AVAILABLE **
-
         Provides the ability to convert one asset into another asset.
       operationId: convertAsset
       parameters:
@@ -1453,84 +1405,21 @@ paths:
         - name: amount
           in: query
           description: The amount of the asset to convert
-          required: true
           schema:
             type: string
+            default: 1
       responses:
         '200':
-          description: The rate and converted value
+          description: The rate and amount of the toAssetId
           content:
             application/json:
               schema:
                 title: ConvertResponse
                 type: object
                 properties:
-                  fromAssetId:
-                    description: The asset to convert from
-                    type: string
-                  toAssetId:
-                    description: The asset to convert to
-                    type: string
                   amount:
-                    description: The amount of the from asset to convert
+                    description: The amount of the to asset using the conversion rate
                     type: string
                   rate:
                     description: The rate used for the converstion
                     type: string
-                  timestamp:
-                    description: The timestamp of the rate used
-                    type: string
-                    format: date-time
-                  result:
-                    description: The conversion result
-                    type: string
-  /rates:
-    get:
-      tags:
-        - Rates
-      summary: Convert the value of one asset into another asset
-      description: |
-        ** THIS ENDPOINT IS CURRENTLY NOT AVAILABLE **
-
-        Provides the ability to convert one asset into another asset.
-      operationId: getExchangeRates
-      parameters:
-        - name: baseAssetId
-          in: query
-          description: The base asset id to get the rates for
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: The latest exchange rate data for a particular base asset
-          content:
-            application/json:
-              schema:
-                title: RatesResponse
-                type: object
-                properties:
-                  content:
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        baseAssetId:
-                          description: The base asset id
-                          type: string
-                        rates:
-                          description: The exchange rates for all currencies
-                          type: array
-                          items:
-                            type: object
-                            properties:
-                              timestamp:
-                                description: The timestamp when the rates were published
-                                type: string
-                                format: date-time
-                              assetId:
-                                description: The asset id the exchange rate is for
-                                type: string
-                              rate:
-                                description: the exchange rate
-                                type: string
