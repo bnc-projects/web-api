@@ -348,7 +348,6 @@ x-tagGroups:
       - XchangeFeed
       - GWA / MWA
       - Market Cap
-      - Convert
 
   - name: Websocket API
     tags:
