@@ -1301,6 +1301,20 @@ paths:
           schema:
             type: string
             format: uuid
+        - name: interval
+          in: query
+          description: |
+            The interval period.
+          required: false
+          schema:
+            type: string
+            default: 1d
+            enum:
+              - 1m
+              - 5m
+              - 15m
+              - 1h
+              - 1d
         - name: startAfter
           in: query
           description: Retrieve OHLCV for the indexId or indexType required, starting after this particular id.
