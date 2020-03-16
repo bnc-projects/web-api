@@ -21,9 +21,12 @@ components:
         clientCredentials:
           tokenUrl: 'https://api.bravenewcoin.com/v3/oauth/token'
           scopes:
-            read:exchange-ticker: Read exchange ticker
-            read:index-ticker: Read GWA and MWA
+            read:exchange-ticker: Read the historical exchange ticker
+            read:index-ticker: Read the historical index tickers
             read:ohlcv: Read end of day open, high, low, close and volume
+            read:ohlcv-intraday: Read intraday open, high, low, close
+            read:gwa: Read the global weighted averages (index-ticker, ohlcv and/or ohlcv-intraday)
+            read:mwa: Read the market weighted averages (index-ticker, ohlcv and/or ohlcv-intraday)
             read:market-cap: Read the market capatilization
   schemas:
     Error:
@@ -371,16 +374,15 @@ tags:
       curl https://api.bravenewcoin.com/v3/asset?symbol=LTC
       ```
       ### Example API call for GWA Intraday LTC:
+      To request LTC index tickers with a timestamp before `17th March 2020`.
       ```
-      curl https://api.bravenewcoin.com/v3/index-ticker?indexType=GWA&indexId={LTC_Asset_Id} -H 'Authorization: Bearer test_SiHrnL5NKsea0G2W4LHd' -G
+      curl https://api.bravenewcoin.com/v3/index-ticker?timestamp=2020-03-17T00:00:00.000Z&indexType=GWA&indexId=220cbd0c-e466-4a75-9833-755307f872f3 -H 'Authorization: Bearer test_SiHrnL5NKsea0G2W4LHd' -G
       ```
-      In the above example, with no other parameters set, the API will return the latest 30 second values.
 
       ### Example API call for GWA Open, High, Low, Close, Volume for LTC:
       ```
-      curl https://api.bravenewcoin.com/v3/ohlcv?indexType=GWA&indexId={LTC_Asset_Id} -H 'Authorization: Bearer test_SiHrnL5NKsea0G2W4LHd' -G
+      curl https://api.bravenewcoin.com/v3/ohlcv?timestamp=2019-09-25T00:00:00.000Z&indexType=GWA&indexId={LTC_Asset_Id} -H 'Authorization: Bearer test_SiHrnL5NKsea0G2W4LHd' -G
       ```
-      In the above example, with no other parameters set, the API will return the latest OHLCV values for the last 24 hour period.
 
   - name: MWA
     description: |
@@ -400,15 +402,13 @@ tags:
 
       ### Example API call for MWA Intraday BTC/USD:
       ```
-      curl https://api.bravenewcoin.com/v3/index-ticker?indexType=MWA&indexId={BTC_USD_Market_Id} -H 'Authorization: Bearer test_SiHrnL5NKsea0G2W4LHd' -G
+      curl https://api.bravenewcoin.com/v3/index-ticker?timestamp=2019-09-25T00:00:00.000Z&indexType=MWA&indexId={BTC_USD_Market_Id} -H 'Authorization: Bearer test_SiHrnL5NKsea0G2W4LHd' -G
       ```
-      In the above example, with no other parameters set, the API will return the latest 30 second values.
 
       ### Example API call for MWA Open, High, Low, Close, Volume for BTC/USD:
       ```
-      curl https://api.bravenewcoin.com/v3/ohlcv?indexType=MWA&indexId={BTC_USD_Market_Id} -H 'Authorization: Bearer test_SiHrnL5NKsea0G2W4LHd' -G
+      curl https://api.bravenewcoin.com/v3/ohlcv?timestamp=2019-09-25T00:00:00.000Z&indexType=MWA&indexId={BTC_USD_Market_Id} -H 'Authorization: Bearer test_SiHrnL5NKsea0G2W4LHd' -G
       ```
-      In the above example, with no other parameters set, the API will return the latest OHLCV values for the last 24 hour period.
 
   - name: Authentication
     description: |
@@ -1082,14 +1082,14 @@ paths:
         - name: exchangeId
           in: query
           description: Retrieve all ticks for the particular exchange id provided.
-          required: false
+          required: true
           schema:
             type: string
             format: uuid
         - name: marketId
           in: query
           description: Retrieve all ticks for the particular market id provided.
-          required: false
+          required: true
           schema:
             type: string
             format: uuid
@@ -1145,7 +1145,15 @@ paths:
       summary: Get intraday GWA or MWAs
       security:
         - auth:
+          - read:index-ticker
+          - read:gwa
+        - auth:
+          - read:index-ticker
+          - read:mwa
+        - auth:
             - read:index-ticker
+            - read:gwa
+            - read:mwa
       description: |
         This API provides support to get GWA or MWAs. A Type parameter is used
                 to filter the type of index being returned.
@@ -1176,8 +1184,7 @@ paths:
         - name: timestamp
           in: query
           description: |
-            Retrieve all the indices from the timestamp provided. If no timestamp is provided,
-            then the most recent calculated value will be provided.
+            Retrieve all the indices from the timestamp provided. If no timestamp is provided, then the most recent calculated value will be provided.
           required: false
           schema:
             type: string
@@ -1201,7 +1208,7 @@ paths:
             | MWA        |Market Id  |
             | GWA        |Asset Id   |
 
-          required: false
+          required: true
           schema:
             type: string
             format: uuid
@@ -1246,10 +1253,31 @@ paths:
       security:
         - auth:
             - read:ohlcv
+            - read:gwa
+        - auth:
+            - read:ohlcv
+            - read:mwa
+        - auth:
+            - read:ohlcv
+            - read:gwa
+            - read:mwa
+        - auth:
+            - read:ohlcv
+            - read:ohlcv-intraday
+            - read:gwa
+        - auth:
+            - read:ohlcv
+            - read:ohlcv-intraday
+            - read:mwa
+        - auth:
+            - read:ohlcv
+            - read:ohlcv-intraday
+            - read:gwa
+            - read:mwa
       description: |
         Get end of day open, high, low, close and volumes (OHLCV) for market weighted averages (MWA) or global weighted averages (GWA). The 24hr period for end of day is 00:00:00 UTC.
 
-        This API provides the open, high, low, close and volume using the index type provided. If no timestamp is provided, then only the latest values are returned.
+        This API provides the open, high, low, close and volume using the index type provided.
 
         Currently the following types of indices are supported -
 
@@ -1281,7 +1309,7 @@ paths:
         - name: indexType
           in: query
           description: Retrieve the OHLCV end of day by the index type.
-          required: false
+          required: true
           schema:
             type: string
             enum:
@@ -1297,10 +1325,24 @@ paths:
             | MWA        |Market Id  |
             | GWA        |Asset Id   |
 
-          required: false
+          required: true
           schema:
             type: string
             format: uuid
+        - name: interval
+          in: query
+          description: |
+            The interval period.
+          required: false
+          schema:
+            type: string
+            default: 1d
+            enum:
+              - 1m
+              - 5m
+              - 15m
+              - 1h
+              - 1d
         - name: startAfter
           in: query
           description: Retrieve OHLCV for the indexId or indexType required, starting after this particular id.
