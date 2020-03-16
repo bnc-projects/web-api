@@ -222,7 +222,7 @@ components:
             - MWA
             - GWA
         timestamp:
-          description: Start of the period for which OHLCV belongs to in UTC
+          description: The date and time the OHLCV was generated
           type: string
           format: date-time
         open:
@@ -249,6 +249,14 @@ components:
         twap:
           description: The 24h time-weighted average price of the index
           type: string
+        startTime:
+          description: The date and time for the start of the OHLCV period
+          type: string
+          format: date-time
+        endTime:
+          description: The date and time for the end of the OHLCV period
+          type: string
+          format: date-time
     MarketCapPercentChange:
       type: object
       description: The percent change over a period of time.
@@ -1144,11 +1152,11 @@ paths:
       summary: Get intraday GWA or MWAs
       security:
         - auth:
-          - read:index-ticker
-          - read:gwa
+            - read:index-ticker
+            - read:gwa
         - auth:
-          - read:index-ticker
-          - read:mwa
+            - read:index-ticker
+            - read:mwa
         - auth:
             - read:index-ticker
             - read:gwa
