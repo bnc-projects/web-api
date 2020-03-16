@@ -376,7 +376,7 @@ tags:
       ### Example API call for GWA Intraday LTC:
       To request LTC index tickers with a timestamp before `17th March 2020`.
       ```
-      curl https://api.bravenewcoin.com/v3/index-ticker?timestamp=2019-09-25T00:00:00.000Z&indexType=GWA&indexId={LTC_Asset_Id} -H 'Authorization: Bearer test_SiHrnL5NKsea0G2W4LHd' -G
+      curl https://api.bravenewcoin.com/v3/index-ticker?timestamp=2020-03-17T00:00:00.000Z&indexType=GWA&indexId=220cbd0c-e466-4a75-9833-755307f872f3 -H 'Authorization: Bearer test_SiHrnL5NKsea0G2W4LHd' -G
       ```
 
       ### Example API call for GWA Open, High, Low, Close, Volume for LTC:
