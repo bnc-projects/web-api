@@ -21,7 +21,7 @@ components:
         clientCredentials:
           tokenUrl: 'https://api.bravenewcoin.com/v3/oauth/token'
           scopes:
-            read:exchange-ticker: Read the histroical exchange ticker
+            read:exchange-ticker: Read the historical exchange ticker
             read:index-ticker: Read the historical index tickers
             read:ohlcv: Read end of day open, high, low, close and volume
             read:ohlcv-intraday: Read intraday open, high, low, close
