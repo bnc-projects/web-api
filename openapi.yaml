@@ -1144,7 +1144,15 @@ paths:
       summary: Get intraday GWA or MWAs
       security:
         - auth:
+          - read:index-ticker
+          - read:gwa
+        - auth:
+          - read:index-ticker
+          - read:mwa
+        - auth:
             - read:index-ticker
+            - read:gwa
+            - read:mwa
       description: |
         This API provides support to get GWA or MWAs. A Type parameter is used
                 to filter the type of index being returned.
@@ -1242,6 +1250,24 @@ paths:
         - GWA / MWA
       summary: Get end of day Open, High, Low, Close, Volumes
       security:
+        - auth:
+            - read:ohlcv
+            - read:gwa
+        - auth:
+            - read:ohlcv
+            - read:mwa
+        - auth:
+            - read:ohlcv
+            - read:gwa
+            - read:mwa
+        - auth:
+            - read:ohlcv
+            - read:ohlcv-intraday
+            - read:gwa
+        - auth:
+            - read:ohlcv
+            - read:ohlcv-intraday
+            - read:mwa
         - auth:
             - read:ohlcv
             - read:ohlcv-intraday
