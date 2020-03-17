@@ -25,8 +25,6 @@ components:
             read:index-ticker: Read the historical index tickers
             read:ohlcv: Read end of day open, high, low, close and volume
             read:ohlcv-intraday: Read intraday open, high, low, close
-            read:gwa: Read the global weighted averages (index-ticker, ohlcv and/or ohlcv-intraday)
-            read:mwa: Read the market weighted averages (index-ticker, ohlcv and/or ohlcv-intraday)
             read:market-cap: Read the market capatilization
   schemas:
     Error:
@@ -1153,14 +1151,6 @@ paths:
       security:
         - auth:
             - read:index-ticker
-            - read:gwa
-        - auth:
-            - read:index-ticker
-            - read:mwa
-        - auth:
-            - read:index-ticker
-            - read:gwa
-            - read:mwa
       description: |
         This API provides support to get GWA or MWAs. A Type parameter is used
                 to filter the type of index being returned.
@@ -1260,27 +1250,11 @@ paths:
       security:
         - auth:
             - read:ohlcv
-            - read:gwa
         - auth:
-            - read:ohlcv
-            - read:mwa
-        - auth:
-            - read:ohlcv
-            - read:gwa
-            - read:mwa
+            - read:ohlcv-intraday
         - auth:
             - read:ohlcv
             - read:ohlcv-intraday
-            - read:gwa
-        - auth:
-            - read:ohlcv
-            - read:ohlcv-intraday
-            - read:mwa
-        - auth:
-            - read:ohlcv
-            - read:ohlcv-intraday
-            - read:gwa
-            - read:mwa
       description: |
         Get end of day open, high, low, close and volumes (OHLCV) for market weighted averages (MWA) or global weighted averages (GWA). The 24hr period for end of day is 00:00:00 UTC.
 
