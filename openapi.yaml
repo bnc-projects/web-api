@@ -1251,8 +1251,6 @@ paths:
         - auth:
             - read:ohlcv
         - auth:
-            - read:ohlcv-intraday
-        - auth:
             - read:ohlcv
             - read:ohlcv-intraday
       description: |
