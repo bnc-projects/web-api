@@ -247,11 +247,11 @@ components:
         twap:
           description: The 24h time-weighted average price of the index
           type: string
-        startTime:
+        startTimestamp:
           description: The date and time for the start of the OHLCV period
           type: string
           format: date-time
-        endTime:
+        endTimestamp:
           description: The date and time for the end of the OHLCV period
           type: string
           format: date-time
