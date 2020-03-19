@@ -219,10 +219,6 @@ components:
           enum:
             - MWA
             - GWA
-        timestamp:
-          description: The date and time the OHLCV was generated
-          type: string
-          format: date-time
         open:
           description: The opening price of the index for the 24h period
           type: string
