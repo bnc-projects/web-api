@@ -24,7 +24,6 @@ components:
             read:exchange-ticker: Read the historical exchange ticker
             read:index-ticker: Read the historical index tickers
             read:ohlcv: Read end of day open, high, low, close and volume
-            read:ohlcv-intraday: Read intraday open, high, low, close
             read:market-cap: Read the market capatilization
   schemas:
     Error:
@@ -1249,7 +1248,6 @@ paths:
             - read:ohlcv
         - auth:
             - read:ohlcv
-            - read:ohlcv-intraday
       description: |
         Get end of day open, high, low, close and volumes (OHLCV) for market weighted averages (MWA) or global weighted averages (GWA). The 24hr period for end of day is 00:00:00 UTC.
 
@@ -1314,10 +1312,6 @@ paths:
             type: string
             default: 1d
             enum:
-              - 1m
-              - 5m
-              - 15m
-              - 1h
               - 1d
         - name: startAfter
           in: query
