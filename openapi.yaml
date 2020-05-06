@@ -707,6 +707,8 @@ tags:
     description: |
       All top-level API resources have support for bulk fetches via "list" API methods. For instance, you can list assets, list exchange tickers, and list GWA / MWA. These list API methods share a common structure, taking at least these three parameters: `size`, `timestamp` or `startAfter`.
 
+      APIs which support query parameters timestamp and startAfter will provide paginated results when these query parameters are provided.
+
       Brave New Coin API's utilise cursor-based pagination using the `startAfter` parameter. The parameter should be an existing object ID and returns resources in reverse chronological order. The `startAfter` parameter returns resources listed after the named resource. For APIs which take both a `startAfter` and `timestamp` parameters, the `timestamp` is ignored if `startAfter` is provided.
 
       Arguments     |                         | Description
