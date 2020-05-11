@@ -21,7 +21,7 @@ components:
         clientCredentials:
           tokenUrl: 'https://api.bravenewcoin.com/v3/oauth/token'
           scopes:
-            read:exchange-ticker: Read the historical exchange ticker
+            read:exchange-ticker: Read the latest exchange ticker
             read:index-ticker: Read the historical index tickers
             read:ohlcv: Read end of day open, high, low, close and volume
             read:market-cap: Read the market capatilization
@@ -1065,23 +1065,15 @@ paths:
         - auth:
             - read:exchange-ticker
       description: |-
-        This API provides ticker information by exchange and market. If no timestamp is provided, then only the most recent ticks will be provided.
+        This API provides ticker information by exchange and market.
 
         Using this API by **base and quote symbol is not recommended** as it may result in an error when duplicate symbols are found. Searching by marketId is recommended and will result in a faster response.
       operationId: listExchangeTicker
       x-code-samples:
         - lang: Shell
           label: curl
-          source: "curl https://api.bravenewcoin.com/v3/exchange-ticker/?timestamp=2018-08-14T05:54:42.395Z&size=100 -H 'Authorization: Bearer test_SiHrnL5NKsea0G2W4LHd' -G"
+          source: "curl https://api.bravenewcoin.com/v3/exchange-ticker/ -H 'Authorization: Bearer test_SiHrnL5NKsea0G2W4LHd' -G"
       parameters:
-        - name: timestamp
-          in: query
-          description: >-
-            Retrieve all ticks from the timestamp provided.
-          required: false
-          schema:
-            type: string
-            format: date-time
         - name: exchangeId
           in: query
           description: Retrieve all ticks for the particular exchange id provided.
@@ -1096,22 +1088,6 @@ paths:
           schema:
             type: string
             format: uuid
-        - name: startAfter
-          in: query
-          description: Retrieve all ticks starting after this particular id.
-          required: false
-          schema:
-            type: string
-            format: uuid
-        - name: size
-          description: The maximum size to return in the result set. This parameter is ignored if no timestamp is provided.
-          in: query
-          required: false
-          schema:
-            type: integer
-            default: 10
-            minimum: 1
-            maximum: 2000
         - name: baseSymbol
           in: query
           description: Retrieve the ticks for the markets which contain the base symbol. If the base symbol is provided then the quote symbol must be provided.
@@ -1246,8 +1222,6 @@ paths:
         - GWA / MWA
       summary: Get end of day Open, High, Low, Close, Volumes
       security:
-        - auth:
-            - read:ohlcv
         - auth:
             - read:ohlcv
       description: |
