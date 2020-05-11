@@ -1072,7 +1072,7 @@ paths:
       x-code-samples:
         - lang: Shell
           label: curl
-          source: "curl https://api.bravenewcoin.com/v3/exchange-ticker/?timestamp=2018-08-14T05:54:42.395Z&size=100 -H 'Authorization: Bearer test_SiHrnL5NKsea0G2W4LHd' -G"
+          source: "curl https://api.bravenewcoin.com/v3/exchange-ticker/ -H 'Authorization: Bearer test_SiHrnL5NKsea0G2W4LHd' -G"
       parameters:
         - name: exchangeId
           in: query
