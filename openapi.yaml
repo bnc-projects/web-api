@@ -1224,8 +1224,6 @@ paths:
       security:
         - auth:
             - read:ohlcv
-        - auth:
-            - read:ohlcv
       description: |
         Get end of day open, high, low, close and volumes (OHLCV) for market weighted averages (MWA) or global weighted averages (GWA). The 24hr period for end of day is 00:00:00 UTC.
 
