@@ -359,6 +359,7 @@ x-tagGroups:
       - Websocket Errors
       - Websocket XchangeFeed
       - Websocket GWA / MWA
+      - Websocket Trade Data
 tags:
   - name: GWA
     description: |
@@ -417,7 +418,7 @@ tags:
 
       ## Websocket API Authentication
 
-      Our websocket endpoint requires the bearer token to be sent as *access_token* parameter in the connection url. The token will have to be used within 30 seconds of being issued.
+      Our websocket endpoint requires the bearer token to be sent as *access_token* parameter in the connection url. The token will have to be used within 86400 seconds (24 hours) of being issued.
 
       ```
       wss://ws.bravenewcoin.com?access_token=<token>
@@ -483,7 +484,7 @@ tags:
 
   - name: Websocket Overview
     description: |
-      Brave New Coin Websocket API exposes GWA / MWA data and XchangeFeed data via Websockets. Clients need to send a subscribe message to authenticate and start receiving data. See [XchangeFeed](#tag/Websocket-XchangeFeed), [GWA / MWA](#tag/Websocket-GWA-MWA).
+      Brave New Coin Websocket API exposes GWA / MWA, Trades and XchangeFeed data via Websockets. Clients need to send a subscribe message to authenticate and start receiving data. See [XchangeFeed](#tag/Websocket-XchangeFeed), [GWA / MWA](#tag/Websocket-GWA-MWA), [Trades](#tag/Websocket-Trade-Data).
 
       A sample project using the BNC Websocket API is available on Github :
 
@@ -565,7 +566,7 @@ tags:
       Name                      | Description
       --------------------------|------------
       marketId                  | Subscribe to the exchange ticks for this market
-      exchangId                 | Subscribe to the exchange ticks for this exchange
+      exchangeId                | Subscribe to the exchange ticks for this exchange
       marketName                | Subscribe to the exchange ticks for this exchange by the trade pair. e.g. BTC_USD. It is recommended to subscribe by the marketId rather than the marketName
 
       #### Subscribe to Exchange
@@ -664,6 +665,112 @@ tags:
         "price": "string",
         "volume": "string",
         "timestamp": "2018-09-06T04:35:44Z"
+      }
+      ```
+    x-traitTag: true
+  - name: Websocket Trade Data
+    description: |
+
+      This endpoint can be used to subscribe to the raw trade data from different exchanges. Clients can send a Subscribe message to start receiving trade data.
+
+      To subscribe to all the trades of an exchange, only the exchangeId can be sent. To subscribe to all the trades of a market, only the marketId can be sent. Both exchangeId and marketId can be sent to subscribe to the market in an exchange. Clients can subscribe to multiple sources as required. Clients need to call the [Market](#tag/Market) and [Exchange](#tag/Exchange) REST API's to get the ids.
+
+      Below is a list of exchanges and markets for which BNC tracks and collects trade data.
+
+      Exchange Name |  Exchange Id                           |  Market Name  | Market Id
+      --------------|----------------------------------------|---------------|------------
+      Binance       |  a05e02d1-2789-49a3-aa83-1d3c9a442ea8  |  EOS_BTC      | b884f3b1-23b4-4c9e-b95b-29a53165fecd
+                    |                                        |  XRP_BTC      | bb999433-d36d-42e9-9a2e-af1d3219c9ac
+      Bitfinex      |  7f26d058-318d-440c-9b55-486eabd8a065  |  BTC_USD      | 6ea0d2ef-6dd0-4adb-ad32-f7f3db58ccbe
+                    |                                        |  LTC_USD      | 2cbedd6a-dca2-48b1-a9db-9a1b24c2f85c
+                    |                                        |  ETH_USD      | bff074a3-3564-4479-a4bd-c49766acc63c
+                    |                                        |  XRP_USD      | 89426269-ec59-4bef-9393-e50fd84f14cf
+                    |                                        |  EOS_USD      | 5f5b8426-35b7-41df-a17a-84a4a6777b48
+                    |                                        |  EOS_BTC      | b884f3b1-23b4-4c9e-b95b-29a53165fecd
+      Bitstamp      |  48ca12fa-f5f4-484a-9945-84825030c8cd  |  BTC_USD      |
+                    |                                        |  LTC_USD      |
+                    |                                        |  ETH_USD      |
+                    |                                        |  XRP_USD      |
+      Bittrex       |  2eccd6dd-e073-4767-942d-24301dd9cad8  |  XRP_USD      |
+                    |                                        |  EOS_BTC      |
+                    |                                        |  BTC_USD      |
+                    |                                        |  LTC_USD      |
+                    |                                        |  ETH_USD      |
+      BTSE          |  ec946827-a994-4d1f-9c5b-ef3ac944b270  |  BTC_USD      |
+                    |                                        |  LTC_USD      |
+                    |                                        |  ETH_USD      |
+      Coinbase-Pro  |  65cf072d-2ffa-48f8-9497-6654234f52e3  |  BTC_USD      |
+                    |                                        |  LTC_USD      |
+                    |                                        |  ETH_USD      |
+                    |                                        |  XRP_USD      |
+                    |                                        |  EOS_USD      |
+                    |                                        |  EOS_BTC      |
+                    |                                        |  XRP_BTC      |
+      Gemini        |  48ea171d-928b-4509-a209-e7a6dd7392d1  |  BTC_USD      |
+                    |                                        |  LTC_USD      |
+                    |                                        |  ETH_USD      |
+      itBit         |  2d26aaa4-ba5c-44dc-84ba-88474ef57556  |  BTC_USD      |
+                    |                                        |  ETH_USD      |
+      Kraken        |  fa75a209-f460-4195-bbcc-56eb72286e3d  |  BTC_USD      |
+                    |                                        |  LTC_USD      |
+                    |                                        |  ETH-USD      |
+                    |                                        |  XRP-USD      |
+                    |                                        |  EOS_USD      |
+                    |                                        |  EOS_BTC      |
+
+      ### Parameters
+
+      Name                      | Description
+      --------------------------|------------
+      marketId                  | Subscribe to the exchange trades for this market
+      exchangeId                | Subscribe to the exchange trades for this exchange
+      requestId (optional)      | Client generated id that uniquely identifies the request
+
+      #### Subscribe to trades by Exchange Id
+
+      ```
+      {
+        "event": "SUBSCRIBE_TRADE",
+        "exchangeId": "65cf072d-2ffa-48f8-9497-6654234f52e3",
+        "requestId": 1
+      }
+      ```
+
+      #### Subscribe to trades by Market Id
+
+      ```
+      {
+        "event": "SUBSCRIBE_TRADE",
+        "marketId": "6ea0d2ef-6dd0-4adb-ad32-f7f3db58ccbe",
+        "requestId": 1
+      }
+      ```
+      #### Subscribe to trades for a Market in an Exchange
+
+      ```
+      {
+        "event": "SUBSCRIBE_TRADE",
+        "exchangeId": "65cf072d-2ffa-48f8-9497-6654234f52e3"
+        "marketId": "6ea0d2ef-6dd0-4adb-ad32-f7f3db58ccbe",
+        "requestId": 1
+      }
+      ```
+      #### Response
+
+      The server will return ticks in this format
+      ```
+      {
+        "event": "TRADE"
+        "id": "string",
+        "tradeId": "string",
+        "exchangeId": "string",
+        "exchange": "string",
+        "marketId": "string",
+        "marketName": "string",
+        "price": "string",
+        "amount": "string",
+        "exchangeTimestamp": "2020-06-19T04:37:34.845026Z"
+        "timestamp": "2020-06-19T04:37:34.894961Z"
       }
       ```
     x-traitTag: true
