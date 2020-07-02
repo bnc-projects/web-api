@@ -200,6 +200,9 @@ components:
         volume:
           description: The calculated volume in the last 24 hours.
           type: string
+        tickVolume:
+          description: The calculated volume in the tick. Only for LX 30 second ticks.
+          type: string
     OpenHighLowCloseVolume:
       type: object
       properties:
@@ -358,6 +361,7 @@ x-tagGroups:
       - Websocket Overview
       - Websocket Errors
       - Websocket XchangeFeed
+      - Websocket LX
       - Websocket GWA / MWA
       - Websocket Trade Data
 tags:
@@ -484,7 +488,12 @@ tags:
 
   - name: Websocket Overview
     description: |
-      Brave New Coin Websocket API exposes GWA / MWA, Trades and XchangeFeed data via Websockets. Clients need to send a subscribe message to authenticate and start receiving data. See [XchangeFeed](#tag/Websocket-XchangeFeed), [GWA / MWA](#tag/Websocket-GWA-MWA), [Trades](#tag/Websocket-Trade-Data).
+      Brave New Coin Websocket API exposes the
+      [LX](#tag/Websocket-LX) indices,
+      [GWA / MWA](#tag/Websocket-GWA-MWA) indices,
+      [trade data](#tag/Websocket-Trade-Data) (for selected markets) and [XchangeFeed](#tag/Websocket-XchangeFeed)
+      (for all the exchanges and markets covered by BNC) via Websockets.
+      Clients need to send a subscribe message to authenticate and start receiving data.
 
       A sample project using the BNC Websocket API is available on Github :
 
@@ -516,19 +525,22 @@ tags:
 
       #### Ping message
 
-      Clients or server can send a ping request to check if the connection is active. Clients are expected to implement a `pong` response. The server may terminate the connection if the client does not respond to `ping` from the server.
+      Clients or server can send a ping request to check if the connection is active. Clients are expected to implement a `pong` response.
+      The server may terminate the connection if the client does not respond to `ping` from the server.
 
       Request
       ```
       {
-        "event": "PING"
+        "event": "PING",
+        "requestId": 1
       }
       ```
       Response
       ```
       {
         "event": "PONG",
-        "timestamp": "2018-09-05T01:34:39Z"
+        "timestamp": "2018-09-05T01:34:39Z",
+        "requestId": 1
       }
       ```
   - name: Websocket Errors
@@ -630,27 +642,26 @@ tags:
       }
       ```
     x-traitTag: true
-  - name: Websocket GWA / MWA
+  - name: Websocket LX
     description: |
 
-      This endpoint can be used to subscribe to the GWA / MWA data. These indices are calculated by BNC and published to the websocket endpoint. Clients need to send a Subscribe message to start receiving.
-      Indices can be subscribed by the indexId or the indexType.
+      This websocket endpoint can be used to subscribe to [BNC's LX indices](https://bravenewcoin.com/enterprise-solutions/indices-program).
+      Clients need to send a Subscribe message to start receiving. The LX Indices can be subscribed by the indexId or the indexType `LX`.
+      The following table provides the available index Ids to subscribe to an LX index.
 
-      The index id will differ based on the index type.
-
-      | Index Type | Index Id  |
-      | -----------|:---------:|
-      | MWA        |Market Id  |
-      | GWA        |Asset Id   |
-
-      Clients need to call the [Market](#tag/Market) and [Asset](#tag/Asset) REST API's to get the ids.
+      | Index Type | Index Id  | Example Id | Description |
+      | -----------| --------- | ---------- | ----------- |
+      | LX         | Index Id  | 191724d4-7915-491b-8b73-bc293e03a93e | [BLX](https://bravenewcoin.com/data-and-charts/indices/blx) |
+      | LX         | Index Id  | 6560acf3-1cb7-4fe4-aa19-fbd90c7b56ee | [ELX](https://bravenewcoin.com/data-and-charts/indices/elx) |
+      | LX         | Index Id  | ce36445a-2a33-4a0f-8b5b-e56175f8db60 | [XRPLX](https://bravenewcoin.com/data-and-charts/indices/blx) |
 
       #### Subscribe by Index ID
 
       ```
       {
         "event": "SUBSCRIBE_INDEX_TICKER",
-        "indexId": "359107d3-bd1a-418c-9470-58831ed9a45e"
+        "indexId": "191724d4-7915-491b-8b73-bc293e03a93e",
+        "requestId" : 1
       }
       ```
 
@@ -659,7 +670,70 @@ tags:
       ```
       {
         "event": "SUBSCRIBE_INDEX_TICKER",
-        "indexType": "MWA"
+        "indexType": "LX",
+        "requestId": 2
+      }
+      ```
+
+      #### Responses
+
+      Subscription response
+      ```
+      {
+        "event": "SUBSCRIBED_INDEX_TICKER",
+        "indexType": "LX",
+        "timestamp": "2020-06-25T04:56:14.313516Z",
+        "requestId": 2
+      }
+      ```
+
+      The server will return ticks in this format
+      ```
+      {
+        "event": "INDEX_TICKER"
+        "id": "uuid",
+        "indexId": "uuid",
+        "indexType": "LX",
+        "name": "string",
+        "price": "string",
+        "volume": "string",
+        "tickVolume": "string",
+        "timestamp": "2020-06-25T04:57:01.298745Z"
+      }
+      ```
+    x-traitTag: true
+  - name: Websocket GWA / MWA
+    description: |
+
+      This endpoint can be used to subscribe to the GWA / MWA data. These indices are calculated by BNC and published to the websocket endpoint. Clients need to send a Subscribe message to start receiving.
+      Indices can be subscribed by the indexId or the indexType.
+
+      The index id will differ based on the index type.
+
+      | Index Type | Index Id  | Example Id | Description |
+      | -----------| --------- | ---------- | ----------- |
+      | MWA        | Market Id | 2e6d3ce9-9f30-464c-b73e-ba150d2dfb8a | MWA for XAUT_BTC |
+      | GWA        | Asset Id  | 1490fca6-29f8-416a-835b-e9d000f26fd0 | GWA for [XAUT](https://bravenewcoin.com/data-and-charts/assets/XAUT/price) using the BNC asset Id for XAUT. |
+
+      Clients need to call the [Market](#tag/Market) and [Asset](#tag/Asset) REST API's to get the ids.
+
+      #### Subscribe by Index ID
+
+      ```
+      {
+        "event": "SUBSCRIBE_INDEX_TICKER",
+        "indexId": "1490fca6-29f8-416a-835b-e9d000f26fd0",
+        "requestId" : 1
+      }
+      ```
+
+      #### Subscribe by Index Type
+
+      ```
+      {
+        "event": "SUBSCRIBE_INDEX_TICKER",
+        "indexType": "MWA",
+        "requestId": 2
       }
       ```
 
@@ -670,7 +744,8 @@ tags:
       {
         "event": "SUBSCRIBED_INDEX_TICKER",
         "indexType": "MWA",
-        "timestamp": "2020-06-25T04:56:14.313516Z"
+        "timestamp": "2020-06-25T04:56:14.313516Z",
+        "requestId": 2
       }
       ```
 
