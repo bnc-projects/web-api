@@ -25,6 +25,7 @@ components:
             read:index-ticker: Read the historical index tickers
             read:ohlcv: Read end of day open, high, low, close and volume
             read:market-cap: Read the market capatilization
+            read:LX: Read historical LX index tickers and end of day open, high, low, close and volume
   schemas:
     Error:
       type: object
@@ -177,7 +178,7 @@ components:
       type: object
       properties:
         indexId:
-          description: Unique identifier for the constituent used to calculate the index.
+          description: Unique identifier for the constituent used to calculate the index. Or a unique ID for the index in the case of LX indices.
           type: string
           format: uuid
         indexType:
@@ -186,6 +187,7 @@ components:
           enum:
             - MWA
             - GWA
+            - LX
         price:
           description: The calculated price.
           type: string
@@ -211,16 +213,17 @@ components:
           type: string
           format: uuid
         indexId:
-          description: Unique identifier for the constituent used to calculate the index.
+          description: Unique identifier for the constituent used to calculate the index. Or a unique ID for the index in the case of LX indices.
           type: string
           format: uuid
         indexType:
-          description: The index type of thhe OHLCV
+          description: The index type of the OHLCV
           required: true
           type: string
           enum:
             - MWA
             - GWA
+            - LX
         open:
           description: The opening price of the index for the 24h period
           type: string
@@ -253,6 +256,7 @@ components:
           description: The date and time for the end of the OHLCV period
           type: string
           format: date-time
+
     MarketCapPercentChange:
       type: object
       description: The percent change over a period of time.
@@ -353,7 +357,7 @@ x-tagGroups:
       - Market
       - Exchange
       - XchangeFeed
-      - GWA / MWA
+      - GWA / MWA / LX
       - Market Cap
 
   - name: Websocket API
@@ -471,8 +475,8 @@ tags:
   - name: Rest API Overview
     description: |
       Brave New Coin REST API exposes the following endpoints:
-      * [GWA / MWA](#tag/GWA-MWA): Data from intraday API's is limited to a 200 day trailing window and refreshed every 30 seconds from June 1st, 2019.
-      * [OHLCV](#tag/Open-High-Low-Close-Volumes): OHLCV API's can provide the full historic dataset.
+      * [GWA / MWA / LX](#tag/GWA-MWA-LX): Data from intraday API's is limited to a 200 day trailing window and refreshed every 30 seconds from June 1st, 2019.
+      * [OHLCV](#tag/GWA-MWA-LX): OHLCV API's can provide the full historic dataset.
       * [Market Cap](#tag/Market-Cap): Latest ranking within the last 5 minutes.
       * [XchangeFeed](#tag/XchangeFeed): Standardized exchange market tickers updated every 30 seconds.
 
@@ -1331,11 +1335,12 @@ paths:
   /index-ticker:
     get:
       tags:
-        - GWA / MWA
-      summary: Get intraday GWA or MWAs
+        - GWA / MWA / LX
+      summary: Get intraday
       security:
         - auth:
             - read:index-ticker
+            - read:LX
       description: |
         This API provides support to get GWA or MWAs. A Type parameter is used
                 to filter the type of index being returned.
@@ -1346,13 +1351,17 @@ paths:
         | ------------|:----------------------------:|
         | MWA         | The Market weighted averages |
         | GWA         | The Global weighted averages |
+        | LX          | Liquid Indices               |
 
         Each index type will have an index id which identifies the constituent type used to build the index -
 
         | Index Type | Index Id  | Output |
         | -----------|:---------:|:---------:|
-        | MWA        | Market Id | The Market Weighted Average for that market |
+        | MWA        | Market Id | The Market Weighted Average for that market       |
         | GWA        | Asset Id  | The Global Weighted Average for that coin / asset |
+        | LX         | 191724d4-7915-491b-8b73-bc293e03a93e  | Bitcoin Liquid Index (BLX)  |
+        | LX         | 6560acf3-1cb7-4fe4-aa19-fbd90c7b56ee  | Ethereum Liquid Index (ELX) |
+        | LX         | ce36445a-2a33-4a0f-8b5b-e56175f8db60  | Ripple Liquid Index (XRPLX) |
 
         Clients are supposed to use this ID to call the other rest API's to get more information about the constituents
         used while building the index.
@@ -1361,7 +1370,7 @@ paths:
       x-code-samples:
         - lang: Shell
           label: curl
-          source: "curl https://api.bravenewcoin.com/v3/index-ticker?indexType=GWA -H 'Authorization: Bearer test_SiHrnL5NKsea0G2W4LHd' -G"
+          source: "curl https://api.bravenewcoin.com/v3/index-ticker?indexId={index_id} -H 'Authorization: Bearer test_SiHrnL5NKsea0G2W4LHd' -G"
       parameters:
         - name: timestamp
           in: query
@@ -1374,21 +1383,25 @@ paths:
         - name: indexType
           in: query
           description: Retrieve the index by the type.
-          required: true
+          required: false
           schema:
             type: string
             enum:
               - MWA
               - GWA
+              - LX
         - name: indexId
           in: query
           description: |
             Retrieve all the indices by the particular index id. The index id will differ based on the index type.
 
-            | Index Type | Index Id  |
-            | -----------|:---------:|
-            | MWA        |Market Id  |
-            | GWA        |Asset Id   |
+            | Index Type | Index Id  | Description |
+            | -----------|:---------:|:-----------:|
+            | MWA        |Market Id  |             |
+            | GWA        |Asset Id   |             |
+            | LX         |191724d4-7915-491b-8b73-bc293e03a93e  | [BLX](https://bravenewcoin.com/data-and-charts/indices/blx) |
+            | LX         |6560acf3-1cb7-4fe4-aa19-fbd90c7b56ee  | [ELX](https://bravenewcoin.com/data-and-charts/indices/elx) |
+            | LX         |ce36445a-2a33-4a0f-8b5b-e56175f8db60  | [XRPLX](https://bravenewcoin.com/data-and-charts/indices/blx) |
 
           required: true
           schema:
@@ -1430,11 +1443,12 @@ paths:
   /ohlcv:
     get:
       tags:
-        - GWA / MWA
+        - GWA / MWA / LX
       summary: Get end of day Open, High, Low, Close, Volumes
       security:
         - auth:
             - read:ohlcv
+            - read:LX
       description: |
         Get end of day open, high, low, close and volumes (OHLCV) for market weighted averages (MWA) or global weighted averages (GWA). The 24hr period for end of day is 00:00:00 UTC.
 
@@ -1446,18 +1460,24 @@ paths:
         | ------------|:----------------------------:|
         | MWA         | The Market weighted averages |
         | GWA         | The Global weighted averages |
+        | LX          | Liquid Indices               |
 
         Each index type will have an index id which identifies the constituent type used to build the index -
 
         | Index Type | Index Id  | Output |
         | -----------|:---------:|:---------:|
-        | MWA        | Market Id | OHLCV for that market |
+        | MWA        | Market Id | OHLCV for that market       |
         | GWA        | Asset Id  | OHLCV for that coin / asset |
+        | LX         | 191724d4-7915-491b-8b73-bc293e03a93e  | OHLCV for Bitcoin Liquid Index (BLX)  |
+        | LX         | 6560acf3-1cb7-4fe4-aa19-fbd90c7b56ee  | OHLCV for Ethereum Liquid Index (ELX) |
+        | LX         | ce36445a-2a33-4a0f-8b5b-e56175f8db60  | OHLCV for Ripple Liquid Index (XRPLX) |
+
+
       operationId: listOhlcv
       x-code-samples:
         - lang: Shell
           label: curl
-          source: "curl https://api.bravenewcoin.com/v3/ohlcv -H 'Authorization: Bearer test_SiHrnL5NKsea0G2W4LHd' -G"
+          source: "curl https://api.bravenewcoin.com/v3/ohlcv?indexId={index_id} -H 'Authorization: Bearer test_SiHrnL5NKsea0G2W4LHd' -G"
       parameters:
         - name: timestamp
           in: query
@@ -1470,21 +1490,26 @@ paths:
         - name: indexType
           in: query
           description: Retrieve the OHLCV end of day by the index type.
-          required: true
+          required: false
           schema:
             type: string
             enum:
               - MWA
               - GWA
+              - LX
         - name: indexId
           in: query
           description: |
             Retrieve all the OHLCV values by the particular index id. The index id will differ based on the index type.
 
-            | Index Type | Index Id  |
-            | -----------|:---------:|
-            | MWA        |Market Id  |
-            | GWA        |Asset Id   |
+            | Index Type | Index Id  | Description |
+            | -----------|:---------:|:-----------:|
+            | MWA        |Market Id  |             |
+            | GWA        |Asset Id   |             |
+            | LX         |191724d4-7915-491b-8b73-bc293e03a93e  | [BLX](https://bravenewcoin.com/data-and-charts/indices/blx) |
+            | LX         |6560acf3-1cb7-4fe4-aa19-fbd90c7b56ee  | [ELX](https://bravenewcoin.com/data-and-charts/indices/elx) |
+            | LX         |ce36445a-2a33-4a0f-8b5b-e56175f8db60  | [XRPLX](https://bravenewcoin.com/data-and-charts/indices/blx) |
+
 
           required: true
           schema:
