@@ -178,7 +178,7 @@ components:
       type: object
       properties:
         indexId:
-          description: Unique identifier for the resource.
+          description: Unique identifier for the constituent used to calculate the index. Or a unique ID for the index in the case of LX indices.
           type: string
           format: uuid
         indexType:
@@ -196,7 +196,7 @@ components:
           type: string
           format: date-time
         id:
-          description: Unique identifier for the constituent used to calculate the index.
+          description: Unique identifier for the resource.
           type: string
           format: uuid
         volume:
@@ -213,7 +213,7 @@ components:
           type: string
           format: uuid
         indexId:
-          description: Unique identifier for the constituent used to calculate the index.
+          description: Unique identifier for the constituent used to calculate the index. Or a unique ID for the index in the case of LX indices.
           type: string
           format: uuid
         indexType:
@@ -254,10 +254,6 @@ components:
           format: date-time
         endTimestamp:
           description: The date and time for the end of the OHLCV period
-          type: string
-          format: date-time
-        timestamp:
-          description: The date and time of the OHLCV
           type: string
           format: date-time
 
@@ -1361,11 +1357,11 @@ paths:
 
         | Index Type | Index Id  | Output |
         | -----------|:---------:|:---------:|
-        | MWA        | Market Id | The Market Weighted Average for that market |
+        | MWA        | Market Id | The Market Weighted Average for that market       |
         | GWA        | Asset Id  | The Global Weighted Average for that coin / asset |
-        | LX         | Index Id  | Bitcoin Liquid Index (BLX)
-        | LX         | Index Id  | Ethereum Liquid Index (ELX)
-        | LX         | Index Id  | Ripple Liquid Index (XRPLX)
+        | LX         | 191724d4-7915-491b-8b73-bc293e03a93e  | Bitcoin Liquid Index (BLX)  |
+        | LX         | 6560acf3-1cb7-4fe4-aa19-fbd90c7b56ee  | Ethereum Liquid Index (ELX) |
+        | LX         | ce36445a-2a33-4a0f-8b5b-e56175f8db60  | Ripple Liquid Index (XRPLX) |
 
         Clients are supposed to use this ID to call the other rest API's to get more information about the constituents
         used while building the index.
@@ -1399,13 +1395,13 @@ paths:
           description: |
             Retrieve all the indices by the particular index id. The index id will differ based on the index type.
 
-            | Index Type | Index Id  |  Example Id | Description |
-            | -----------|:---------:|:-----------:|             |
-            | MWA        |Market Id  |             |             |
-            | GWA        |Asset Id   |             |             |
-            | LX         |Index Id   | 191724d4-7915-491b-8b73-bc293e03a93e | [BLX](https://bravenewcoin.com/data-and-charts/indices/blx) |
-            | LX         |Index Id   | 6560acf3-1cb7-4fe4-aa19-fbd90c7b56ee | [ELX](https://bravenewcoin.com/data-and-charts/indices/elx) |
-            | LX         |Index Id   | ce36445a-2a33-4a0f-8b5b-e56175f8db60 | [XRPLX](https://bravenewcoin.com/data-and-charts/indices/blx) |
+            | Index Type | Index Id  | Description |
+            | -----------|:---------:|:-----------:|
+            | MWA        |Market Id  |             |
+            | GWA        |Asset Id   |             |
+            | LX         |191724d4-7915-491b-8b73-bc293e03a93e  | [BLX](https://bravenewcoin.com/data-and-charts/indices/blx) |
+            | LX         |6560acf3-1cb7-4fe4-aa19-fbd90c7b56ee  | [ELX](https://bravenewcoin.com/data-and-charts/indices/elx) |
+            | LX         |ce36445a-2a33-4a0f-8b5b-e56175f8db60  | [XRPLX](https://bravenewcoin.com/data-and-charts/indices/blx) |
 
           required: true
           schema:
@@ -1470,11 +1466,11 @@ paths:
 
         | Index Type | Index Id  | Output |
         | -----------|:---------:|:---------:|
-        | MWA        | Market Id | OHLCV for that market |
+        | MWA        | Market Id | OHLCV for that market       |
         | GWA        | Asset Id  | OHLCV for that coin / asset |
-        | LX         | Index Id  | OHLCV for Bitcoin Liquid Index (BLX)
-        | LX         | Index Id  | OHLCV for Ethereum Liquid Index (ELX)
-        | LX         | Index Id  | OHLCV for Ripple Liquid Index (XRPLX)
+        | LX         | 191724d4-7915-491b-8b73-bc293e03a93e  | OHLCV for Bitcoin Liquid Index (BLX)  |
+        | LX         | 6560acf3-1cb7-4fe4-aa19-fbd90c7b56ee  | OHLCV for Ethereum Liquid Index (ELX) |
+        | LX         | ce36445a-2a33-4a0f-8b5b-e56175f8db60  | OHLCV for Ripple Liquid Index (XRPLX) |
 
 
       operationId: listOhlcv
@@ -1506,13 +1502,13 @@ paths:
           description: |
             Retrieve all the OHLCV values by the particular index id. The index id will differ based on the index type.
 
-            | Index Type | Index Id  | Example Id | Description |
-            | -----------|:---------:|:----------:|             |
-            | MWA        |Market Id  |            |             |
-            | GWA        |Asset Id   |            |             |
-            | LX         |Index Id   | 191724d4-7915-491b-8b73-bc293e03a93e | [BLX](https://bravenewcoin.com/data-and-charts/indices/blx) |
-            | LX         |Index Id   | 6560acf3-1cb7-4fe4-aa19-fbd90c7b56ee | [ELX](https://bravenewcoin.com/data-and-charts/indices/elx) |
-            | LX         |Index Id   | ce36445a-2a33-4a0f-8b5b-e56175f8db60 | [XRPLX](https://bravenewcoin.com/data-and-charts/indices/blx) |
+            | Index Type | Index Id  | Description |
+            | -----------|:---------:|:-----------:|
+            | MWA        |Market Id  |             |
+            | GWA        |Asset Id   |             |
+            | LX         |191724d4-7915-491b-8b73-bc293e03a93e  | [BLX](https://bravenewcoin.com/data-and-charts/indices/blx) |
+            | LX         |6560acf3-1cb7-4fe4-aa19-fbd90c7b56ee  | [ELX](https://bravenewcoin.com/data-and-charts/indices/elx) |
+            | LX         |ce36445a-2a33-4a0f-8b5b-e56175f8db60  | [XRPLX](https://bravenewcoin.com/data-and-charts/indices/blx) |
 
 
           required: true
