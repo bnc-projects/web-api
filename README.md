@@ -1,5 +1,5 @@
 # web-api
-Public API documentation for Brave New Coin.
+Public Market Data API documentation for Brave New Coin.
 
 ## Install ReDoc CLI
 ```
