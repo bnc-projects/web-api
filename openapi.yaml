@@ -143,6 +143,19 @@ components:
                 enum:
                   - YES
                   - NO
+        symbols:
+          description: Mapping for asset symbols identifying an exchange's markets that differ from generally accepted usage
+          type: array
+          items:
+            type: object
+            properties:
+              assetId:
+                description: The asset id
+                type: string
+                format: uuid
+              symbol:
+                description: The asset symbol used by the exchange
+                type: string
     Tick:
       type: object
       properties:
