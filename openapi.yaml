@@ -559,6 +559,9 @@ tags:
         "requestId": 1
       }
       ```
+
+      A requestId is an optional field that users may include for their own benefit.
+
   - name: Websocket Errors
     description: |
       Server will return an error message in the below format
@@ -657,6 +660,18 @@ tags:
         "timestamp": "2020-06-25T05:02:17.429649Z"
       }
       ```
+
+      #### Unsubscribe
+      To unsubscribe, the user should send a payload with the exact same body as the subscribe payload except the event becomes unsubscribe instead of subscribe
+      ```
+      {
+        "event": "UNSUBSCRIBE_EXCHANGE_TICKER",
+        "exchangeId": "359107d3-bd1a-418c-9470-58831ed9a45e",
+        "marketId": "f7cbc588-283e-41da-9c28-eee2113d7b8d"
+      }
+      ```
+
+
     x-traitTag: true
   - name: Websocket LX
     description: |
@@ -717,6 +732,16 @@ tags:
         "timestamp": "2020-06-25T04:57:01.298745Z"
       }
       ```
+      #### Unsubscribe
+      To unsubscribe, the user should send a payload with the exact same body as the subscribe payload except the event becomes unsubscribe instead of subscribe. The requestId is a user option and isn't required.
+      ```
+      {
+        "event": "UNSUBSCRIBE_INDEX_TICKER",
+        "indexType": "LX",
+        "requestId": 2
+      }
+      ```
+
     x-traitTag: true
   - name: Websocket GWA / MWA
     description: |
@@ -777,6 +802,17 @@ tags:
         "timestamp": "2020-06-25T04:57:01.298745Z"
       }
       ```
+      #### Unsubscribe
+      To unsubscribe, the user should send a payload with the exact same body as the subscribe payload except the event becomes unsubscribe instead of subscribe. The requestId is a user option and isn't required.
+      ```
+      {
+        "event": "UNSUBSCRIBE_INDEX_TICKER",
+        "indexId": "1490fca6-29f8-416a-835b-e9d000f26fd0",
+        "requestId" : 1
+      }
+      ```
+
+
     x-traitTag: true
   - name: Rest API Errors
     description: |
@@ -1271,7 +1307,7 @@ paths:
         - name: timestamp
           in: query
           description: |
-            Retrieve all the indices from the timestamp provided. If no timestamp is provided, then the most recent calculated value will be provided.
+            Retrieve all the indices up to the timestamp provided. If no timestamp is provided, then the most recent calculated value will be provided.
           required: false
           schema:
             type: string
@@ -1378,7 +1414,7 @@ paths:
         - name: timestamp
           in: query
           description: |
-            Retrieve all MWA/GWA OHLCV from the timestamp provided.
+            Retrieve all MWA/GWA OHLCV up to the timestamp provided.
           required: false
           schema:
             type: string
