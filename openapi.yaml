@@ -187,6 +187,10 @@ components:
           description: The timestamp from when the market data was collected from the exchange.
           type: string
           format: date-time
+        lastMoved:
+          description: The timestamp of the last traded price of the quote asset at the exchange.
+          type: string
+          format: date-time
     IndexTicker:
       type: object
       properties:
@@ -905,6 +909,8 @@ tags:
       To obtain an Exchange Id or Market Id to use as a parameter for REST or Websocket, you need to query the Exchange or Market API respectively:
       * [Exchange](#tag/Exchange)
       * [Market](#tag/Market)
+
+      The exchange tickers are refreshed every 30 seconds even if there has been no trade in that period. In that case the lastMoved timestamp in the response provides the time the price was last updated at the exchange.
   - name: Market Weighted Averages
     description: Retrieve the market weighted averages.
   - name: Global Weighted Averages
