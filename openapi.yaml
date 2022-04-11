@@ -1341,7 +1341,7 @@ paths:
             | LX         |6560acf3-1cb7-4fe4-aa19-fbd90c7b56ee  | [ELX](https://bravenewcoin.com/data-and-charts/indices/elx) |
             | LX         |ce36445a-2a33-4a0f-8b5b-e56175f8db60  | [XRPLX](https://bravenewcoin.com/data-and-charts/indices/blx) |
 
-          required: true
+          required: false
           schema:
             type: string
             format: uuid
@@ -1449,7 +1449,7 @@ paths:
             | LX         |ce36445a-2a33-4a0f-8b5b-e56175f8db60  | [XRPLX](https://bravenewcoin.com/data-and-charts/indices/blx) |
 
 
-          required: true
+          required: false
           schema:
             type: string
             format: uuid
