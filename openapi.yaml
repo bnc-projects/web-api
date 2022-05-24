@@ -86,6 +86,9 @@ components:
         url:
           description: The url of where information about the asset can be found.
           type: string
+        contractAddress:
+          description: (Optional) The contract address on primary blockchain of issuance if the asset is a token.
+          type: string
     Market:
       type: object
       properties:
