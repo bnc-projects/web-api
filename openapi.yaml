@@ -233,11 +233,11 @@ components:
           type: string
           format: uuid
         indexId:
-          description: Unique identifier for the constituent used to calculate the index. Or a unique ID for the index in the case of LX indices.
+          description: Unique identifier for the market, asset or index (see above).
           type: string
           format: uuid
         indexType:
-          description: The index type of the OHLCV
+          description: The index type
           required: true
           type: string
           enum:
@@ -245,35 +245,35 @@ components:
             - GWA
             - LX
         open:
-          description: The opening price of the index for the 24h period
+          description: The opening price within the period
           type: string
         close:
-          description: The closing price of the index for the 24h period
+          description: The closing price within the period
           type: string
         high:
-          description: The high price of the index for the 24h period
+          description: The highest price within the period
           type: string
         low:
-          description: The low price of the index for the 24h period
+          description: The lowest price within the period
           type: string
         volume:
-          description: The 24h volume
+          description: The 24h volume in base asset
           type: string
         volumeUsd:
           description: The 24h volume in USD
           type: string
         vwap:
-          description: The 24h volume-weighted average price of the index
+          description: The mean price within the period, weighted by 24h volume
           type: string
         twap:
-          description: The 24h time-weighted average price of the index
+          description: The mean price within the period
           type: string
         startTimestamp:
-          description: The date and time for the start of the OHLCV period
+          description: The date and time for the start of the period
           type: string
           format: date-time
         endTimestamp:
-          description: The date and time for the end of the OHLCV period
+          description: The date and time for the end of the period
           type: string
           format: date-time
 
@@ -1177,6 +1177,12 @@ paths:
             enum:
               - ACTIVE
               - INACTIVE
+        - name: name
+          in: query
+          description: Return exchange with specified name.
+          required: false
+          schema:
+            type: string
       responses:
         '200':
           description: An object with a `content` property that contains an array of exchanges. Each entry in the array is a seperate exchange resource. If no exchanges are found then an empty object will be returned. This request should never return an error.
@@ -1233,14 +1239,14 @@ paths:
         - name: exchangeId
           in: query
           description: Retrieve all ticks for the particular exchange id provided.
-          required: true
+          required: false
           schema:
             type: string
             format: uuid
         - name: marketId
           in: query
           description: Retrieve all ticks for the particular market id provided.
-          required: true
+          required: false
           schema:
             type: string
             format: uuid
