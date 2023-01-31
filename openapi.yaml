@@ -337,6 +337,100 @@ components:
           $ref: '#/components/schemas/MarketCapPercentChange'
         pricePercentChange:
           $ref: '#/components/schemas/MarketCapPercentChange'
+
+    DerivativeContract:
+      type: object
+      properties:
+        id:
+          description: Unique identifier for the resource. Known as `contractId` in other endpoints.
+          type: string
+          format: uuid
+        exchangeId:
+          description: Unique identifier for the exchange.
+          type: string
+          format: uuid
+        marketId:
+          description: Unique identifier for the market.
+          type: string
+          format: uuid
+        exchangeName:
+          description: The contract name provided by exchange.
+          type: string
+        settlementCurrency:
+          description: The currency symbol which the contract is settled in.
+          type: string
+        contractValue:
+          description: The size of the contract in units of the valueCurrency 
+          type: string
+        valueCurrency:
+          description: The currency symbol which the contract is settled in.
+          type: string
+        optionType:
+          description: The options type. Only for derivativeType `OPTION`.
+          type: string
+          enum:
+            - CALL
+            - PUT
+        optionStrike:
+          description: The options strike price.  Only for derivativeType `OPTION`.
+          type: string
+        listing:
+          description: The timestamp when the contract was listed.  Only for derivativeType `FUTURE` and `OPTION`.
+          type: string
+          format: date-time
+        expiration:
+          description: The timestamp when the contract expires. Only for derivativeType `FUTURE` and `OPTION`.
+          type: string
+          format: date-time
+
+    DerivativeTicker:
+      type: object
+      properties:
+        id:
+          description: Unique identifier for the resource.
+          type: string
+          format: uuid
+        contractId:
+          description: Unique identifier for the contract.
+          type: string
+          format: uuid
+        exchangeId:
+          description: Unique identifier for the exchange.
+          type: string
+          format: uuid
+        marketId:
+          description: Unique identifier for the market.
+          type: string
+          format: uuid
+        timestamp:
+          description: The timestamp from when the market data was collected from the exchange.
+          type: string
+          format: date-time
+        price:
+          description: The last traded price measured in the quote asset of the underlying market.
+          type: string
+        volume:
+          description: The volume in the last 24 hours measured in number of contracts.
+          type: string
+        bid:
+          description: The bid price measured in the quote asset of the underlying market.
+          type: string
+        ask:
+          description: The ask price measured in the quote asset of the underlying market.
+          type: string
+        openInterest:
+          description: The open interest measured in number of contracts.
+          type: string
+        indexPrice:
+          description: The index price measured in the quote asset of the underlying market.
+          type: string
+        markPrice:
+          description: The mark price measured in the quote asset of the underlying market.
+          type: string
+        fundingRate:
+          description: The funding rate.
+          type: string
+
   parameters:
     idParam:
       name: id
@@ -353,6 +447,7 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/Error'
+
 x-tagGroups:
   - name: Overview
     tags:
@@ -379,6 +474,7 @@ x-tagGroups:
       - XchangeFeed
       - GWA / MWA / LX
       - Market Cap
+      - Derivatives
 
   - name: Websocket API
     tags:
@@ -925,6 +1021,8 @@ tags:
       The Market Cap is calculated based on the free float (or circulating) supply figures and the GWA index price. The Total Market Cap is calculated based on the total supply and the GWA index price.
 
       If the percentChange parameter is set to true this API will also return movement in percentage of these values over a 24h, 7d or 30d period.
+  - name: Derivatives
+    description: Retrieve information about derivatives.
   - name: Convert
     description: Retrieve the conversion rates between assets.
 paths:
@@ -1549,6 +1647,141 @@ paths:
                     type: array
                     items:
                       $ref: '#/components/schemas/MarketCap'
+  /derivatives/contract:
+    get:
+      tags:
+        - Derivatives
+      summary: Get contracts
+      security:
+        - auth:
+            - read:derivatives
+      description: |
+        This API provides support to get derivatives contract information e.g. expiration, contract value, settlement currency.
+  
+      operationId: getDerivativesContract
+      x-code-samples:
+        - lang: Shell
+          label: curl
+          source: "curl https://api.bravenewcoin.com/v3/derivatives/contract?derivativeType={derivative_type}&exchangeId={exchange_id} -H 'Authorization: Bearer test_SiHrnL5NKsea0G2W4LHd' -G"
+      parameters:
+        - name: derivativeType
+          in: query
+          description: Retrieve all contracts for a particular derivative type.
+          required: true
+          schema:
+            type: string
+            enum:
+              - FUTURE
+              - PERPETUAL
+              - OPTION
+        - name: exchangeId
+          in: query
+          description: Retrieve all contracts for a particular exchange id.
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: marketId
+          in: query
+          description: Retrieve all contracts for a particular market id.
+          required: false
+          schema:
+            type: string
+            format: uuid
+        - name: contractId
+          in: query
+          description: The unique resource identifier.
+          required: false
+          schema:
+            type: string
+            format: uuid
+        - name: include
+          in: query
+          description: Retrieve contracts based on their expiration type.
+          required: false
+          schema:
+            type: string
+            default: ACTIVE
+            enum:
+              - ACTIVE
+              - ALL
+              - EXPIRED
+      responses:
+        '200':
+          description: Contract information
+          content:
+            application/json:
+              schema:
+                title: ContractResponse
+                type: object
+                properties:
+                  content:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/DerivativeContract'
+
+  /derivatives/ticker:
+    get:
+      tags:
+        - Derivatives
+      summary: Get tickers
+      security:
+        - auth:
+            - read:derivatives
+      description: |
+        This API provides support to get derivatives tickers e.g. price, volume, open interest, ask, bid etc.
+  
+      operationId: getDerivativesTicker
+      x-code-samples:
+        - lang: Shell
+          label: curl
+          source: "curl https://api.bravenewcoin.com/v3/derivatives/ticker?derivativeType={derivative_type}&exchangeId={exchange_id} -H 'Authorization: Bearer test_SiHrnL5NKsea0G2W4LHd' -G"
+      parameters:
+        - name: derivativeType
+          in: query
+          description: Retrieve all contracts for a particular derivative type.
+          required: true
+          schema:
+            type: string
+            enum:
+              - FUTURE
+              - PERPETUAL
+              - OPTION
+        - name: exchangeId
+          in: query
+          description: Retrieve all contracts for a particular exchange id.
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: marketId
+          in: query
+          description: Retrieve all contracts for a particular market id.
+          required: false
+          schema:
+            type: string
+            format: uuid
+        - name: contractId
+          in: query
+          description: The unique resource identifier.
+          required: false
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Contract tickers
+          content:
+            application/json:
+              schema:
+                title: TickerResponse
+                type: object
+                properties:
+                  content:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/DerivativeTicker'
+
   /convert:
     get:
       tags:
