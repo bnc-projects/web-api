@@ -6,7 +6,7 @@ Public Market Data API documentation for Brave New Coin.
 npm i -g redoc-cli
 ```
 
-## Build Documentation
+## Build documentation
 ```
 redoc-cli bundle openapi.yaml --output build/index.html --title "Brave New Coin API documentation" --template template.hbs --options.theme.colors.primary.main=#333F48 --options.theme.typography.links.color=#32329f --options.theme.typography.links.visited=#32329f --options.theme.typography.headings.fontFamily='Lato, sans-serif' --options.noAutoAuth --options.expandResponses=all
 ```
