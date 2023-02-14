@@ -346,7 +346,7 @@ components:
           type: string
           format: uuid
         exchangeId:
-          description: Unique identifier for the exchange.
+          description: Unique identifier for the exchange. See above for supported exchanges.
           type: string
           format: uuid
         marketId:
@@ -395,7 +395,7 @@ components:
           type: string
           format: uuid
         exchangeId:
-          description: Unique identifier for the exchange.
+          description: Unique identifier for the exchange. See above for supported exchanges.
           type: string
           format: uuid
         marketId:
@@ -412,6 +412,9 @@ components:
         volume:
           description: The volume in the last 24 hours measured in number of contracts.
           type: string
+        volumeUsd:
+          description: The volume in the last 24 hours measured in USD.
+          type: string
         bid:
           description: The bid price measured in the quote asset of the underlying market.
           type: string
@@ -420,6 +423,9 @@ components:
           type: string
         openInterest:
           description: The open interest measured in number of contracts.
+          type: string
+        openInterestUsd:
+          description: The open interest measured in USD.
           type: string
         indexPrice:
           description: The index price measured in the quote asset of the underlying market.
@@ -1022,7 +1028,20 @@ tags:
 
       If the percentChange parameter is set to true this API will also return movement in percentage of these values over a 24h, 7d or 30d period.
   - name: Derivatives
-    description: Retrieve information about derivatives.
+    description: |
+      Retrieve contract specifications and ticker data for crypto Futures, Perpetual Swaps and Options.
+      
+      The following exchanges are currently supported in our derivatives endpoints. 
+      
+      | Name       | ExchangeId                           |
+      | -----------|:------------------------------------:|
+      | Binance    | a05e02d1-2789-49a3-aa83-1d3c9a442ea8 |
+      | BitMEX     | ba8670a7-e166-4a08-99d7-003219e1a1b0 |
+      | Bybit      | 03a530ca-e2b8-43cc-8a53-7478939a13f6 |
+      | Deribit    | 46f3c558-453c-41d2-b6d8-c6e57128e206 |
+      | Kraken     | fa75a209-f460-4195-bbcc-56eb72286e3d |
+      | LedgerX    | 6259cb53-3c1b-44c3-8928-0455a30c9634 |
+      | OKX        | 153d4b94-3518-4f79-9ebb-b9123467da95 |
   - name: Convert
     description: Retrieve the conversion rates between assets.
 paths:
