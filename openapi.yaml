@@ -26,6 +26,7 @@ components:
             read:ohlcv: Read end of day open, high, low, close and volume
             read:market-cap: Read the market capatilization
             read:LX: Read historical LX index tickers and end of day open, high, low, close and volume
+            read:derivatives: Read derivatives contract information and latest ticker data
   schemas:
     Error:
       type: object
@@ -346,7 +347,7 @@ components:
           type: string
           format: uuid
         exchangeId:
-          description: Unique identifier for the exchange. See above for supported exchanges.
+          description: Unique identifier for the exchange.
           type: string
           format: uuid
         marketId:
@@ -395,7 +396,7 @@ components:
           type: string
           format: uuid
         exchangeId:
-          description: Unique identifier for the exchange. See above for supported exchanges.
+          description: Unique identifier for the exchange.
           type: string
           format: uuid
         marketId:
@@ -590,8 +591,9 @@ tags:
 
       The following resources are our informational API endpoints that can be queried to provide UUIDs:
       * [Asset](#tag/Asset): Identifier for an asset, coin or token. e.g. BTC, LTC, ETH etc.
-      * [Market](#tag/Market): Identifier for a market on a crypto exchange. e.g. BTC/USD, BTC/ETH etc.
-      * [Exchange](#tag/Exchange): Identifier for an exchange
+      * [Market](#tag/Market): Identifier for a market pair, consisting of a base asset and quote asset. e.g. BTC/USD, BTC/ETH etc.
+      * [Exchange](#tag/Exchange): Identifier for an exchange. e.g. Binance, Bitstamp, Kraken. 
+      * [Contract](#tag/Derivatives): Identifier for a derivatives contract. e.g. Bybit's *BTCUSDM23* Future or Deribit's *ETH-31MAR23-4000-C* Option.
 
   - name: Rest API Overview
     description: |
@@ -1695,7 +1697,7 @@ paths:
               - OPTION
         - name: exchangeId
           in: query
-          description: Retrieve all contracts for a particular exchange id.
+          description: Retrieve all contracts for a particular exchange id. See above for supported exchanges.
           required: true
           schema:
             type: string
@@ -1768,7 +1770,7 @@ paths:
               - OPTION
         - name: exchangeId
           in: query
-          description: Retrieve all contracts for a particular exchange id.
+          description: Retrieve all contracts for a particular exchange id. See above for supported exchanges.
           required: true
           schema:
             type: string
