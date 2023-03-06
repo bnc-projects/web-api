@@ -1692,9 +1692,9 @@ paths:
           schema:
             type: string
             enum:
-              - FUTURE
-              - PERPETUAL
-              - OPTION
+              - futures
+              - perpetuals
+              - options
         - name: exchangeId
           in: query
           description: The unique exchange resource identifier. See above for supported exchanges.
@@ -1758,9 +1758,9 @@ paths:
           schema:
             type: string
             enum:
-              - FUTURE
-              - PERPETUAL
-              - OPTION
+              - futures
+              - perpetuals
+              - options
         - name: id
           in: path
           description: The unique contract resource identifier.
@@ -1801,9 +1801,9 @@ paths:
           schema:
             type: string
             enum:
-              - FUTURE
-              - PERPETUAL
-              - OPTION
+              - futures
+              - perpetuals
+              - options
         - name: exchangeId
           in: query
           description: The unique exchange resource identifier. See above for supported exchanges.
