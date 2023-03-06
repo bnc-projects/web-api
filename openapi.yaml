@@ -1668,26 +1668,26 @@ paths:
                     type: array
                     items:
                       $ref: '#/components/schemas/MarketCap'
-  /derivatives/contract:
+  /derivatives/contract/{derivative_type}:
     get:
       tags:
         - Derivatives
-      summary: Get contracts
+      summary: List all contracts
       security:
         - auth:
             - read:derivatives
       description: |
-        This API provides support to get derivatives contract information e.g. expiration, contract value, settlement currency.
+        This API provides derivatives contract information e.g. expiration, contract value, settlement currency.
   
-      operationId: getDerivativesContract
+      operationId: listContracts
       x-code-samples:
         - lang: Shell
           label: curl
-          source: "curl https://api.bravenewcoin.com/v3/derivatives/contract?derivativeType={derivative_type}&exchangeId={exchange_id} -H 'Authorization: Bearer test_SiHrnL5NKsea0G2W4LHd' -G"
+          source: "curl https://api.bravenewcoin.com/v3/derivatives/contract/{derivative_type}?exchangeId={exchange_id} -H 'Authorization: Bearer test_SiHrnL5NKsea0G2W4LHd' -G"
       parameters:
         - name: derivativeType
-          in: query
-          description: Retrieve all contracts for a particular derivative type.
+          in: path
+          description: Identifies the contracts derivative type. 
           required: true
           schema:
             type: string
@@ -1697,28 +1697,21 @@ paths:
               - OPTION
         - name: exchangeId
           in: query
-          description: Retrieve all contracts for a particular exchange id. See above for supported exchanges.
+          description: The unique exchange resource identifier. See above for supported exchanges.
           required: true
           schema:
             type: string
             format: uuid
         - name: marketId
           in: query
-          description: Retrieve all contracts for a particular market id.
-          required: false
-          schema:
-            type: string
-            format: uuid
-        - name: contractId
-          in: query
-          description: The unique resource identifier.
+          description: The unique market resource identifier. See [/market](#tag/Market).
           required: false
           schema:
             type: string
             format: uuid
         - name: include
           in: query
-          description: Retrieve contracts based on their expiration type.
+          description: Identifies the contracts expiration status.   
           required: false
           schema:
             type: string
@@ -1729,7 +1722,7 @@ paths:
               - EXPIRED
       responses:
         '200':
-          description: Contract information
+          description: An object with a `content` property that contains an array of contracts. Each entry in the array is a seperate contract resource. If no contracts are found then an empty object will be returned. 
           content:
             application/json:
               schema:
@@ -1740,8 +1733,51 @@ paths:
                     type: array
                     items:
                       $ref: '#/components/schemas/DerivativeContract'
-
-  /derivatives/ticker:
+  
+  /derivatives/contract/{derivative_type}/{id}:
+    get:
+      tags:
+        - Derivatives
+      summary: Retrieve a contract
+      security:
+        - auth:
+            - read:derivatives
+      description: |
+        Retrieve the information for a single contract by providing it's unique resource identifier. 
+  
+      operationId: getContractById
+      x-code-samples:
+        - lang: Shell
+          label: curl
+          source: "curl https://api.bravenewcoin.com/v3/derivatives/contract/{derivative_type}/{id} -H 'Authorization: Bearer test_SiHrnL5NKsea0G2W4LHd' -G"
+      parameters:
+        - name: derivativeType
+          in: path
+          description: Identifies the contracts derivative type. 
+          required: true
+          schema:
+            type: string
+            enum:
+              - FUTURE
+              - PERPETUAL
+              - OPTION
+        - name: id
+          in: path
+          description: The unique contract resource identifier.
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: The contract which matches the UUID requested.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DerivativeContract'
+        '404':
+          description: The contract resource cannot be found.
+  /derivatives/ticker/{derivative_type}:
     get:
       tags:
         - Derivatives
@@ -1750,17 +1786,17 @@ paths:
         - auth:
             - read:derivatives
       description: |
-        This API provides support to get derivatives tickers e.g. price, volume, open interest, ask, bid etc.
+        This API provides derivatives tickers e.g. price, volume, open interest, ask, bid etc.
   
       operationId: getDerivativesTicker
       x-code-samples:
         - lang: Shell
           label: curl
-          source: "curl https://api.bravenewcoin.com/v3/derivatives/ticker?derivativeType={derivative_type}&exchangeId={exchange_id} -H 'Authorization: Bearer test_SiHrnL5NKsea0G2W4LHd' -G"
+          source: "curl https://api.bravenewcoin.com/v3/derivatives/ticker/{derivative_type}?exchangeId={exchange_id} -H 'Authorization: Bearer test_SiHrnL5NKsea0G2W4LHd' -G"
       parameters:
         - name: derivativeType
-          in: query
-          description: Retrieve all contracts for a particular derivative type.
+          in: path
+          description: Identifies the contracts derivative type. 
           required: true
           schema:
             type: string
@@ -1770,21 +1806,21 @@ paths:
               - OPTION
         - name: exchangeId
           in: query
-          description: Retrieve all contracts for a particular exchange id. See above for supported exchanges.
+          description: The unique exchange resource identifier. See above for supported exchanges.
           required: true
           schema:
             type: string
             format: uuid
         - name: marketId
           in: query
-          description: Retrieve all contracts for a particular market id.
+          description: The unique market resource identifier. See [/market](#tag/Market).
           required: false
           schema:
             type: string
             format: uuid
         - name: contractId
           in: query
-          description: The unique resource identifier.
+          description: The unique contract resource identifier. See [/contract](#tag/Derivatives/operation/listContracts). 
           required: false
           schema:
             type: string
