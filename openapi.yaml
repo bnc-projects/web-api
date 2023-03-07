@@ -367,20 +367,20 @@ components:
           description: The currency symbol which the contract is settled in.
           type: string
         optionType:
-          description: The options type. Only for derivativeType `OPTION`.
+          description: The options type. Only for derivativeType `options`.
           type: string
           enum:
             - CALL
             - PUT
         optionStrike:
-          description: The options strike price.  Only for derivativeType `OPTION`.
+          description: The options strike price.  Only for derivativeType `options`.
           type: string
         listing:
-          description: The timestamp when the contract was listed.  Only for derivativeType `FUTURE` and `OPTION`.
+          description: The timestamp when the contract was listed.  Only for derivativeType `futures` and `options`.
           type: string
           format: date-time
         expiration:
-          description: The timestamp when the contract expires. Only for derivativeType `FUTURE` and `OPTION`.
+          description: The timestamp when the contract expires. Only for derivativeType `futures` and `options`.
           type: string
           format: date-time
 
@@ -435,7 +435,7 @@ components:
           description: The mark price measured in the quote asset of the underlying market.
           type: string
         fundingRate:
-          description: The funding rate.
+          description: The last funding rate, updated at different frequencies depending on the exchange. Only for derivativeType `perpetuals`.
           type: string
 
   parameters:
