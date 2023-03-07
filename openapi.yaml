@@ -1683,7 +1683,7 @@ paths:
       x-code-samples:
         - lang: Shell
           label: curl
-          source: "curl https://api.bravenewcoin.com/v3/derivatives/contract/{derivative_type}?exchangeId={exchange_id} -H 'Authorization: Bearer test_SiHrnL5NKsea0G2W4LHd' -G"
+          source: "curl https://api.bravenewcoin.com/v3/derivatives/contract/perpetuals?exchangeId=a05e02d1-2789-49a3-aa83-1d3c9a442ea8 -H 'Authorization: Bearer test_SiHrnL5NKsea0G2W4LHd' -G"
       parameters:
         - name: derivativeType
           in: path
@@ -1749,7 +1749,7 @@ paths:
       x-code-samples:
         - lang: Shell
           label: curl
-          source: "curl https://api.bravenewcoin.com/v3/derivatives/contract/{derivative_type}/{id} -H 'Authorization: Bearer test_SiHrnL5NKsea0G2W4LHd' -G"
+          source: "curl https://api.bravenewcoin.com/v3/derivatives/contract/perpetuals/0d2056a3-5cd5-3022-8da0-3abcc542f327 -H 'Authorization: Bearer test_SiHrnL5NKsea0G2W4LHd' -G"
       parameters:
         - name: derivativeType
           in: path
@@ -1792,7 +1792,7 @@ paths:
       x-code-samples:
         - lang: Shell
           label: curl
-          source: "curl https://api.bravenewcoin.com/v3/derivatives/ticker/{derivative_type}?exchangeId={exchange_id} -H 'Authorization: Bearer test_SiHrnL5NKsea0G2W4LHd' -G"
+          source: "curl https://api.bravenewcoin.com/v3/derivatives/ticker/perpetuals?exchangeId=a05e02d1-2789-49a3-aa83-1d3c9a442ea8 -H 'Authorization: Bearer test_SiHrnL5NKsea0G2W4LHd' -G"
       parameters:
         - name: derivativeType
           in: path
@@ -1820,7 +1820,7 @@ paths:
             format: uuid
         - name: contractId
           in: query
-          description: The unique contract resource identifier. See [/contract](#tag/Derivatives/operation/listContracts). 
+          description: The unique contract resource identifier. See [/contract](#operation/listContracts). 
           required: false
           schema:
             type: string
