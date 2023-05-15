@@ -1204,7 +1204,7 @@ paths:
       x-code-samples:
         - lang: Shell
           label: curl
-          source: "curl https://api.bravenewcoin.com/v3/asset/74182afb-c7ea-4856-a65d-a03ab5f72635 -H 'Authorization: Bearer test_SiHrnL5NKsea0G2W4LHd' -G"
+          source: "curl https://api.bravenewcoin.com/v3/asset/f1ff77b6-3ab4-4719-9ded-2fc7e71cff1f -H 'Authorization: Bearer test_SiHrnL5NKsea0G2W4LHd' -G"
       responses:
         '200':
           description: The asset which matches the UUID requested.
@@ -1265,7 +1265,7 @@ paths:
       x-code-samples:
         - lang: Shell
           label: curl
-          source: "curl https://api.bravenewcoin.com/v3/market/74182afb-c7ea-4856-a65d-a03ab5f72635 -H 'Authorization: Bearer test_SiHrnL5NKsea0G2W4LHd' -G"
+          source: "curl https://api.bravenewcoin.com/v3/market/6ea0d2ef-6dd0-4adb-ad32-f7f3db58ccbe -H 'Authorization: Bearer test_SiHrnL5NKsea0G2W4LHd' -G"
       responses:
         '200':
           description: The market which matches the UUID requested
@@ -1327,7 +1327,7 @@ paths:
       x-code-samples:
         - lang: Shell
           label: curl
-          source: "curl https://api.bravenewcoin.com/v3/exchange/74182afb-c7ea-4856-a65d-a03ab5f72635 -H 'Authorization: Bearer test_SiHrnL5NKsea0G2W4LHd' -G"
+          source: "curl https://api.bravenewcoin.com/v3/exchange/65cf072d-2ffa-48f8-9497-6654234f52e3 -H 'Authorization: Bearer test_SiHrnL5NKsea0G2W4LHd' -G"
       responses:
         '200':
           description: The exchange which matched the UUID requested
